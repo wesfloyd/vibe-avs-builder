@@ -45,7 +45,13 @@ export const {
           console.log('Successfully authorized user:', email);
           return user as any;
         } catch (error) {
-          console.error('Error during authorization:', error);
+          console.error('Error during authorization:', {
+            error,
+            message: error instanceof Error ? error.message : 'Unknown error',
+            stack: error instanceof Error ? error.stack : undefined,
+            email,
+            timestamp: new Date().toISOString(),
+          });
           return null;
         }
       },
@@ -56,7 +62,6 @@ export const {
       if (user) {
         token.id = user.id;
       }
-
       return token;
     },
     async session({
@@ -69,7 +74,6 @@ export const {
       if (session.user) {
         session.user.id = token.id as string;
       }
-
       return session;
     },
   },
