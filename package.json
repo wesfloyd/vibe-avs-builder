@@ -11,6 +11,7 @@
     "format": "biome format --write",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "npx tsx lib/db/migrate.ts",
+    "db:reset": "npx tsx lib/db/reset.ts",
     "db:studio": "drizzle-kit studio",
     "db:push": "drizzle-kit push",
     "db:pull": "drizzle-kit pull",
@@ -19,8 +20,10 @@
     "test": "export PLAYWRIGHT=True && pnpm exec playwright test --workers=4"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^1.2.10",
     "@ai-sdk/react": "^1.2.8",
     "@ai-sdk/xai": "^1.2.10",
+    "@anthropic-ai/sdk": "^0.39.0",
     "@codemirror/lang-javascript": "^6.2.2",
     "@codemirror/lang-python": "^6.1.6",
     "@codemirror/state": "^6.5.0",
@@ -87,6 +90,7 @@
     "@tailwindcss/typography": "^0.5.15",
     "@types/d3-scale": "^4.0.8",
     "@types/next": "^9.0.0",
+    "@types/next-auth": "^3.15.0",
     "@types/node": "^22.13.10",
     "@types/papaparse": "^5.3.15",
     "@types/pdf-parse": "^1.1.4",
