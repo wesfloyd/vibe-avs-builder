@@ -1,6 +1,7 @@
 import 'server-only';
 
 import { genSaltSync, hashSync } from 'bcrypt-ts';
+import crypto from 'node:crypto';
 import {
   and,
   asc,
@@ -42,6 +43,64 @@ export async function getUser(email: string): Promise<Array<User>> {
     return await db.select().from(user).where(eq(user.email, email));
   } catch (error) {
     console.error('Failed to get user from database');
+    throw error;
+  }
+}
+
+export async function createResetToken(email: string): Promise<string | null> {
+  try {
+    const users = await getUser(email);
+    if (users.length === 0) return null;
+
+    const resetToken = crypto.randomUUID();
+    const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour from now
+
+    await db
+      .update(user)
+      .set({ resetToken, resetTokenExpiry })
+      .where(eq(user.email, email));
+
+    return resetToken;
+  } catch (error) {
+    console.error('Failed to create reset token');
+    throw error;
+  }
+}
+
+export async function getUserByResetToken(token: string): Promise<User | null> {
+  try {
+    const users = await db
+      .select()
+      .from(user)
+      .where(
+        and(eq(user.resetToken, token), gte(user.resetTokenExpiry, new Date())),
+      );
+
+    return users.length > 0 ? users[0] : null;
+  } catch (error) {
+    console.error('Failed to get user by reset token');
+    throw error;
+  }
+}
+
+export async function updateUserPassword(
+  userId: string,
+  password: string,
+): Promise<void> {
+  try {
+    const salt = genSaltSync(10);
+    const hash = hashSync(password, salt);
+
+    await db
+      .update(user)
+      .set({
+        password: hash,
+        resetToken: null,
+        resetTokenExpiry: null,
+      })
+      .where(eq(user.id, userId));
+  } catch (error) {
+    console.error('Failed to update user password');
     throw error;
   }
 }

@@ -15,6 +15,8 @@ export const user = pgTable('User', {
   id: uuid('id').primaryKey().notNull().defaultRandom(),
   email: varchar('email', { length: 64 }).notNull(),
   password: varchar('password', { length: 64 }),
+  resetToken: varchar('resetToken', { length: 64 }),
+  resetTokenExpiry: timestamp('resetTokenExpiry'),
 });
 
 export type User = InferSelectModel<typeof user>;

@@ -46,3 +46,11 @@ pnpm next start
 ```
 
 Your app template should now be running on [localhost:3000](http://localhost:3000).
+
+
+
+Roadmap:
+- Add Password Reset: For production use, you should:
+Implement an actual email sending mechanism (like using a service like SendGrid, Mailgun, etc.)
+Update the forgot-password API endpoint to send an email with the reset link
+Add rate limiting to prevent abuse of the password reset functionality

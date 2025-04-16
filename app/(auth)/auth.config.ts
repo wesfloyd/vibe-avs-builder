@@ -15,13 +15,24 @@ export const authConfig = {
       const isOnChat = nextUrl.pathname.startsWith('/');
       const isOnRegister = nextUrl.pathname.startsWith('/register');
       const isOnLogin = nextUrl.pathname.startsWith('/login');
+      const isOnForgotPassword =
+        nextUrl.pathname.startsWith('/forgot-password');
+      const isOnResetPassword = nextUrl.pathname.startsWith('/reset-password');
 
-      if (isLoggedIn && (isOnLogin || isOnRegister)) {
+      if (
+        isLoggedIn &&
+        (isOnLogin || isOnRegister || isOnForgotPassword || isOnResetPassword)
+      ) {
         return Response.redirect(new URL('/', nextUrl as unknown as URL));
       }
 
-      if (isOnRegister || isOnLogin) {
-        return true; // Always allow access to register and login pages
+      if (
+        isOnRegister ||
+        isOnLogin ||
+        isOnForgotPassword ||
+        isOnResetPassword
+      ) {
+        return true; // Always allow access to register, login, and password reset pages
       }
 
       if (isOnChat) {
