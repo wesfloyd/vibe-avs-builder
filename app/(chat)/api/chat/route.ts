@@ -1,5 +1,5 @@
+import type { UIMessage } from 'ai';
 import {
-  UIMessage,
   appendResponseMessages,
   createDataStreamResponse,
   smoothStream,
@@ -49,6 +49,7 @@ export async function POST(request: Request) {
     const userMessage = getMostRecentUserMessage(messages);
 
     if (!userMessage) {
+      console.error('No user message found');
       return new Response('No user message found', { status: 400 });
     }
 
@@ -159,6 +160,7 @@ export async function POST(request: Request) {
       },
     });
   } catch (error) {
+    console.error('Error in POST', error);
     return new Response('An error occurred while processing your request!', {
       status: 404,
     });
@@ -170,7 +172,8 @@ export async function DELETE(request: Request) {
   const id = searchParams.get('id');
 
   if (!id) {
-    return new Response('Not Found', { status: 404 });
+    console.error(`Id ${id} Not Found for delete`);
+    return new Response('Not Found for delete', { status: 404 });
   }
 
   const session = await auth();
@@ -190,6 +193,7 @@ export async function DELETE(request: Request) {
 
     return new Response('Chat deleted', { status: 200 });
   } catch (error) {
+    console.error('Error deleting chat:', error);
     return new Response('An error occurred while processing your request!', {
       status: 500,
     });
