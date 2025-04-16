@@ -35,10 +35,13 @@ Forked from: https://vercel.com/templates/next.js/nextjs-ai-chatbot
 3. Download your environment variables: `vercel env pull`
 
 ```bash
+rm -rf node_modules
+rm -rf .next/
 pnpm install
+pnpm next build
+
 pnpm dev 
 #or
-pnpm next build
 pnpm next start
 ```
 
