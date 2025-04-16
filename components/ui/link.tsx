@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 interface LinkProps extends React.ComponentPropsWithoutRef<typeof NextLink> {
   children: React.ReactNode;
   className?: string;
+  href: string;
 }
 
 export function Link({ children, className, ...props }: LinkProps) {
