@@ -44,6 +44,7 @@ export function Chat({
   } = useChat({
     id,
     body: { id, selectedChatModel: selectedChatModel },
+    api: '/api/chat',
     initialMessages,
     experimental_throttle: 100,
     sendExtraMessageFields: true,
@@ -51,7 +52,14 @@ export function Chat({
     onFinish: () => {
       mutate(unstable_serialize(getChatHistoryPaginationKey));
     },
-    onError: () => {
+    onError: (error) => {
+      console.error('Chat error occurred:', {
+        error,
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+        chatId: id,
+        timestamp: new Date().toISOString(),
+      });
       toast.error('An error occurred, please try again!');
     },
   });
