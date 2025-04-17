@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useActionState, useEffect, useState } from 'react';
-import { toast } from '@/components/toast';
 
 import { AuthForm } from '@/components/auth-form';
 import { SubmitButton } from '@/components/submit-button';
@@ -13,9 +12,14 @@ import { login, type LoginActionState } from '../actions';
 export default function Page() {
   const router = useRouter();
 
+  // Auto-redirect to home page
+  useEffect(() => {
+    router.replace('/');
+  }, [router]);
+  
+  // Dummy states to maintain compatibility with existing code
   const [email, setEmail] = useState('');
   const [isSuccessful, setIsSuccessful] = useState(false);
-
   const [state, formAction] = useActionState<LoginActionState, FormData>(
     login,
     {
@@ -23,24 +27,16 @@ export default function Page() {
     },
   );
 
+  // This won't run since we're redirecting, but kept for code compatibility
   useEffect(() => {
-    if (state.status === 'failed') {
-      toast({
-        type: 'error',
-        description: 'Invalid credentials!',
-      });
-    } else if (state.status === 'invalid_data') {
-      toast({
-        type: 'error',
-        description: 'Failed validating your submission!',
-      });
-    } else if (state.status === 'success') {
+    if (state.status === 'success') {
       setIsSuccessful(true);
       router.refresh();
     }
   }, [state.status, router]);
 
   const handleSubmit = (formData: FormData) => {
+    // This function won't be called, but kept for code compatibility
     setEmail(formData.get('email') as string);
     formAction(formData);
   };

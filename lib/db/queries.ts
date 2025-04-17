@@ -58,6 +58,28 @@ export async function createUser(email: string, password: string) {
   }
 }
 
+export async function createGuestUserIfNotExists() {
+  const guestEmail = 'guest@example.com';
+  const guestPassword = 'guest123'; // This password is not secret as it's just for the guest account
+  
+  try {
+    const existingUsers = await getUser(guestEmail);
+    
+    if (existingUsers.length === 0) {
+      console.log('Creating guest user account...');
+      await createUser(guestEmail, guestPassword);
+      console.log('Guest user account created successfully');
+    } else {
+      console.log('Guest user account already exists');
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Failed to create guest user in database', error);
+    throw error;
+  }
+}
+
 export async function saveChat({
   id,
   userId,

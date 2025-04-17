@@ -8,14 +8,18 @@ import { AuthForm } from '@/components/auth-form';
 import { SubmitButton } from '@/components/submit-button';
 
 import { register, type RegisterActionState } from '../actions';
-import { toast } from '@/components/toast';
 
 export default function Page() {
   const router = useRouter();
 
+  // Auto-redirect to home page
+  useEffect(() => {
+    router.replace('/');
+  }, [router]);
+  
+  // Dummy states to maintain compatibility with existing code
   const [email, setEmail] = useState('');
   const [isSuccessful, setIsSuccessful] = useState(false);
-
   const [state, formAction] = useActionState<RegisterActionState, FormData>(
     register,
     {
@@ -23,25 +27,16 @@ export default function Page() {
     },
   );
 
+  // This won't run since we're redirecting, but kept for code compatibility
   useEffect(() => {
-    if (state.status === 'user_exists') {
-      toast({ type: 'error', description: 'Account already exists!' });
-    } else if (state.status === 'failed') {
-      toast({ type: 'error', description: 'Failed to create account!' });
-    } else if (state.status === 'invalid_data') {
-      toast({
-        type: 'error',
-        description: 'Failed validating your submission!',
-      });
-    } else if (state.status === 'success') {
-      toast({ type: 'success', description: 'Account created successfully!' });
-
+    if (state.status === 'success') {
       setIsSuccessful(true);
       router.refresh();
     }
   }, [state, router]);
 
   const handleSubmit = (formData: FormData) => {
+    // This function won't be called, but kept for code compatibility
     setEmail(formData.get('email') as string);
     formAction(formData);
   };
