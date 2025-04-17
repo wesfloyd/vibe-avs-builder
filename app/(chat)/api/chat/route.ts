@@ -65,24 +65,24 @@ export async function POST(request: Request) {
         title = 'New Chat';
       }
 
+      // For wf-disable-auth-flow branch:
+      // Create chat without checking for valid user in database
+      // This avoids foreign key constraint errors
       await saveChat({
         id,
-        userId:
-          sessionWithFallback.user?.id ||
-          '00000000-0000-0000-0000-000000000000',
+        userId: sessionWithFallback.user?.id || null,
         title: title || 'New Chat', // Ensure title is always a string
       });
     } else {
-      if (
-        chat.userId !==
-        (sessionWithFallback.user?.id || '00000000-0000-0000-0000-000000000000')
-      ) {
+      // For wf-disable-auth-flow branch:
+    // Skip user ID check for chat access
+    if (chat.userId && sessionWithFallback.user?.id && 
+        chat.userId !== sessionWithFallback.user.id) {
         console.error(
           'POST: Unauthorized: Chat ID',
           id,
           'User ID',
-          sessionWithFallback.user?.id ||
-            '00000000-0000-0000-0000-000000000000',
+          sessionWithFallback.user?.id,
         );
         // Allow access with warning instead of returning 401
         console.warn('Allowing access to chat despite user mismatch');
@@ -209,15 +209,15 @@ export async function DELETE(request: Request) {
   try {
     const chat = await getChatById({ id });
 
-    if (
-      chat.userId !==
-      (sessionWithFallback.user?.id || '00000000-0000-0000-0000-000000000000')
-    ) {
+    // For wf-disable-auth-flow branch:
+    // Skip user ID check for chat deletion
+    if (chat.userId && sessionWithFallback.user?.id && 
+        chat.userId !== sessionWithFallback.user.id) {
       console.error(
         'DELETE: Unauthorized: Chat ID',
         id,
         'User ID',
-        sessionWithFallback.user?.id || '00000000-0000-0000-0000-000000000000',
+        sessionWithFallback.user?.id,
       );
       // Allow access with warning instead of returning 401
       console.warn('Allowing deletion despite user mismatch');
