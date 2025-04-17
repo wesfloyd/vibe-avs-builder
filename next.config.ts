@@ -11,6 +11,10 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  compiler: {
+    // Enable SWC compiler for faster builds and type checking
+    styledComponents: true,
+  },
 };
 
 export default nextConfig;

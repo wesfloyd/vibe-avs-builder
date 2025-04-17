@@ -38,6 +38,51 @@ const runMigrate = async () => {
       )`;
     console.log('Migration table exists:', migrationTableExists[0].exists);
     
+    // Check if migrations are needed by comparing with latest migration
+    if (migrationTableExists[0].exists) {
+      const latestMigration = await connection`
+        SELECT hash FROM drizzle.__drizzle_migrations 
+        ORDER BY id DESC LIMIT 1`;
+      
+      if (latestMigration.length > 0) {
+        // Get filesystem migrations list (implement logic to check if newer migrations exist)
+        const fs = require('fs');
+        const path = require('path');
+        
+        // Read the journal file to get the latest migration info
+        const journalPath = path.resolve('./lib/db/migrations/meta/_journal.json');
+        if (fs.existsSync(journalPath)) {
+          const journal = JSON.parse(fs.readFileSync(journalPath, 'utf8'));
+          if (journal.entries && journal.entries.length > 0) {
+            // Get the latest entry
+            const latestEntry = journal.entries[journal.entries.length - 1];
+            
+            // Get the hash from the migration meta data
+            const latestMetaPath = path.resolve(`./lib/db/migrations/meta/${latestEntry.tag}_snapshot.json`);
+            if (fs.existsSync(latestMetaPath)) {
+              const latestMeta = JSON.parse(fs.readFileSync(latestMetaPath, 'utf8'));
+              
+              // Simple hash check - can be improved with more robust comparison
+              console.log('Latest migration hash (DB):', latestMigration[0].hash);
+              console.log('Latest migration tag (files):', latestEntry.tag);
+              
+              // Skip if we've already applied all migrations
+              // A more robust check would compare all migrations, not just the latest
+              if (latestMigration.length >= journal.entries.length) {
+                console.log('Database is up to date, skipping migrations');
+                // Skip migrations and return early
+                const tables = await connection`
+                  SELECT tablename FROM pg_catalog.pg_tables WHERE schemaname = 'public'`;
+                console.log('Tables after migration check:', tables.map(t => t.tablename));
+                await connection.end();
+                process.exit(0);
+              }
+            }
+          }
+        }
+      }
+    }
+    
     // Run migrations with verbose logging
     const start = Date.now();
     await migrate(db, { migrationsFolder: './lib/db/migrations' });
