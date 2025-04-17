@@ -39,11 +39,13 @@ Your app template should now be running on [localhost:3000](http://localhost:300
   - Develop Asset Library sidebar/panel for storing generated assets
   - Add stage selector component
 
+
 4. Stage 1: Idea Refinement Implementation:
   - Create custom prompts for AVS idea evaluation
   - Build rating component for idea feasibility
   - Implement name suggestion functionality
   - Store refined idea as an artifact
+  - Add Download button to download idea
 
 5. Stage 2: Design Generation:
   - Add image artifact for AVS logo generation
@@ -65,6 +67,7 @@ Your app template should now be running on [localhost:3000](http://localhost:300
   - Update theme/styling to reflect EigenLayer branding
   - Implement "open" user flow with guided LLM experience
   - Add stage-specific help content
+  - Add "AVS Name" supplied or AI generated at the top after first user interaction. Note Vercel treats them as "Projects"
 
 10. General Architectural Changes:
   - Create specialized document templates for AVS components
@@ -73,6 +76,8 @@ Your app template should now be running on [localhost:3000](http://localhost:300
 7. Marketing Integration:
   - Add CTA component for scheduling calls with EigenLayer
   - Implement conversion tracking
+
+
 
 ## Done
 
