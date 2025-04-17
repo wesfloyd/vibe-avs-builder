@@ -1,6 +1,6 @@
 import type { NextAuthConfig } from 'next-auth';
 
-export const authConfig = {
+export const authConfig: NextAuthConfig = {
   pages: {
     signIn: '/login',
     newUser: '/',
@@ -36,4 +36,12 @@ export const authConfig = {
       return true;
     },
   },
-} satisfies NextAuthConfig;
+};
+
+// Conditionally add trustHost
+if (
+  process.env.NEXTAUTH_URL?.includes('localhost') ||
+  process.env.NODE_ENV === 'development'
+) {
+  authConfig.trustHost = true;
+}

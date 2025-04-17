@@ -4,11 +4,11 @@ import Image from 'next/image';
 import { useWindowSize } from 'usehooks-ts';
 import { SidebarToggle } from '@/components/sidebar-toggle';
 import { Button } from '@/components/ui/button';
-import { PlusIcon, } from './icons';
+import { PlusIcon } from './icons';
 import { useSidebar } from './ui/sidebar';
 import { memo } from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
-import type { VisibilityType, } from './visibility-selector';
+import type { VisibilityType } from './visibility-selector';
 
 function PureChatHeader({
   chatId,
@@ -52,12 +52,12 @@ function PureChatHeader({
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
-            variant="ghost"
+            variant="outline"
             className="order-3 md:order-2 p-2"
             onClick={() => window.open('https://www.eigenlayer.xyz', '_blank')}
           >
             <Image
-              src="/images/eigenlayer-logo.png"
+              src="/images/eigenlayer-logo-simplified.png"
               alt="EigenLayer Logo"
               className="h-6 w-auto"
               width={24}

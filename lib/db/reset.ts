@@ -18,25 +18,51 @@ const runReset = async () => {
 
   console.log('⚠️ Dropping all tables...');
 
-  // Drop all tables in public schema
-  await db.execute(sql`
-    DO $$ DECLARE
-      r RECORD;
-    BEGIN
-      FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
-        EXECUTE 'DROP TABLE IF EXISTS ' || quote_ident(r.tablename) || ' CASCADE';
-      END LOOP;
-    END $$;
-  `);
+  try {
+    // Drop all tables in public schema
+    await db.execute(sql`
+      DO $$ DECLARE
+        r RECORD;
+      BEGIN
+        FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
+          EXECUTE 'DROP TABLE IF EXISTS public.' || quote_ident(r.tablename) || ' CASCADE';
+        END LOOP;
+      END $$;
+    `);
+    console.log('✅ Tables dropped from public schema');
 
-  console.log('✅ Tables dropped');
-  console.log('⏳ Running migrations...');
+    // Also reset the drizzle migrations table
+    await db.execute(sql`
+      TRUNCATE TABLE drizzle.__drizzle_migrations;
+    `);
+    console.log('✅ Drizzle migrations table truncated');
 
-  const start = Date.now();
-  await migrate(db, { migrationsFolder: './lib/db/migrations' });
-  const end = Date.now();
+    // Check tables before running migrations
+    const tablesBeforeMigration = await connection`
+      SELECT tablename FROM pg_catalog.pg_tables 
+      WHERE schemaname = 'public'`;
+    console.log('Tables before migration:', tablesBeforeMigration.map(t => t.tablename));
+    
+    console.log('⏳ Running migrations...');
 
-  console.log('✅ Migrations completed in', end - start, 'ms');
+    const start = Date.now();
+    await migrate(db, { migrationsFolder: './lib/db/migrations' });
+    const end = Date.now();
+
+    console.log('✅ Migrations completed in', end - start, 'ms');
+    
+    // Check tables after running migrations
+    const tablesAfterMigration = await connection`
+      SELECT tablename FROM pg_catalog.pg_tables 
+      WHERE schemaname = 'public'`;
+    console.log('Tables after migration:', tablesAfterMigration.map(t => t.tablename));
+  } catch (error) {
+    console.error('Error during reset process:', error);
+    throw error;
+  } finally {
+    await connection.end();
+  }
+  
   process.exit(0);
 };
 
