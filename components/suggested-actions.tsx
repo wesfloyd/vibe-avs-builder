@@ -13,24 +13,25 @@ interface SuggestedActionsProps {
 function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
   const suggestedActions = [
     {
-      title: 'What are the advantages',
-      label: 'of using Next.js?',
-      action: 'What are the advantages of using Next.js?',
+      title: 'Refine an AVS idea',
+      label: 'Is this a good idea for an AVS?',
+      action: 'Is this a good idea for an AVS? ..',
     },
     {
-      title: 'Write code to',
-      label: `demonstrate djikstra's algorithm`,
-      action: `Write code to demonstrate djikstra's algorithm`,
+      title: 'Generate a Design tech spec',
+      label: `to help define my AVS idea in detail`,
+      action: `Generate a Design tech spec based on my AVS idea ..`,
     },
     {
-      title: 'Help me write an essay',
-      label: `about silicon valley`,
-      action: `Help me write an essay about silicon valley`,
+      title: 'Generate code for my AVS prototype',
+      label: `that I can run locally and demo`,
+      action: `Generate code for my AVS prototype using Hello World example`,
     },
     {
-      title: 'What is the weather',
-      label: 'in San Francisco?',
-      action: 'What is the weather in San Francisco?',
+      title: 'Build an example AVS',
+      label: 'that is an Oracle for weather data',
+      action:
+        'Generate example AVS code for a weather data Oracle using Hello World example',
     },
   ];
 

@@ -4,6 +4,8 @@
 
 Forked from: https://vercel.com/templates/next.js/nextjs-ai-chatbot
 
+Test Prod domain: https://vibe-avs-builder.vercel.app/
+
 ## Features
 
 - [Next.js](https://nextjs.org) App Router
@@ -47,11 +49,7 @@ Your app template should now be running on [localhost:3000](http://localhost:300
 
 ## Todo
 
-1. Landing Page Updates:
-  - Modify greeting component to match "What would you like to validate?" prompt
-  - Add subtitle "Enter your idea for an AVS"
-  - Add links to EigenLayer AVS documentation and tutorial videos
-  - Update page metadata/title to reflect EigenLayer AVS Builder
+
 
 3. Stage-Based UI Components:
   - Create Progress Indicator/Timeline component
@@ -94,3 +92,9 @@ Your app template should now be running on [localhost:3000](http://localhost:300
   - Implement conversion tracking
 
 ## Done
+
+1. Landing Page Updates:
+  - Modify greeting component to match "What would you like to validate?" prompt
+  - Add subtitle "Enter your idea for an AVS"
+  - Add links to EigenLayer AVS documentation and tutorial videos
+  - Update page metadata/title to reflect EigenLayer AVS Builder
