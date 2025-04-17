@@ -3,6 +3,13 @@ import type { NextRequest } from 'next/server';
 import { getChatsByUserId } from '@/lib/db/queries';
 
 export async function GET(request: NextRequest) {
+  // Temporarily disabled - returning empty list with proper structure
+  return Response.json({
+    chats: [],
+    hasMore: false,
+  });
+
+  /*
   const { searchParams } = request.nextUrl;
 
   const limit = Number.parseInt(searchParams.get('limit') || '10');
@@ -30,8 +37,12 @@ export async function GET(request: NextRequest) {
       endingBefore,
     });
 
-    return Response.json(chats);
+    return Response.json({
+      chats,
+      hasMore: false
+    });
   } catch (_) {
     return Response.json('Failed to fetch chats!', { status: 500 });
   }
+  */
 }
