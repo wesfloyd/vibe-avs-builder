@@ -1,6 +1,6 @@
 import type { NextAuthConfig } from 'next-auth';
 
-export const authConfig = {
+export const authConfig: NextAuthConfig = {
   pages: {
     signIn: '/login',
     newUser: '/',
@@ -9,6 +9,9 @@ export const authConfig = {
     // added later in auth.ts since it requires bcrypt which is only compatible with Node.js
     // while this file is also used in non-Node.js environments
   ],
+  trustHost:
+    process.env.NEXTAUTH_URL?.includes('localhost') ||
+    process.env.NODE_ENV === 'development',
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
@@ -36,4 +39,4 @@ export const authConfig = {
       return true;
     },
   },
-} satisfies NextAuthConfig;
+};
