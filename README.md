@@ -70,6 +70,9 @@ Build optimizations:
   - Add deployment information to artifacts
   - Create download functionality for generated code
 
+7. Operational:
+ - Find ways to separate Dev from Production database and data stores.
+
 8. Model Customization:
   - Update AI models and prompts for EigenLayer-specific context
   - Create specialized prompts for each stage
