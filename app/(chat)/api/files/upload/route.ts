@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
 import { auth } from '@/app/(auth)/auth';
+import { getSessionWithFallback } from '@/lib/auth';
 
 // Use Blob instead of File since File is not available in Node.js environment
 const FileSchema = z.object({
@@ -19,10 +20,7 @@ const FileSchema = z.object({
 
 export async function POST(request: Request) {
   const session = await auth();
-
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const sessionWithFallback = getSessionWithFallback(session);
 
   if (request.body === null) {
     return new Response('Request body is empty', { status: 400 });

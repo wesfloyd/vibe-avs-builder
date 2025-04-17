@@ -1,8 +1,9 @@
 import type { NextAuthConfig } from 'next-auth';
+import { isDevelopmentEnvironment, getTrustedHosts } from '@/lib/constants';
 
 export const authConfig = {
   pages: {
-    signIn: '/',  // Redirect to home instead of login
+    signIn: '/', // Redirect to home instead of login
     newUser: '/',
   },
   providers: [
@@ -24,4 +25,6 @@ export const authConfig = {
       return true;
     },
   },
+  trustHost: true,
+  debug: isDevelopmentEnvironment(),
 } satisfies NextAuthConfig;

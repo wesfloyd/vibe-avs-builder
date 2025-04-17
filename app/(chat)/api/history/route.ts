@@ -1,15 +1,9 @@
 import { auth } from '@/app/(auth)/auth';
 import type { NextRequest } from 'next/server';
 import { getChatsByUserId } from '@/lib/db/queries';
+import { getSessionWithFallback } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
-  // Temporarily disabled - returning empty list with proper structure
-  return Response.json({
-    chats: [],
-    hasMore: false,
-  });
-
-  /*
   const { searchParams } = request.nextUrl;
 
   const limit = Number.parseInt(searchParams.get('limit') || '10');
@@ -24,14 +18,11 @@ export async function GET(request: NextRequest) {
   }
 
   const session = await auth();
-
-  if (!session?.user?.id) {
-    return Response.json('Unauthorized!', { status: 401 });
-  }
+  const sessionWithFallback = getSessionWithFallback(session);
 
   try {
     const chats = await getChatsByUserId({
-      id: session.user.id,
+      id: sessionWithFallback.user.id,
       limit,
       startingAfter,
       endingBefore,
@@ -39,10 +30,14 @@ export async function GET(request: NextRequest) {
 
     return Response.json({
       chats,
-      hasMore: false
+      hasMore: false,
     });
-  } catch (_) {
-    return Response.json('Failed to fetch chats!', { status: 500 });
+  } catch (error) {
+    console.error('Failed to fetch chats:', error);
+    // Return empty results on error instead of error message
+    return Response.json({
+      chats: [],
+      hasMore: false,
+    });
   }
-  */
 }
