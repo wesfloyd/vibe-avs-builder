@@ -16,5 +16,5 @@ export const myProvider = customProvider({
     'title-model': anthropic('claude-3-5-haiku-20241022'),
     'artifact-model': anthropic('claude-3-5-haiku-20241022'),
   },
-  // note image models are not supported for anthropic, this section is removed for now.
+  // note image models are not supported via the anthropic provider & api, this section is removed for now.
 });
