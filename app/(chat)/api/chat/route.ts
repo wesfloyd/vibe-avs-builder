@@ -43,13 +43,14 @@ export async function POST(request: Request) {
     const session = await auth();
 
     if (!session || !session.user || !session.user.id) {
+      console.error('POST: Unauthorized: No session or user ID');
       return new Response('Unauthorized', { status: 401 });
     }
 
     const userMessage = getMostRecentUserMessage(messages);
 
     if (!userMessage) {
-      console.error('No user message found');
+      console.error('POST: No user message found');
       return new Response('No user message found', { status: 400 });
     }
 
@@ -63,6 +64,12 @@ export async function POST(request: Request) {
       await saveChat({ id, userId: session.user.id, title });
     } else {
       if (chat.userId !== session.user.id) {
+        console.error(
+          'POST: Unauthorized: Chat ID',
+          id,
+          'User ID',
+          session.user.id,
+        );
         return new Response('Unauthorized', { status: 401 });
       }
     }
@@ -179,6 +186,7 @@ export async function DELETE(request: Request) {
   const session = await auth();
 
   if (!session || !session.user) {
+    console.error('DELETE: Unauthorized: No session or user');
     return new Response('Unauthorized', { status: 401 });
   }
 
@@ -186,6 +194,12 @@ export async function DELETE(request: Request) {
     const chat = await getChatById({ id });
 
     if (chat.userId !== session.user.id) {
+      console.error(
+        'DELETE: Unauthorized: Chat ID',
+        id,
+        'User ID',
+        session.user.id,
+      );
       return new Response('Unauthorized', { status: 401 });
     }
 

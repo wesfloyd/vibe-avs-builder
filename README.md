@@ -33,6 +33,18 @@ Your app template should now be running on [localhost:3000](http://localhost:300
 ## Todo
 
 
+Build optimizations:
+
+1. Next.js Output Caching: Reduces rebuild time by excluding unnecessary platform-specific modules. This prevents
+   Vercel from reprocessing files that haven't changed between builds.
+  2. Vercel Config File: The @vercel/cache-utils package helps implement intelligent caching strategies for
+  dependencies and build artifacts, significantly reducing cold start times.
+  3. Turborepo Cache: Enables distributed caching across your team and CI/CD pipeline. Reuses computation results
+  from previous builds when inputs haven't changed.
+  5. Vercelignore File: Excludes test files, docs, and other non-production assets from being processed during
+  build, reducing the amount of files Vercel needs to analyze.
+  6. SWC Minify: Enables Next.js's Rust-based minifier instead of Terser, resulting in up to 7x faster minification   during builds while maintaining similar output size.
+
 
 3. Stage-Based UI Components:
   - Create Progress Indicator/Timeline component
