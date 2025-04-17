@@ -3,14 +3,5 @@
   "buildCommand": "pnpm build",
   "outputDirectory": ".next",
   "devCommand": "pnpm dev",
-  "installCommand": "pnpm install",
-  "buildCache": {
-    "enabled": true,
-    "paths": [
-      ".next/cache", 
-      ".swc", 
-      "node_modules/.cache", 
-      ".vercel/.tmp"
-    ]
-  }
+  "installCommand": "pnpm install"
 }
