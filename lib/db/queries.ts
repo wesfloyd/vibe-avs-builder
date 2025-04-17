@@ -34,7 +34,13 @@ import type { ArtifactKind } from '@/components/artifact';
 // https://authjs.dev/reference/adapter/drizzle
 
 // biome-ignore lint: Forbidden non-null assertion.
-const client = postgres(process.env.POSTGRES_URL!);
+const client = postgres(process.env.POSTGRES_URL!, {
+  connect_timeout: 10, // seconds
+  max_lifetime: 60 * 5, // 5 minutes (max connection lifetime)
+  idle_timeout: 20, // seconds (how long clients sit idle in the pool)
+  max: 5, // maximum number of connections
+  debug: process.env.NODE_ENV === 'development', // Log debug info in development
+});
 const db = drizzle(client);
 
 export async function getUser(email: string): Promise<Array<User>> {
@@ -63,20 +69,46 @@ export async function createGuestUserIfNotExists() {
   const guestPassword = 'guest123'; // This password is not secret as it's just for the guest account
   
   try {
-    const existingUsers = await getUser(guestEmail);
+    // Add retry logic with exponential backoff
+    const maxRetries = 3;
+    let retryCount = 0;
+    let lastError = null;
     
-    if (existingUsers.length === 0) {
-      console.log('Creating guest user account...');
-      await createUser(guestEmail, guestPassword);
-      console.log('Guest user account created successfully');
-    } else {
-      console.log('Guest user account already exists');
+    while (retryCount < maxRetries) {
+      try {
+        const existingUsers = await getUser(guestEmail);
+        
+        if (existingUsers.length === 0) {
+          console.log('Creating guest user account...');
+          await createUser(guestEmail, guestPassword);
+          console.log('Guest user account created successfully');
+        } else {
+          console.log('Guest user account already exists');
+        }
+        
+        return true; // Success, exit the retry loop
+      } catch (error) {
+        lastError = error;
+        retryCount++;
+        if (retryCount >= maxRetries) {
+          break; // Exit if we've reached max retries
+        }
+        
+        // Exponential backoff - wait longer between each retry
+        const delayMs = 1000 * Math.pow(2, retryCount - 1); // 1s, 2s, 4s, etc.
+        console.warn(`Database operation failed, retrying in ${delayMs}ms (attempt ${retryCount}/${maxRetries})`, error);
+        
+        // Wait before retrying
+        await new Promise(resolve => setTimeout(resolve, delayMs));
+      }
     }
     
-    return true;
+    // If we get here, all retries failed
+    console.error(`Failed to create guest user after ${maxRetries} attempts`, lastError);
+    return false;
   } catch (error) {
-    console.error('Failed to create guest user in database', error);
-    throw error;
+    console.error('Unexpected error in createGuestUserIfNotExists', error);
+    return false; // Don't throw, just return false to allow fallback mechanism
   }
 }
 
