@@ -2,6 +2,7 @@ import type { UIMessage } from 'ai';
 import {
   appendResponseMessages,
   createDataStreamResponse,
+  generateText,
   smoothStream,
   streamText,
 } from 'ai';
@@ -80,6 +81,16 @@ export async function POST(request: Request) {
       ],
     });
 
+    // Infer the user's current intent.
+    const response = await generateText({
+      model: myProvider.languageModel(selectedChatModel),
+      // Todo: consider whether to create separate models for different purposes
+      system: `Review the user's prompt, determine whether they are attempting to either: 1) Refine an AVS Idea 2) Generate a Design Tech Spec for their idea or 3) Generate AVS prototype code or 4) Other (something else). Respond with one of these four options: Idea, Design, Prototype, or Other and nothing else.`,
+      prompt: userMessage.content,
+    });
+
+    console.log('Result from generateText', response.text);
+
     // This is where the AI response is generated
     return createDataStreamResponse({
       execute: (dataStream) => {
@@ -96,7 +107,7 @@ export async function POST(request: Request) {
                   'createDocument',
                   'updateDocument',
                   'requestSuggestions',
-                  'refineIdea',
+                  //'refineIdea',
                 ],
           experimental_transform: smoothStream({ chunking: 'word' }),
           experimental_generateMessageId: generateUUID,
@@ -107,7 +118,7 @@ export async function POST(request: Request) {
               session,
               dataStream,
             }),
-            refineIdea,
+            //refineIdea,
           },
           onFinish: async ({ response }) => {
             if (session.user?.id) {
