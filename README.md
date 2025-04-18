@@ -46,6 +46,7 @@ Note: this app was forked from [Vercel Next.js AI Chatbot](https://vercel.com/te
 8. Model Customization:
   - Update AI models and prompts for EigenLayer-specific context
   - Create specialized prompts for each stage
+  - Integrate MCP server to user ideas
 
   
 4. Stage 1: Idea Refinement Implementation:

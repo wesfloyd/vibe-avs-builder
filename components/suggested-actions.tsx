@@ -28,19 +28,16 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
       label: `that I can run locally and demo`,
       action: `Generate code for my AVS prototype using Hello World example`,
     },
-    {
-      title: 'Build an example AVS',
-      label: 'that is an Oracle for weather data',
-      action:
-        'Generate example AVS code for a weather data Oracle using Hello World example',
-    },
+    // {
+    //   title: 'Build an example AVS',
+    //   label: 'that is an Oracle for weather data',
+    //   action:
+    //     'Generate example AVS code for a weather data Oracle using Hello World example',
+    // },
   ];
 
   return (
-    <div
-      data-testid="suggested-actions"
-      className="grid sm:grid-cols-2 gap-2 w-full"
-    >
+    <div data-testid="suggested-actions" className="grid  gap-2 w-full">
       {suggestedActions.map((suggestedAction, index) => (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
