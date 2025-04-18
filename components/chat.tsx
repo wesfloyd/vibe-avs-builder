@@ -74,10 +74,7 @@ export function Chat({
 
   return (
     <>
-      <div
-        id="chat"
-        className="flex flex-col min-w-0 max-h-[80dvh] h-[80dvh] bg-background"
-      >
+      <div id="chat" className="flex flex-col min-w-0 h-dvh bg-background">
         <ChatHeader
           chatId={id}
           selectedModelId={selectedChatModel}
@@ -113,16 +110,6 @@ export function Chat({
             />
           )}
         </form>
-      </div>
-      <div className="flex justify-center items-center py-20 px-2 text-sm text-muted-foreground">
-        <a
-          href="https://docs.eigenlayer.xyz/developers/Concepts/avs-developer-guide"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hover:underline text-lg"
-        >
-          EigenLayer AVS Developer Documentation
-        </a>
       </div>
 
       <Artifact

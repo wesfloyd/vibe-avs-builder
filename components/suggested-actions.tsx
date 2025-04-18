@@ -14,13 +14,14 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
   const suggestedActions = [
     {
       title: 'Refine an AVS idea',
-      label: 'Is this a good idea for an AVS?',
-      action: 'Is this a good idea for an AVS? ..',
+      label: 'Is this a good idea for an AVS? ..',
+      action:
+        'I have an idea for an EigenLayer Autonomously Verified Service, but it needs to be refined. Let me tell you more about it, then get your feedback.',
     },
     {
       title: 'Generate a Design tech spec',
       label: `to help define my AVS idea in detail`,
-      action: `Generate a Design tech spec based on my AVS idea ..`,
+      action: `Generate a Design tech spec based on my AVS idea.`,
     },
     {
       title: 'Generate code for my AVS prototype',
