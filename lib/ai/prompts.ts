@@ -1,6 +1,5 @@
 import type { ArtifactKind } from '@/components/artifact';
-import * as fs from 'fs';
-import * as path from 'path';
+import { stage1IdeaRefinementPromptText } from './prompts/stage1-idea-refinement';
 
 
 export const artifactsPrompt = `
@@ -51,12 +50,35 @@ export const systemPromptDefault = (params: {
 };
 
 
-// Custom prmoptrompt for Stage 1: AVS idea generation
-export const stage1IdeasPrompt = 'Your goal is to help the user generate a refined idea prompt for my AVS idea using the following prompting:'
-  + fs.readFileSync(path.join('app', 'prompts', 'stage1-idea-refinement-prompt.md'), 'utf-8')
-  + '# And you can use the following EigenLayer documentation for additional context:'
-  + fs.readFileSync(path.join('app', 'context', 'repomix-output-eigenlayer-docs-overview-min.md'), 'utf-8');
 
+// Custom prompt for Stage 1: AVS idea generation
+const EIGENLAYER_DOCS_OVERVIEW_URL = 'https://af52o4jcdfzphbst.public.blob.vercel-storage.com/context/repomix-output-eigenlayer-docs-overview-min-wtABuLj3MuRM9JklyGY2tt8v6gPJNY.md';
+
+/**
+ * Asynchronously fetches the EigenLayer docs overview from Vercel Blob Storage
+ * and constructs the full Stage 1 ideas prompt.
+ */
+export const stage1IdeasPrompt = async (): Promise<string> => {
+  try {
+    const response = await fetch(EIGENLAYER_DOCS_OVERVIEW_URL);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch EigenLayer docs: ${response.statusText}`);
+    }
+    const eigenLayerDocsOverview = await response.text();
+
+    const prompt = 'Your goal is to help the user generate a refined idea prompt for my AVS idea using the following prompting:'
+      + stage1IdeaRefinementPromptText // Use imported content
+      + '# And you can use the following EigenLayer documentation for additional context:'
+      + eigenLayerDocsOverview; // Use fetched content
+    
+    return prompt;
+  } catch (error) {
+    console.error("Error fetching or constructing stage 1 ideas prompt:", error);
+    // Fallback or re-throw depending on desired error handling
+    // For now, returning a basic prompt might be safest
+    return 'Error loading detailed prompt context. Please describe your AVS idea.';
+  }
+};
 
 export const codePrompt = `
 You are a TypeScript code generator that creates self-contained, executable code snippets. When writing code:

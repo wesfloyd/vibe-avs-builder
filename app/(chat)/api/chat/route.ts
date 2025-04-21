@@ -89,22 +89,21 @@ export async function POST(request: Request) {
     );
     console.log('User inferred intent:', likelyIntent);
 
+    // Determine the system prompt based on intent *before* starting the stream execution
+    let systemPromptForExecution = systemPromptDefault({ selectedChatModel });
+    if (likelyIntent === 'Idea') {
+      // Await the async function using its correct name
+      systemPromptForExecution = await stage1IdeasPrompt(); 
+    }
+
     // This is where the AI response is generated
     return createDataStreamResponse({
       execute: (dataStream) => {
         // This is where the AI response is invoked
 
-        // Combine the base system prompt with the inferred intent using a template literal
-        let systemPromptWithContext = systemPromptDefault({ selectedChatModel });
-
-        // If the user's intent is to generate ideas, append the stage1IdeasPrompt
-        if (likelyIntent === 'Idea') {
-          systemPromptWithContext = stage1IdeasPrompt;
-        } 
-
         const result = streamText({
           model: myProvider.languageModel(selectedChatModel),
-          system: systemPromptWithContext, // Modified system prompt per user intent
+          system: systemPromptForExecution, // Use the pre-determined system prompt
           messages,// This contains the full conversation history
           maxSteps: 5,
           experimental_activeTools:
