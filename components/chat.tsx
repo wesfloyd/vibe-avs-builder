@@ -53,13 +53,13 @@ export function Chat({
       mutate(unstable_serialize(getChatHistoryPaginationKey));
     },
     onError: (error) => {
-      console.error('Chat error occurred:', {
-        error,
-        message: error instanceof Error ? error.message : 'Unknown error',
-        stack: error instanceof Error ? error.stack : undefined,
-        chatId: id,
-        timestamp: new Date().toISOString(),
-      });
+      console.error('Chat hook threw:', error);
+      if (error instanceof Response) {
+        console.error(`  status = ${error.status} ${error.statusText}`);
+        error.text().then((body) => console.error('  response body:', body));
+      } else if (error instanceof Error) {
+        console.error(error.stack);
+      }
       toast.error('An error occurred, please try again!');
     },
   });

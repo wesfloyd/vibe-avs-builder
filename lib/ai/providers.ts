@@ -1,4 +1,5 @@
 import { anthropic } from '@ai-sdk/anthropic';
+import { openai } from '@ai-sdk/openai';
 
 import {
   customProvider,
@@ -6,6 +7,8 @@ import {
   wrapLanguageModel,
 } from 'ai';
 
+// This provider will be used as the least expensive "default" provider.
+// Note: image models are not supported via the anthropic provider & api, this section is removed for now.
 export const myProvider = customProvider({
   languageModels: {
     'chat-model': anthropic('claude-3-5-haiku-20241022'),
@@ -17,4 +20,12 @@ export const myProvider = customProvider({
     'artifact-model': anthropic('claude-3-5-haiku-20241022'),
   },
   // note image models are not supported via the anthropic provider & api, this section is removed for now.
+});
+
+// Todo: add additional providers here for higher quality inference.
+// OpenAI model guide: https://platform.openai.com/docs/models
+export const betterProvider = customProvider({
+  languageModels: {
+    'chat-model': openai('gpt-4o-mini'),
+  },
 });
