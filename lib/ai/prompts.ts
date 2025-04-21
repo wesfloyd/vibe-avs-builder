@@ -52,9 +52,9 @@ export const systemPromptDefault = (params: {
 
 // Custom prmoptrompt for Stage 1: AVS idea generation
 export const stage1IdeasPrompt = 'Your goal is to help the user generate a refined idea prompt for my AVS idea using the following prompting:'
-  + fs.readFileSync(path.join(process.cwd(), 'lib', 'prompts', 'stage1-idea-refinement-prompt.md'), 'utf-8')
+  + fs.readFileSync(path.join(process.cwd(), '/app/prompts/stage1-idea-refinement-prompt.md'), 'utf-8')
   + '# And you can use the following EigenLayer documentation for additional context:'
-  + fs.readFileSync(path.join(process.cwd(), 'lib', 'context', 'repomix-output-eigenlayer-docs-overview-min.md'), 'utf-8');
+  + fs.readFileSync(path.join(process.cwd(), '/app/context/repomix-output-eigenlayer-docs-overview-min.md'), 'utf-8');
 
 
 
