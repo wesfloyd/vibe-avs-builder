@@ -89,15 +89,20 @@ export async function POST(request: Request) {
       prompt: userMessage.content,
     });
 
-    console.log('Result from generateText', response.text);
+    const likelyIntent = response.text;
+    console.log('User intent:', likelyIntent);
 
     // This is where the AI response is generated
     return createDataStreamResponse({
       execute: (dataStream) => {
         // This is where the AI response is invoked
+
+        // Combine the base system prompt with the inferred intent using a template literal
+        const systemPromptWithIntent = `${systemPrompt({ selectedChatModel })} and their intent is: ${likelyIntent}`;
+
         const result = streamText({
           model: myProvider.languageModel(selectedChatModel),
-          system: systemPrompt({ selectedChatModel }),
+          system: systemPromptWithIntent,
           messages,
           maxSteps: 5,
           experimental_activeTools:
