@@ -24,7 +24,7 @@ export const myProvider = customProvider({
 
 // Todo: add additional providers here for higher quality inference.
 // OpenAI model guide: https://platform.openai.com/docs/models
-export const betterProvider = customProvider({
+export const openaiProvider = customProvider({
   languageModels: {
     'chat-model': openai('gpt-4o-mini'),
   },

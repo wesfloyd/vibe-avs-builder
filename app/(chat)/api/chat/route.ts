@@ -2,12 +2,10 @@ import type { UIMessage } from 'ai';
 import {
   appendResponseMessages,
   createDataStreamResponse,
-  generateObject,
   generateText,
   smoothStream,
   streamText,
 } from 'ai';
-import { z } from 'zod';
 import { auth } from '@/app/(auth)/auth';
 import { systemPrompt } from '@/lib/ai/prompts';
 import {
@@ -27,7 +25,8 @@ import { updateDocument } from '@/lib/ai/tools/update-document';
 import { requestSuggestions } from '@/lib/ai/tools/request-suggestions';
 //import { refineIdea } from '@/lib/ai/tools/refine-idea';
 import { isProductionEnvironment } from '@/lib/constants';
-import { betterProvider, myProvider } from '@/lib/ai/providers';
+import { myProvider } from '@/lib/ai/providers';
+import { inferUserIntent } from '@/lib/ai/intentManager';
 
 export const maxDuration = 60;
 
@@ -83,21 +82,11 @@ export async function POST(request: Request) {
       ],
     });
 
-    // Infer the user's current intent using generateObject
-    const { object: intentResult } = await generateObject({
-      model: myProvider.languageModel(selectedChatModel),
-      schema: z.object({
-        intent: z
-          .enum(['Idea', 'Design', 'Prototype', 'Other'])
-          .describe(
-            "The user's likely intent: refining an Idea, generating a Design spec, generating Prototype code, or Other.",
-          ),
-      }),
-      system: `Review the user's prompt and determine their primary intent. Choose one of: Idea, Design, Prototype, or Other.`,
-      prompt: userMessage.content,
-    });
-
-    const likelyIntent = intentResult.intent;
+    // Infer the user's current intent
+    const likelyIntent = await inferUserIntent(
+      userMessage.content,
+      selectedChatModel,
+    );
     console.log('User intent:', likelyIntent);
 
     // This is where the AI response is generated
@@ -109,8 +98,6 @@ export async function POST(request: Request) {
         const systemPromptWithIntent = `${systemPrompt({ selectedChatModel })} and their intent is: ${likelyIntent}`;
 
         const result = streamText({
-          //note: using OpenAI currently causes a client side error when used with model: betterProvider.languageModel(selectedChatModel),
-          // I think the error has to do with streamText support .. tbd
           model: myProvider.languageModel(selectedChatModel),
           system: systemPromptWithIntent,
           messages,
