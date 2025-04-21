@@ -2,6 +2,7 @@ import type { UIMessage } from 'ai';
 import {
   appendResponseMessages,
   createDataStreamResponse,
+  generateText,
   smoothStream,
   streamText,
 } from 'ai';
@@ -22,7 +23,7 @@ import { generateTitleFromUserMessage } from '../../actions';
 import { createDocument } from '@/lib/ai/tools/create-document';
 import { updateDocument } from '@/lib/ai/tools/update-document';
 import { requestSuggestions } from '@/lib/ai/tools/request-suggestions';
-import { getWeather } from '@/lib/ai/tools/get-weather';
+import { refineIdea } from '@/lib/ai/tools/refine-idea';
 import { isProductionEnvironment } from '@/lib/constants';
 import { myProvider } from '@/lib/ai/providers';
 
@@ -80,32 +81,49 @@ export async function POST(request: Request) {
       ],
     });
 
+    // Infer the user's current intent.
+    const response = await generateText({
+      model: myProvider.languageModel(selectedChatModel),
+      // Todo: consider whether to create separate models for different purposes
+      system: `Review the user's prompt, determine whether they are attempting to either: 1) Refine an AVS Idea 2) Generate a Design Tech Spec for their idea or 3) Generate AVS prototype code or 4) Other (something else). Respond with one of these four options: Idea, Design, Prototype, or Other and nothing else.`,
+      prompt: userMessage.content,
+    });
+
+    const likelyIntent = response.text;
+    console.log('User intent:', likelyIntent);
+
+    // This is where the AI response is generated
     return createDataStreamResponse({
       execute: (dataStream) => {
+        // This is where the AI response is invoked
+
+        // Combine the base system prompt with the inferred intent using a template literal
+        const systemPromptWithIntent = `${systemPrompt({ selectedChatModel })} and their intent is: ${likelyIntent}`;
+
         const result = streamText({
           model: myProvider.languageModel(selectedChatModel),
-          system: systemPrompt({ selectedChatModel }),
+          system: systemPromptWithIntent,
           messages,
           maxSteps: 5,
           experimental_activeTools:
             selectedChatModel === 'chat-model-reasoning'
               ? []
               : [
-                  'getWeather',
                   'createDocument',
                   'updateDocument',
                   'requestSuggestions',
+                  //'refineIdea',
                 ],
           experimental_transform: smoothStream({ chunking: 'word' }),
           experimental_generateMessageId: generateUUID,
           tools: {
-            getWeather,
             createDocument: createDocument({ session, dataStream }),
             updateDocument: updateDocument({ session, dataStream }),
             requestSuggestions: requestSuggestions({
               session,
               dataStream,
             }),
+            //refineIdea,
           },
           onFinish: async ({ response }) => {
             if (session.user?.id) {
@@ -149,8 +167,10 @@ export async function POST(request: Request) {
           },
         });
 
+        // This is where the AI response is consumed
         result.consumeStream();
 
+        // This is where the AI response is merged into the data stream
         result.mergeIntoDataStream(dataStream, {
           sendReasoning: true,
         });

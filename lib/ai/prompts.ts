@@ -31,6 +31,7 @@ This is a guide for using artifacts tools: \`createDocument\` and \`updateDocume
 Do not update document right after creating it. Wait for user feedback or request to update it.
 `;
 
+// TODO: consider modifying this section to invoke MCP server and custom prompts
 export const regularPrompt =
   'You are a friendly assistant! Keep your responses concise and helpful.';
 

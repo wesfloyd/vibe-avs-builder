@@ -32,9 +32,10 @@ function PureMessages({
 
   return (
     <div
-      id="title"
+      id="messages"
       ref={messagesContainerRef}
-      className="flex flex-col min-w-0 gap-6 h-[300px] overflow-y-auto pt-4 justify-center"
+      className="flex flex-col min-w-0 gap-6 flex-1 overflow-y-scroll pt-4"
+      // todo fix this
     >
       {messages.length === 0 && <Greeting />}
 

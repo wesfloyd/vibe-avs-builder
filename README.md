@@ -42,11 +42,13 @@ Note: this app was forked from [Vercel Next.js AI Chatbot](https://vercel.com/te
 
 ## Todo
 
-3. Stage-Based UI Components:
-  - Create Progress Indicator/Timeline component
-  - Develop Asset Library sidebar/panel for storing generated assets
-  - Add stage selector component
 
+8. Model Customization:
+  - Update AI models and prompts for EigenLayer-specific context
+  - Create specialized prompts for each stage
+  - Integrate MCP server to user ideas
+
+  
 4. Stage 1: Idea Refinement Implementation:
   - Create custom prompts for AVS idea evaluation
   - Build rating component for idea feasibility
@@ -66,22 +68,21 @@ Note: this app was forked from [Vercel Next.js AI Chatbot](https://vercel.com/te
   - Add deployment information to artifacts
   - Create download functionality for generated code
 
+3. Maybe? Stage-Based UI Components:
+  - Create Progress Indicator/Timeline component
+  - Add stage selector component
+
 7. Operational:
  - Find ways to separate Dev from Production database and data stores.
 
-8. Model Customization:
-  - Update AI models and prompts for EigenLayer-specific context
-  - Create specialized prompts for each stage
 
 9. UI/UX Improvements:
   - Update theme/styling to reflect EigenLayer branding
   - Implement "open" user flow with guided LLM experience
   - Add stage-specific help content
   - Add "AVS Name" supplied or AI generated at the top after first user interaction. Note Vercel treats them as "Projects"
+  - Add references to eigenlayer.xyz and docs site?
 
-10. General Architectural Changes:
-  - Create specialized document templates for AVS components
-  - Implement tools for validating AVS concepts
 
 7. Marketing Integration:
   - Add CTA component for scheduling calls with EigenLayer

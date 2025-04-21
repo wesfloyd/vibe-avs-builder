@@ -14,13 +14,14 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
   const suggestedActions = [
     {
       title: 'Refine an AVS idea',
-      label: 'Is this a good idea for an AVS?',
-      action: 'Is this a good idea for an AVS? ..',
+      label: 'Is this a good idea for an AVS? ..',
+      action:
+        'I have an idea for an EigenLayer Autonomously Verified Service, but it needs to be refined. Let me tell you more about it, then get your feedback.',
     },
     {
       title: 'Generate a Design tech spec',
       label: `to help define my AVS idea in detail`,
-      action: `Generate a Design tech spec based on my AVS idea ..`,
+      action: `Generate a Design tech spec based on my AVS idea.`,
     },
     {
       title: 'Generate code for my AVS prototype',
@@ -28,18 +29,15 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
       action: `Generate code for my AVS prototype using Hello World example`,
     },
     {
-      title: 'Build an example AVS',
-      label: 'that is an Oracle for weather data',
+      title: 'Design your "Verifiable App" on EigenCloud',
+      label: 'enhance your app with verifiability',
       action:
-        'Generate example AVS code for a weather data Oracle using Hello World example',
+        "Let's talk about my app design and how to enhance it with verifiability on EigenCloud",
     },
   ];
 
   return (
-    <div
-      data-testid="suggested-actions"
-      className="grid sm:grid-cols-2 gap-2 w-full"
-    >
+    <div data-testid="suggested-actions" className="grid  gap-2 w-full">
       {suggestedActions.map((suggestedAction, index) => (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
