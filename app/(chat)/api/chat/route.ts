@@ -7,7 +7,7 @@ import {
   streamText,
 } from 'ai';
 import { auth } from '@/app/(auth)/auth';
-import { systemPrompt } from '@/lib/ai/prompts';
+import { systemPromptDefault, stage1IdeasPrompt } from '@/lib/ai/prompts';
 import {
   deleteChatById,
   getChatById,
@@ -87,7 +87,7 @@ export async function POST(request: Request) {
       userMessage.content,
       selectedChatModel,
     );
-    console.log('User intent:', likelyIntent);
+    console.log('User inferred intent:', likelyIntent);
 
     // This is where the AI response is generated
     return createDataStreamResponse({
@@ -95,12 +95,17 @@ export async function POST(request: Request) {
         // This is where the AI response is invoked
 
         // Combine the base system prompt with the inferred intent using a template literal
-        const systemPromptWithIntent = `${systemPrompt({ selectedChatModel })} and their intent is: ${likelyIntent}`;
+        let systemPromptWithContext = systemPromptDefault({ selectedChatModel });
+
+        // If the user's intent is to generate ideas, append the stage1IdeasPrompt
+        if (likelyIntent === 'Idea') {
+          systemPromptWithContext = stage1IdeasPrompt;
+        } 
 
         const result = streamText({
           model: myProvider.languageModel(selectedChatModel),
-          system: systemPromptWithIntent,
-          messages,
+          system: systemPromptWithContext, // Modified system prompt per user intent
+          messages,// This contains the full conversation history
           maxSteps: 5,
           experimental_activeTools:
             selectedChatModel === 'chat-model-reasoning'
