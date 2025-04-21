@@ -28,12 +28,12 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
       label: `that I can run locally and demo`,
       action: `Generate code for my AVS prototype using Hello World example`,
     },
-    {
-      title: 'Design your "Verifiable App" on EigenCloud',
-      label: 'enhance your app with verifiability',
-      action:
-        "Let's talk about my app design and how to enhance it with verifiability on EigenCloud",
-    },
+    // {
+    //   title: 'Design your "Verifiable App" on EigenCloud',
+    //   label: 'enhance your app with verifiability',
+    //   action:
+    //     "Let's talk about my app design and how to enhance it with verifiability on EigenCloud",
+    // },
   ];
 
   return (
