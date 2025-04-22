@@ -1,7 +1,14 @@
+import { anthropic } from '@ai-sdk/anthropic';
+import { createOpenAI } from '@ai-sdk/openai';
+import { embed } from 'ai';
+import { z } from 'zod';
 import type { ArtifactKind } from '@/components/artifact';
+import {
+  fetchEigenLayerDocsMiddleware,
+  fetchEigenLayerDocsOverview,
+} from './loadContext';
 import { stage1IdeaRefinementPromptText} from './prompts/stage1-idea-refinement';
 import { stage2DesignGenerationPromptText} from './prompts/stage2-design-generation-prompt';
-
 
 export const artifactsPrompt = `
 Artifacts is a special user interface mode that helps users with writing, editing, and other content creation tasks. When artifact is open, it is on the right side of the screen, while the conversation is on the left side. When creating or updating documents, changes are reflected in real-time on the artifacts and visible to the user.
@@ -50,48 +57,15 @@ export const systemPromptDefault = (params: {
 };
 
 
-
-// Custom prompt for Stage 1: AVS idea generation
-const EIGENLAYER_DOCS_OVERVIEW_URL = 'https://af52o4jcdfzphbst.public.blob.vercel-storage.com/context/repomix-output-eigenlayer-docs-overview-min-wtABuLj3MuRM9JklyGY2tt8v6gPJNY.md';
-
-// Cache for the EigenLayer docs to prevent repeated fetches
-let eigenLayerDocsCache: string | null = null;
-
-/**
- * Fetches the EigenLayer docs, using a cached version if available
- */
-async function fetchEigenLayerDocs(): Promise<string> {
-  // Return cached docs if available
-  if (eigenLayerDocsCache) {
-    return eigenLayerDocsCache;
-  }
-
-  try {
-    const response = await fetch(EIGENLAYER_DOCS_OVERVIEW_URL);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch EigenLayer docs: ${response.statusText}`);
-    }
-    const eigenLayerDocsOverview = await response.text();
-    
-    // Cache the docs for future use
-    eigenLayerDocsCache = eigenLayerDocsOverview;
-    
-    return eigenLayerDocsOverview;
-  } catch (error) {
-    console.error("Error fetching EigenLayer docs:", error);
-    return 'Error loading EigenLayer documentation.';
-  }
-}
-
 /**
  * Asynchronously fetches the EigenLayer docs overview from Vercel Blob Storage
  * and constructs the full Stage 1 ideas prompt.
  */
 export const stage1IdeasPrompt = async (): Promise<string> => {
   try {
-    const eigenLayerDocsOverview = await fetchEigenLayerDocs();
+    const eigenLayerDocsOverview = await fetchEigenLayerDocsOverview();
 
-    const prompt = 'Your goal is to help the user generate a refined idea prompt for my AVS idea using the following prompting:'
+    const prompt = 'Your goal is to help the user generate a refined idea prompt for their EigenLayer Autonomous Verifiable Service (AVS) idea using the following prompting:'
       + stage1IdeaRefinementPromptText // Use imported content
       + '# And you can use the following EigenLayer documentation for additional context:'
       + eigenLayerDocsOverview; // Use fetched content
@@ -106,15 +80,17 @@ export const stage1IdeasPrompt = async (): Promise<string> => {
 };
 
 // Custom prompt for Stage 2: AVS idea refinement
-// TODO: Test this!
 export const stage2DesignPrompt = async (): Promise<string> => {
   try {
-    const eigenLayerDocsOverview = await fetchEigenLayerDocs();
+    const eigenLayerDocsOverview = await fetchEigenLayerDocsOverview();
+    const eigenLayerDocsMiddleware = await fetchEigenLayerDocsMiddleware();
 
-    const prompt = 'Your goal is to help the user generate a refined idea prompt for my AVS idea using the following prompting:'
+    const prompt = 'Your goal is to help the user generate a design tech spec for their EigenLayer Autonomous Verifiable Service (AVS) idea using the following prompting:'
       + stage2DesignGenerationPromptText // Use imported content  
       + '# And you can use the following EigenLayer documentation for additional context:'
-      + eigenLayerDocsOverview; // Use fetched content
+      + eigenLayerDocsOverview // Use fetched content
+      + '# And you can use the following EigenLayer middleware overview for additional context:'
+      + eigenLayerDocsMiddleware; // Use fetched content
 
     return prompt;
   } catch (error) {
@@ -122,7 +98,6 @@ export const stage2DesignPrompt = async (): Promise<string> => {
     return 'Error loading detailed prompt context. Please describe your AVS idea.';
   }
 };
-
 
 export const codePrompt = `
 You are a TypeScript code generator that creates self-contained, executable code snippets. When writing code:

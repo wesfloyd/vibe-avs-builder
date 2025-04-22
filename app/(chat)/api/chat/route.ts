@@ -7,7 +7,7 @@ import {
   streamText,
 } from 'ai';
 import { auth } from '@/app/(auth)/auth';
-import { systemPromptDefault, stage1IdeasPrompt } from '@/lib/ai/prompts';
+import { systemPromptDefault, stage1IdeasPrompt, stage2DesignPrompt } from '@/lib/ai/prompts';
 import {
   deleteChatById,
   getChatById,
@@ -94,7 +94,10 @@ export async function POST(request: Request) {
     if (likelyIntent === 'Idea') {
       // Await the async function using its correct name
       systemPromptForExecution = await stage1IdeasPrompt(); 
-    }
+    } else if (likelyIntent === 'Design') {
+      systemPromptForExecution = await stage2DesignPrompt();
+    } 
+    // TODO: add condition to add context for Stage 3 Prototype on Wednesday
 
     // This is where the AI response is generated
     return createDataStreamResponse({
