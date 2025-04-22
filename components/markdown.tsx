@@ -7,7 +7,22 @@ import { CodeBlock } from './code-block';
 const components: Partial<Components> = {
   // @ts-expect-error
   code: CodeBlock,
-  pre: ({ children }) => <>{children}</>,
+  p: ({ node, children }) => {
+    // Check if the paragraph's first child is a <pre> element
+    // which react-markdown now adds for fenced code blocks.
+    if (
+      node &&
+      node.children[0] &&
+      node.children.length === 1 &&
+      node.children[0].type === 'element' &&
+      node.children[0].tagName === 'pre'
+    ) {
+      // If it only contains a pre (our CodeBlock), render children directly
+      return <>{children}</>;
+    }
+    // Otherwise, render a normal paragraph
+    return <p>{children}</p>;
+  },
   ol: ({ node, children, ...props }) => {
     return (
       <ol className="list-decimal list-outside ml-4" {...props}>

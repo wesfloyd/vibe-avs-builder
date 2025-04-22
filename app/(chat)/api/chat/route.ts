@@ -87,7 +87,7 @@ export async function POST(request: Request) {
       userMessage.content,
       selectedChatModel,
     );
-    console.log('User inferred intent:', likelyIntent);
+    console.log('Inferred user intent:', likelyIntent);
 
     // Determine the system prompt based on intent *before* starting the stream execution
     let systemPromptForExecution = systemPromptDefault({ selectedChatModel });
