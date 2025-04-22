@@ -12,6 +12,8 @@ build an avs that generates cat images
 
 ## Stage 2 Design Tech Spec Generation Tests
 
+### Positive Test
+
 Help me generate a design tech spec for my AVS using this idea for guidance
 
 CatLLM: AI Cat Image Generation and Validation AVS
@@ -46,3 +48,9 @@ The generator operator receives rewards when the average validator accuracy rati
 This reward structure ensures both thorough validation and high-quality image generation
 This model incentivizes honest validation (since validators are always rewarded for participation) while also motivating the generator to produce high-quality cat images (since they only receive rewards for exceptional work above the 90% threshold).
 
+
+### Negative Test
+
+Help me generate a design tech spec for my AVS using this idea for guidance
+
+I want to create an avs that generates football bats for soccer players
