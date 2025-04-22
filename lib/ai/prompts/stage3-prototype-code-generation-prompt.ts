@@ -1,3 +1,4 @@
+export const stage3PrototypeCodeGenerationPromptText = `
 ## Instructions for llm:
 
 Dear LLM - use this file to guide you in implementing the the prototype Active Validation Service (AVS) on EigenLayer.
@@ -21,7 +22,7 @@ If the user has established a sufficiently clear design tech spec with this prom
 - Create a copy of the repository from (/lib/hello-world-avs/) to /output.
 - Rename the folder to "hello-[avs-name]-prototype" in the /outputs folder.
 - Create a prototype implementation under a new folder named "hello-[avs-name]-prototype" in the /outputs folder.
-- Document Everything: modify the `README.md`, keep it up-to-date, ensuring anyone can clone the repo, run the operator, and test the AVS.
+- Document Everything: modify the README.md, keep it up-to-date, ensuring anyone can clone the repo, run the operator, and test the AVS.
 - Create a build plan before you generate the new files. Write the plan to /outputs/hello-[avs-name]-prototype folder.
 - Ask the user to confirm your build plan before proceeding. 
 
@@ -41,7 +42,7 @@ Modify the code in the newly created /outputs/"hello-[avs-name]-prototype" folde
 ### 2. Operator Typescript Code
 
 All Operator code should be written in TypeScript.
-- Use the `/operator` folder. 
+- Use the /operator folder. 
 - Modify the index.ts file to represent the offchain Operator logic.
 - Include any necessary libraries or frameworks for your computation (e.g., cryptographic libraries).  
 - Operator Workflow:  
@@ -52,7 +53,7 @@ All Operator code should be written in TypeScript.
 
 ### 3. README
 
-Modify the `README.md` file at the root of your repository to include:
+Modify the README.md file at the root of your repository to include:
 1. Project Overview: Brief explanation of what the AVS does.  
 2. Installation Instructions: Prerequisites, environment variables, and libraries.  
 3. How to Run the Operator Binary:  
@@ -72,4 +73,4 @@ Modify the simple front end under /avs-frontend folder that allows users to gene
 ## Final Checks
 Ensure the code executes correctly and resolve any compile errors. Try to build the smart contracts with build:forge and resolve any compilation errors.
 Provide the user with a pointer to the README.md file and instructions on how they can test the AVS.
-
+`; 

@@ -1,5 +1,6 @@
 import type { ArtifactKind } from '@/components/artifact';
-import { stage1IdeaRefinementPromptText } from './prompts/stage1-idea-refinement';
+import { stage1IdeaRefinementPromptText} from './prompts/stage1-idea-refinement';
+import { stage2DesignGenerationPromptText} from './prompts/stage2-design-generation-prompt';
 
 
 export const artifactsPrompt = `
@@ -33,7 +34,6 @@ This is a guide for using artifacts tools: \`createDocument\` and \`updateDocume
 Do not update document right after creating it. Wait for user feedback or request to update it.
 `;
 
-// TODO: consider modifying this section to invoke MCP server and custom prompts
 export const basicPrompt =
   'You are a friendly assistant! Keep your responses concise and helpful.';
 
@@ -54,17 +54,42 @@ export const systemPromptDefault = (params: {
 // Custom prompt for Stage 1: AVS idea generation
 const EIGENLAYER_DOCS_OVERVIEW_URL = 'https://af52o4jcdfzphbst.public.blob.vercel-storage.com/context/repomix-output-eigenlayer-docs-overview-min-wtABuLj3MuRM9JklyGY2tt8v6gPJNY.md';
 
+// Cache for the EigenLayer docs to prevent repeated fetches
+let eigenLayerDocsCache: string | null = null;
+
 /**
- * Asynchronously fetches the EigenLayer docs overview from Vercel Blob Storage
- * and constructs the full Stage 1 ideas prompt.
+ * Fetches the EigenLayer docs, using a cached version if available
  */
-export const stage1IdeasPrompt = async (): Promise<string> => {
+async function fetchEigenLayerDocs(): Promise<string> {
+  // Return cached docs if available
+  if (eigenLayerDocsCache) {
+    return eigenLayerDocsCache;
+  }
+
   try {
     const response = await fetch(EIGENLAYER_DOCS_OVERVIEW_URL);
     if (!response.ok) {
       throw new Error(`Failed to fetch EigenLayer docs: ${response.statusText}`);
     }
     const eigenLayerDocsOverview = await response.text();
+    
+    // Cache the docs for future use
+    eigenLayerDocsCache = eigenLayerDocsOverview;
+    
+    return eigenLayerDocsOverview;
+  } catch (error) {
+    console.error("Error fetching EigenLayer docs:", error);
+    return 'Error loading EigenLayer documentation.';
+  }
+}
+
+/**
+ * Asynchronously fetches the EigenLayer docs overview from Vercel Blob Storage
+ * and constructs the full Stage 1 ideas prompt.
+ */
+export const stage1IdeasPrompt = async (): Promise<string> => {
+  try {
+    const eigenLayerDocsOverview = await fetchEigenLayerDocs();
 
     const prompt = 'Your goal is to help the user generate a refined idea prompt for my AVS idea using the following prompting:'
       + stage1IdeaRefinementPromptText // Use imported content
@@ -73,12 +98,31 @@ export const stage1IdeasPrompt = async (): Promise<string> => {
     
     return prompt;
   } catch (error) {
-    console.error("Error fetching or constructing stage 1 ideas prompt:", error);
+    console.error("Error constructing stage 1 ideas prompt:", error);
     // Fallback or re-throw depending on desired error handling
     // For now, returning a basic prompt might be safest
     return 'Error loading detailed prompt context. Please describe your AVS idea.';
   }
 };
+
+// Custom prompt for Stage 2: AVS idea refinement
+// TODO: Test this!
+export const stage2DesignPrompt = async (): Promise<string> => {
+  try {
+    const eigenLayerDocsOverview = await fetchEigenLayerDocs();
+
+    const prompt = 'Your goal is to help the user generate a refined idea prompt for my AVS idea using the following prompting:'
+      + stage2DesignGenerationPromptText // Use imported content  
+      + '# And you can use the following EigenLayer documentation for additional context:'
+      + eigenLayerDocsOverview; // Use fetched content
+
+    return prompt;
+  } catch (error) {
+    console.error("Error constructing stage 2 ideas prompt:", error); 
+    return 'Error loading detailed prompt context. Please describe your AVS idea.';
+  }
+};
+
 
 export const codePrompt = `
 You are a TypeScript code generator that creates self-contained, executable code snippets. When writing code:
