@@ -21,7 +21,7 @@ export async function inferUserIntent(
       intent: z
         .enum(['Idea', 'Design', 'Prototype', 'Other'])
         .describe(
-          "The user's likely intent: refining an Idea, generating a Design spec, generating Prototype code, or Other.",
+          "The user's likely intent: refining an Idea, generating a Design Tech Spec, generating Prototype code, or Other.",
         ),
     }),
     system: `Review the user's prompt and determine their primary intent. Choose one of: Idea, Design, Prototype, or Other.`,

@@ -7,7 +7,7 @@ import {
   streamText,
 } from 'ai';
 import { auth } from '@/app/(auth)/auth';
-import { systemPromptDefault, stage1IdeasPrompt } from '@/lib/ai/prompts';
+import { systemPromptDefault, stage1IdeasPrompt, stage2DesignPrompt } from '@/lib/ai/prompts';
 import {
   deleteChatById,
   getChatById,
@@ -87,14 +87,17 @@ export async function POST(request: Request) {
       userMessage.content,
       selectedChatModel,
     );
-    console.log('User inferred intent:', likelyIntent);
+    console.log('Inferred user intent:', likelyIntent);
 
     // Determine the system prompt based on intent *before* starting the stream execution
     let systemPromptForExecution = systemPromptDefault({ selectedChatModel });
     if (likelyIntent === 'Idea') {
       // Await the async function using its correct name
       systemPromptForExecution = await stage1IdeasPrompt(); 
-    }
+    } else if (likelyIntent === 'Design') {
+      systemPromptForExecution = await stage2DesignPrompt();
+    } 
+    // TODO: add condition to add context for Stage 3 Prototype on Wednesday
 
     // This is where the AI response is generated
     return createDataStreamResponse({

@@ -1,6 +1,14 @@
+import { anthropic } from '@ai-sdk/anthropic';
+import { createOpenAI } from '@ai-sdk/openai';
+import { embed } from 'ai';
+import { z } from 'zod';
 import type { ArtifactKind } from '@/components/artifact';
-import { stage1IdeaRefinementPromptText } from './prompts/stage1-idea-refinement';
-
+import {
+  fetchEigenLayerDocsMiddleware,
+  fetchEigenLayerDocsOverview,
+} from './loadContext';
+import { stage1IdeaRefinementPromptText} from './prompts/stage1-idea-refinement';
+import { stage2DesignGenerationPromptText} from './prompts/stage2-design-generation-prompt';
 
 export const artifactsPrompt = `
 Artifacts is a special user interface mode that helps users with writing, editing, and other content creation tasks. When artifact is open, it is on the right side of the screen, while the conversation is on the left side. When creating or updating documents, changes are reflected in real-time on the artifacts and visible to the user.
@@ -33,7 +41,6 @@ This is a guide for using artifacts tools: \`createDocument\` and \`updateDocume
 Do not update document right after creating it. Wait for user feedback or request to update it.
 `;
 
-// TODO: consider modifying this section to invoke MCP server and custom prompts
 export const basicPrompt =
   'You are a friendly assistant! Keep your responses concise and helpful.';
 
@@ -50,32 +57,44 @@ export const systemPromptDefault = (params: {
 };
 
 
-
-// Custom prompt for Stage 1: AVS idea generation
-const EIGENLAYER_DOCS_OVERVIEW_URL = 'https://af52o4jcdfzphbst.public.blob.vercel-storage.com/context/repomix-output-eigenlayer-docs-overview-min-wtABuLj3MuRM9JklyGY2tt8v6gPJNY.md';
-
 /**
  * Asynchronously fetches the EigenLayer docs overview from Vercel Blob Storage
  * and constructs the full Stage 1 ideas prompt.
  */
 export const stage1IdeasPrompt = async (): Promise<string> => {
   try {
-    const response = await fetch(EIGENLAYER_DOCS_OVERVIEW_URL);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch EigenLayer docs: ${response.statusText}`);
-    }
-    const eigenLayerDocsOverview = await response.text();
+    const eigenLayerDocsOverview = await fetchEigenLayerDocsOverview();
 
-    const prompt = 'Your goal is to help the user generate a refined idea prompt for my AVS idea using the following prompting:'
+    const prompt = 'Your goal is to help the user generate a refined idea prompt for their EigenLayer Autonomous Verifiable Service (AVS) idea using the following prompting:'
       + stage1IdeaRefinementPromptText // Use imported content
       + '# And you can use the following EigenLayer documentation for additional context:'
       + eigenLayerDocsOverview; // Use fetched content
     
     return prompt;
   } catch (error) {
-    console.error("Error fetching or constructing stage 1 ideas prompt:", error);
+    console.error("Error constructing stage 1 ideas prompt:", error);
     // Fallback or re-throw depending on desired error handling
     // For now, returning a basic prompt might be safest
+    return 'Error loading detailed prompt context. Please describe your AVS idea.';
+  }
+};
+
+// Custom prompt for Stage 2: AVS idea refinement
+export const stage2DesignPrompt = async (): Promise<string> => {
+  try {
+    const eigenLayerDocsOverview = await fetchEigenLayerDocsOverview();
+    const eigenLayerDocsMiddleware = await fetchEigenLayerDocsMiddleware();
+
+    const prompt = 'Your goal is to help the user generate a design tech spec for their EigenLayer Autonomous Verifiable Service (AVS) idea using the following prompting:'
+      + stage2DesignGenerationPromptText // Use imported content  
+      + '# And you can use the following EigenLayer documentation for additional context:'
+      + eigenLayerDocsOverview // Use fetched content
+      + '# And you can use the following EigenLayer middleware overview for additional context:'
+      + eigenLayerDocsMiddleware; // Use fetched content
+
+    return prompt;
+  } catch (error) {
+    console.error("Error constructing stage 2 ideas prompt:", error); 
     return 'Error loading detailed prompt context. Please describe your AVS idea.';
   }
 };
