@@ -101,10 +101,13 @@ export async function POST(request: Request) {
       systemPromptForExecution += await stage2DesignPrompt();
     } else if (likelyIntent === 'Prototype') {
       // Append the stage 3 prototype prompt to the system prompt
-      systemPromptForExecution += await stage3PrototypePrompt();
+      systemPromptForExecution = await stage3PrototypePrompt();
     }
-    // todo: further testing on whether to include artifacts prompt or not for stage 1 and 2
     
+    // todo: find a method to better log the full systemPromptForExecution string for better debugging
+    // todo: further testing on whether to include artifacts prompt or not for stage 1 and 2
+    // todo: lots more work to do to determine whether the current tool -> createDocument -> additional LLM calls approach will work.
+
     console.log('systemPromptForExecution char count: ', systemPromptForExecution.length);
     console.log('systemPromptForExecution token count should be approx 3.5x the char count, which is ', systemPromptForExecution.length * 3.5);
 
