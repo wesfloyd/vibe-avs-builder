@@ -28,6 +28,8 @@ import { isProductionEnvironment } from '@/lib/constants';
 import { myProvider } from '@/lib/ai/providers';
 import { inferUserIntent } from '@/lib/ai/intentManager';
 import { text } from 'stream/consumers';
+import fs from 'fs/promises';
+import path from 'path';
 
 export const maxDuration = 60;
 
@@ -104,6 +106,7 @@ export async function POST(request: Request) {
       systemPromptForExecution = await stage3PrototypePrompt();
     }
     
+    // todo: build a different create datastream function for stage 3 that does Not register the tools
     // todo: find a method to better log the full systemPromptForExecution string for better debugging
     // todo: further testing on whether to include artifacts prompt or not for stage 1 and 2
     // todo: lots more work to do to determine whether the current tool -> createDocument -> additional LLM calls approach will work.
@@ -111,6 +114,19 @@ export async function POST(request: Request) {
     console.log('systemPromptForExecution char count: ', systemPromptForExecution.length);
     console.log('systemPromptForExecution token count should be approx 3.5x the char count, which is ', systemPromptForExecution.length * 3.5);
 
+    // --- Development Debug Logging Start ---
+    if (process.env.NODE_ENV === 'development') {
+      try {
+        const debugDir = path.join(process.cwd(), '.debug');
+        const logFilePath = path.join(debugDir, 'system-prompt-log.txt');
+        await fs.mkdir(debugDir, { recursive: true }); // Ensure directory exists
+        await fs.writeFile(logFilePath, systemPromptForExecution, 'utf8');
+        console.log(`[DEV ONLY] System prompt logged to: ${logFilePath}`);
+      } catch (logError) {
+        console.error('[DEV ONLY] Failed to write system prompt log:', logError);
+      }
+    }
+    // --- Development Debug Logging End ---
 
 
     // Todo: modify so that Stage 3 is sent to claude 3.7 sonnet, rather than the default datastream.
