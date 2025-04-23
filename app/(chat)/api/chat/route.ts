@@ -27,6 +27,7 @@ import { requestSuggestions } from '@/lib/ai/tools/request-suggestions';
 import { isProductionEnvironment } from '@/lib/constants';
 import { myProvider } from '@/lib/ai/providers';
 import { inferUserIntent } from '@/lib/ai/intentManager';
+import { text } from 'stream/consumers';
 
 export const maxDuration = 60;
 
@@ -88,6 +89,7 @@ export async function POST(request: Request) {
       selectedChatModel,// todo: modify this to use a minimal fast model?
     );
     console.log('Inferred user intent:', likelyIntent);
+    
 
     // Determine the system prompt based on intent *before* starting the stream execution
     let systemPromptForExecution = systemPromptDefault({ selectedChatModel });
@@ -185,8 +187,19 @@ export async function POST(request: Request) {
           },
         });
 
-        // Log the raw LLM response
-        console.log('Raw LLM Response:', result);
+        // Log the raw LLM response and usage
+        result.usage.then(usage => {
+          console.log('Result Usage Prompt Tokens:', usage.promptTokens);
+        });
+        
+        
+        result.reasoning.then(reasoning => {
+          console.log('Raw LLM Reasoning:', reasoning);
+        });
+
+        result.text.then(text => {
+          console.log('Raw LLM Response:', text);
+        });
 
         // This is where the AI response is consumed
         result.consumeStream();
