@@ -103,17 +103,17 @@ export async function POST(request: Request) {
 
 
     // Log the system prompt for debugging in development
-    await logContentForDebug(systemPromptForExecution, `system-prompt-log-${id}.txt`, 'Chat API');
+    await logContentForDebug(systemPromptForExecution, `${id}-system-prompt-log.txt`, 'Chat API');
 
 
-    // Todo: modify so that Stage 3 is sent to claude 3.7 sonnet, rather than the default datastream.
-    // consider modifying only the selectedChatModel variable before invoking this
-
-
+    
     const dataStreamResponse = createDataStreamResponse({
       execute: (dataStream) => {
         // This is where the AI response is invoked
         if (likelyIntent === 'Prototype') {
+        
+        // Todo: modify so that Stage 3 is sent to claude 3.7 sonnet, rather than the default datastream.
+        // consider modifying only the selectedChatModel variable before invoking this
           // Execute the stage 3 prototype chat stream
           executeStage3PrototypeChatStream({
             dataStream,

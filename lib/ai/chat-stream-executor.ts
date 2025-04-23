@@ -10,6 +10,7 @@ import { createDocument } from '@/lib/ai/tools/create-document';
 import { updateDocument } from '@/lib/ai/tools/update-document';
 import { requestSuggestions } from '@/lib/ai/tools/request-suggestions';
 import { saveMessages } from '@/lib/db/queries';
+import { logContentForDebug } from '@/lib/utils/debugUtils';
 
 interface ExecuteChatStreamParams {
   dataStream: any; // Using 'any' for now as CoreDataStream seems incorrect
@@ -32,6 +33,7 @@ export async function executeDefaultChatStream({
   id,
   isProductionEnvironment,
 }: ExecuteChatStreamParams) {
+   console.log('Initiating executeDefaultChatStream');
   const result = streamText({
     model: myProvider.languageModel(selectedChatModel),
     system: systemPromptForExecution, // Use the pre-determined system prompt
@@ -109,8 +111,9 @@ export async function executeDefaultChatStream({
     console.log('Raw LLM Reasoning:', reasoning);
   });
 
-  result.text.then(text => {
+  result.text.then(async (text) => {
     console.log('Raw LLM Response:', text);
+    await logContentForDebug(text, `${id}-raw-llm-response.txt`, 'Chat Stream Executor - Default');
   });
 
   // This is where the AI response is consumed
@@ -136,6 +139,7 @@ export async function executeStage3PrototypeChatStream({
   id,
   isProductionEnvironment,
 }: ExecuteChatStreamParams) {
+  console.log('Initiating executeStage3PrototypeChatStream');
   const result = streamText({
     model: myProvider.languageModel(selectedChatModel),
     system: systemPromptForExecution, // Use the pre-determined system prompt
@@ -205,8 +209,9 @@ export async function executeStage3PrototypeChatStream({
     console.log('Raw LLM Reasoning:', reasoning);
   });
 
-  result.text.then(text => {
+  result.text.then(async (text) => {
     console.log('Raw LLM Response:', text);
+    await logContentForDebug(text, `${id}-raw-llm-response.txt`, 'Chat Stream Executor - Stage 3');
   });
 
   // This is where the AI response is consumed
