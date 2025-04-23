@@ -105,16 +105,6 @@ export async function executeDefaultChatStream({
   result.usage.then(usage => {
     console.log('Result Usage Prompt Tokens:', usage.promptTokens);
   });
-  
-  
-  result.reasoning.then(reasoning => {
-    console.log('Raw LLM Reasoning:', reasoning);
-  });
-
-  result.text.then(async (text) => {
-    console.log('Raw LLM Response:', text);
-    await logContentForDebug(text, `${id}-raw-llm-response.txt`, 'Chat Stream Executor - Default');
-  });
 
   // This is where the AI response is consumed
   result.consumeStream();
@@ -148,15 +138,7 @@ export async function executeStage3PrototypeChatStream({
     
     experimental_transform: smoothStream({ chunking: 'word' }),
     experimental_generateMessageId: generateUUID,
-    tools: {
-      createDocument: createDocument({ session, dataStream }),
-      updateDocument: updateDocument({ session, dataStream }),
-      requestSuggestions: requestSuggestions({
-        session,
-        dataStream,
-      }),
-      //refineIdea,
-    },
+    
     onFinish: async ({ response }) => {
       if (session.user?.id) {
         try {
