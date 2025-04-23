@@ -7,7 +7,7 @@ import {
   streamText,
 } from 'ai';
 import { auth } from '@/app/(auth)/auth';
-import { systemPromptDefault, stage1IdeasPrompt, stage2DesignPrompt } from '@/lib/ai/prompts';
+import { systemPromptDefault, stage1IdeasPrompt, stage2DesignPrompt, stage3PrototypePrompt, artifactsPrompt } from '@/lib/ai/prompts';
 import {
   deleteChatById,
   getChatById,
@@ -85,21 +85,35 @@ export async function POST(request: Request) {
     // Infer the user's current intent
     const likelyIntent = await inferUserIntent(
       userMessage.content,
-      selectedChatModel,
+      selectedChatModel,// todo: modify this to use a minimal fast model?
     );
     console.log('Inferred user intent:', likelyIntent);
 
     // Determine the system prompt based on intent *before* starting the stream execution
     let systemPromptForExecution = systemPromptDefault({ selectedChatModel });
     if (likelyIntent === 'Idea') {
-      // Await the async function using its correct name
-      systemPromptForExecution = await stage1IdeasPrompt(); 
+      // Append the stage 1 ideas prompt to the system prompt
+      systemPromptForExecution += await stage1IdeasPrompt(); 
     } else if (likelyIntent === 'Design') {
-      systemPromptForExecution = await stage2DesignPrompt();
-    } 
-    // TODO: add condition to add context for Stage 3 Prototype on Wednesday
+      // Append the stage 2 design prompt to the system prompt
+      systemPromptForExecution += await stage2DesignPrompt();
+    } else if (likelyIntent === 'Prototype') {
+      // Append the stage 3 prototype prompt to the system prompt
+      systemPromptForExecution += await stage3PrototypePrompt();
+    }
+    // todo: further testing on whether to include artifacts prompt or not for stage 1 and 2
+    
+    console.log('systemPromptForExecution char count: ', systemPromptForExecution.length);
+    console.log('systemPromptForExecution token count should be approx 3.5x the char count, which is ', systemPromptForExecution.length * 3.5);
 
-    // This is where the AI response is generated
+
+
+    // Todo: modify so that Stage 3 is sent to claude 3.7 sonnet, rather than the default datastream.
+    // consider modifying only the selectedChatModel variable before invoking this
+
+    // Todo: modify to move this code into a function in a separate file, and call that function from the default datastream and stage 3 datastream.
+
+    // This is where the response from the AI provider is generated
     return createDataStreamResponse({
       execute: (dataStream) => {
         // This is where the AI response is invoked
@@ -170,6 +184,9 @@ export async function POST(request: Request) {
             functionId: 'stream-text',
           },
         });
+
+        // Log the raw LLM response
+        console.log('Raw LLM Response:', result);
 
         // This is where the AI response is consumed
         result.consumeStream();

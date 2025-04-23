@@ -1,10 +1,32 @@
-export const stage3PrototypeCodeGenerationPromptText = `
+export const stage3PrototypePromptLLMGuidance = `
+# Instructions for llm:
+
+Dear LLM - use the following prompts to guide you in implementing the the prototype Autonomous Verifiable Service (AVS) on EigenLayer.
+
+Your Primary task:  your job is to to first determine a confidence on how likely the user's AVS idea can be implemented with EigenLayer hello-world-avs code.
+
+If you are less than 50% confident that the user's AVS idea can be implemented with EigenLayer hello-world-avs code, then respond with a message to the user explaining that you are not confident that the idea can be implemented with EigenLayer hello-world-avs code, include your confidence score and give specific reasons why.
+
+If you are more than 50% confident that the user's AVS idea can be implemented with EigenLayer hello-world-avs code, then proceed with the following steps.
+
+## Step 1
+Generate one ServiceManager.sol contract that can be used to repesent their AVS idea or design - renamed for the user's AVS idea or design.
+Generate one Operator.ts file that can be used to repesent the Operator logic.
+
+## Last step
+Respond with a JSON object. The file path should be the key and the the code included as escaped string will be the value.
+`; 
+
+// Todo: ask the system to write out the LLM response to console somehow or a test folder ..
+
+/** Original prompt below
+export const stage3PrototypePromptText = `
 ## Instructions for llm:
 
-Dear LLM - use this file to guide you in implementing the the prototype Active Validation Service (AVS) on EigenLayer.
+Dear LLM - use these prompts file to guide you in implementing the the prototype Autonomous Verifiable Service (AVS) on EigenLayer.
 
 ## Your job
-Your job is to modify this copy of hello-world-avs to fit the AVS design or idea supplied by the user.
+Your job is to  .. modify this copy of hello-world-avs to fit the AVS design or idea supplied by the user.
 
 If the user has supplied a sufficiently clear design tech spec with this prompt: review it first to make sure you undertand the design goals before proceeding.
 
@@ -13,9 +35,6 @@ If the user has supplied only an idea with this prompt: first generate the idea 
 Then ask the user whether they would like to review the generated design tech spec before proceeding.
 
 If the user has Not supplied an idea or the AVS idea or design is not clear: explain the missing information to the user, help guide them on how they should add proper detail.
-
-
-
 
 ## Preparation
 If the user has established a sufficiently clear design tech spec with this prompt, follow the steps below to ensure you fully implement the smart contracts, operator binaries, and frontend.
@@ -67,10 +86,9 @@ Modify the README.md file at the root of your repository to include:
 
 Modify the simple front end under /avs-frontend folder that allows users to generate Tasks and observe events on chain when they are completed.
 
-
-
-
 ## Final Checks
 Ensure the code executes correctly and resolve any compile errors. Try to build the smart contracts with build:forge and resolve any compilation errors.
 Provide the user with a pointer to the README.md file and instructions on how they can test the AVS.
 `; 
+
+*/

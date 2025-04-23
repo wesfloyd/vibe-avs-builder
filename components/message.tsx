@@ -244,6 +244,30 @@ export const PreviewMessage = memo(
 
 export const ThinkingMessage = () => {
   const role = 'assistant';
+  const thinkingWords = [
+    'Thinking',
+    'Contemplating',
+    'Reflecting',
+    'Considering',
+    'Deliberating',
+    'Reasoning',
+    'Pondering',
+    'Analyzing',
+    'Speculating',
+    'Cognizing',
+    'Judging',
+    'Meditating',
+    'Ruminating',
+    'Introspecting',
+    'Evaluating',
+    'Assessing',
+    'Musing',
+    'Theorizing',
+    'Planning',
+    'Envisioning'
+  ];
+  
+  const randomThinkinWord = thinkingWords[Math.floor(Math.random() * thinkingWords.length)];
 
   return (
     <motion.div
@@ -267,7 +291,7 @@ export const ThinkingMessage = () => {
 
         <div className="flex flex-col gap-2 w-full">
           <div className="flex flex-col gap-4 text-muted-foreground">
-            Hmm...
+            {randomThinkinWord}...
           </div>
         </div>
       </div>

@@ -6,9 +6,11 @@ import type { ArtifactKind } from '@/components/artifact';
 import {
   fetchEigenLayerDocsMiddleware,
   fetchEigenLayerDocsOverview,
+  fetchHelloWorldAVSCode,
 } from './loadContext';
-import { stage1IdeaRefinementPromptText} from './prompts/stage1-idea-refinement';
-import { stage2DesignGenerationPromptText} from './prompts/stage2-design-generation-prompt';
+import { stage1IdeaRefinementPromptLLMGuidance} from './prompts/stage1-idea-refinement';
+import { stage2DesignGenerationPromptText as stage2DesignGenerationPromptLLMGuidance} from './prompts/stage2-design-generation-prompt';
+import { stage3PrototypePromptLLMGuidance } from './prompts/stage3-prototype-code-generation-prompt';
 
 export const artifactsPrompt = `
 Artifacts is a special user interface mode that helps users with writing, editing, and other content creation tasks. When artifact is open, it is on the right side of the screen, while the conversation is on the left side. When creating or updating documents, changes are reflected in real-time on the artifacts and visible to the user.
@@ -63,10 +65,10 @@ export const systemPromptDefault = (params: {
  */
 export const stage1IdeasPrompt = async (): Promise<string> => {
   try {
+    console.log('Generating stage 1 ideas prompt');
     const eigenLayerDocsOverview = await fetchEigenLayerDocsOverview();
 
-    const prompt = 'Your goal is to help the user generate a refined idea prompt for their EigenLayer Autonomous Verifiable Service (AVS) idea using the following prompting:'
-      + stage1IdeaRefinementPromptText // Use imported content
+    const prompt = stage1IdeaRefinementPromptLLMGuidance // Use imported content
       + '# And you can use the following EigenLayer documentation for additional context:'
       + eigenLayerDocsOverview; // Use fetched content
     
@@ -82,11 +84,11 @@ export const stage1IdeasPrompt = async (): Promise<string> => {
 // Custom prompt for Stage 2: AVS idea refinement
 export const stage2DesignPrompt = async (): Promise<string> => {
   try {
+    console.log('Generating stage 2 design prompt');
     const eigenLayerDocsOverview = await fetchEigenLayerDocsOverview();
     const eigenLayerDocsMiddleware = await fetchEigenLayerDocsMiddleware();
 
-    const prompt = 'Your goal is to help the user generate a design tech spec for their EigenLayer Autonomous Verifiable Service (AVS) idea using the following prompting:'
-      + stage2DesignGenerationPromptText // Use imported content  
+    const prompt = stage2DesignGenerationPromptLLMGuidance // Use imported content  
       + '# And you can use the following EigenLayer documentation for additional context:'
       + eigenLayerDocsOverview // Use fetched content
       + '# And you can use the following EigenLayer middleware overview for additional context:'
@@ -98,6 +100,32 @@ export const stage2DesignPrompt = async (): Promise<string> => {
     return 'Error loading detailed prompt context. Please describe your AVS idea.';
   }
 };
+
+
+// Custom prompt for Stage 3: AVS code generation
+export const stage3PrototypePrompt = async (): Promise<string> => {
+  try {
+    
+    console.log('Generating stage 3 code prompt');
+    const eigenLayerDocsOverview = await fetchEigenLayerDocsOverview();
+    const eigenLayerDocsMiddleware = await fetchEigenLayerDocsMiddleware();
+    const helloWorldAVSCode = await fetchHelloWorldAVSCode();
+    const prompt = stage3PrototypePromptLLMGuidance // Use imported content
+      + '# And you can use the following EigenLayer documentation for additional context:'
+      + eigenLayerDocsOverview // Use fetched content
+      + '# And you can use the following EigenLayer middleware overview for additional context:'
+      + eigenLayerDocsMiddleware // Use fetched content
+      + '# And you can use the following Hello World AVS code for additional context:'
+      + helloWorldAVSCode; // Use fetched content
+
+
+    return prompt;
+  } catch (error) {
+    console.error("Error constructing stage 3 code prompt:", error);
+    return 'Error loading detailed prompt context. Please describe your AVS idea.';
+  }
+};
+
 
 export const codePrompt = `
 You are a TypeScript code generator that creates self-contained, executable code snippets. When writing code:

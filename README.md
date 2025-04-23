@@ -14,6 +14,7 @@
 **Demo Site**
 [vibe-avs-builder.vercel.app](https://vibe-avs-builder.vercel.app/)
 
+**Soundtrack** [Vibes - Beastie Boys](https://www.youtube.com/watch?v=ClaNCCp2yRI)
 
 ## Running locally
 
@@ -42,19 +43,19 @@ Note: this app was forked from [Vercel Next.js AI Chatbot](https://vercel.com/te
 
 ## Todo
 
+Today:
+1) Modify the prompt for minimal functionality
+2) Add plumbing for the code gen and receiving call via json
+3) Test the code
+4) Expand the prompt to greater functionality
+5) Retest
 
-8. Model Customization:
-  - Update AI models and prompts for EigenLayer-specific context
-  - Create specialized prompts for each stage
-  - Integrate MCP server to user ideas
 
-  
+## Future
 4. Stage 1: Idea Refinement Implementation:
-  - Create custom prompts for AVS idea evaluation
   - Build rating component for idea feasibility
   - Implement name suggestion functionality
   - Store refined idea as an artifact
-  - Add Download button to download idea
 
 5. Stage 2: Design Generation:
   - Add image artifact for AVS logo generation
@@ -75,7 +76,6 @@ Note: this app was forked from [Vercel Next.js AI Chatbot](https://vercel.com/te
 7. Operational:
  - Find ways to separate Dev from Production database and data stores.
 
-
 9. UI/UX Improvements:
   - Update theme/styling to reflect EigenLayer branding
   - Implement "open" user flow with guided LLM experience
@@ -88,14 +88,4 @@ Note: this app was forked from [Vercel Next.js AI Chatbot](https://vercel.com/te
   - Add CTA component for scheduling calls with EigenLayer
   - Implement conversion tracking
 
-
-
-
-## Done
-
-1. Landing Page Updates:
-  - Modify greeting component to match "What would you like to validate?" prompt
-  - Add subtitle "Enter your idea for an AVS"
-  - Add links to EigenLayer AVS documentation and tutorial videos
-  - Update page metadata/title to reflect EigenLayer AVS Builder
 

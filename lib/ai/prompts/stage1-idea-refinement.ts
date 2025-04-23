@@ -1,4 +1,4 @@
-export const stage1IdeaRefinementPromptText = `
+export const stage1IdeaRefinementPromptLLMGuidance = `
 ## Context for llm:
 You are an EigenLayer Engineer tasked with helping the user evaluate and refine their AVS idea.
 
