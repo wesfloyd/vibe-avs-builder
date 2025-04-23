@@ -1,10 +1,6 @@
 import type { UIMessage } from 'ai';
 import {
-  appendResponseMessages,
   createDataStreamResponse,
-  generateText,
-  smoothStream,
-  streamText,
 } from 'ai';
 import { auth } from '@/app/(auth)/auth';
 import { systemPromptDefault, stage1IdeasPrompt, stage2DesignPrompt, stage3PrototypePrompt, artifactsPrompt } from '@/lib/ai/prompts';
@@ -15,18 +11,16 @@ import {
   saveMessages,
 } from '@/lib/db/queries';
 import {
-  generateUUID,
   getMostRecentUserMessage,
-  getTrailingMessageId,
 } from '@/lib/utils';
 import { generateTitleFromUserMessage } from '../../actions';
-import { createDocument } from '@/lib/ai/tools/create-document';
-import { updateDocument } from '@/lib/ai/tools/update-document';
-import { requestSuggestions } from '@/lib/ai/tools/request-suggestions';
-//import { refineIdea } from '@/lib/ai/tools/refine-idea';
 import { isProductionEnvironment } from '@/lib/constants';
 import { myProvider } from '@/lib/ai/providers';
 import { inferUserIntent } from '@/lib/ai/intentManager';
+import { text } from 'stream/consumers';
+import { logContentForDebug } from '@/lib/utils/debugUtils';
+import { executeDefaultChatStream, executeStage3PrototypeChatStream } from '@/lib/ai/chat-stream-executor';
+
 
 export const maxDuration = 60;
 
@@ -82,124 +76,80 @@ export async function POST(request: Request) {
       ],
     });
 
+
+    // Todo: set a default chat model here rather than consuming from selectedChatModel (normal vs reasoning)?
+
+
     // Infer the user's current intent
     const likelyIntent = await inferUserIntent(
       userMessage.content,
       selectedChatModel,// todo: modify this to use a minimal fast model?
     );
     console.log('Inferred user intent:', likelyIntent);
+    
 
     // Determine the system prompt based on intent *before* starting the stream execution
     let systemPromptForExecution = systemPromptDefault({ selectedChatModel });
     if (likelyIntent === 'Idea') {
+    // todo: further testing on whether to include artifacts prompt or not for stage 1 and 2
       // Append the stage 1 ideas prompt to the system prompt
       systemPromptForExecution += await stage1IdeasPrompt(); 
     } else if (likelyIntent === 'Design') {
       // Append the stage 2 design prompt to the system prompt
       systemPromptForExecution += await stage2DesignPrompt();
     } else if (likelyIntent === 'Prototype') {
-      // Append the stage 3 prototype prompt to the system prompt
-      systemPromptForExecution += await stage3PrototypePrompt();
+      // Replace (not append) stage 3 prototype prompt to avoid tool usage
+      systemPromptForExecution = await stage3PrototypePrompt();
     }
-    // todo: further testing on whether to include artifacts prompt or not for stage 1 and 2
-    
     console.log('systemPromptForExecution char count: ', systemPromptForExecution.length);
     console.log('systemPromptForExecution token count should be approx 3.5x the char count, which is ', systemPromptForExecution.length * 3.5);
 
 
 
-    // Todo: modify so that Stage 3 is sent to claude 3.7 sonnet, rather than the default datastream.
-    // consider modifying only the selectedChatModel variable before invoking this
+    // Log the system prompt for debugging in development
+    await logContentForDebug(systemPromptForExecution, `system-prompt-log.txt`, 'Chat API');
 
-    // Todo: modify to move this code into a function in a separate file, and call that function from the default datastream and stage 3 datastream.
 
-    // This is where the response from the AI provider is generated
-    return createDataStreamResponse({
+    
+    const dataStreamResponse = createDataStreamResponse({
       execute: (dataStream) => {
         // This is where the AI response is invoked
-
-        const result = streamText({
-          model: myProvider.languageModel(selectedChatModel),
-          system: systemPromptForExecution, // Use the pre-determined system prompt
-          messages,// This contains the full conversation history
-          maxSteps: 5,
-          experimental_activeTools:
-            selectedChatModel === 'chat-model-reasoning'
-              ? []
-              : [
-                  'createDocument',
-                  'updateDocument',
-                  'requestSuggestions',
-                  //'refineIdea',
-                ],
-          experimental_transform: smoothStream({ chunking: 'word' }),
-          experimental_generateMessageId: generateUUID,
-          tools: {
-            createDocument: createDocument({ session, dataStream }),
-            updateDocument: updateDocument({ session, dataStream }),
-            requestSuggestions: requestSuggestions({
-              session,
-              dataStream,
-            }),
-            //refineIdea,
-          },
-          onFinish: async ({ response }) => {
-            if (session.user?.id) {
-              try {
-                const assistantId = getTrailingMessageId({
-                  messages: response.messages.filter(
-                    (message) => message.role === 'assistant',
-                  ),
-                });
-
-                if (!assistantId) {
-                  throw new Error('No assistant message found!');
-                }
-
-                const [, assistantMessage] = appendResponseMessages({
-                  messages: [userMessage],
-                  responseMessages: response.messages,
-                });
-
-                await saveMessages({
-                  messages: [
-                    {
-                      id: assistantId,
-                      chatId: id,
-                      role: assistantMessage.role,
-                      parts: assistantMessage.parts,
-                      attachments:
-                        assistantMessage.experimental_attachments ?? [],
-                      createdAt: new Date(),
-                    },
-                  ],
-                });
-              } catch (_) {
-                console.error('Failed to save chat');
-              }
-            }
-          },
-          experimental_telemetry: {
-            isEnabled: isProductionEnvironment,
-            functionId: 'stream-text',
-          },
-        });
-
-        // Log the raw LLM response
-        console.log('Raw LLM Response:', result);
-
-        // This is where the AI response is consumed
-        result.consumeStream();
-
-        // This is where the AI response is merged into the data stream
-        result.mergeIntoDataStream(dataStream, {
-          sendReasoning: true,
-        });
+        if (likelyIntent === 'Prototype') {
+        
+        // Todo: modify so that Stage 3 is sent to claude 3.7 sonnet, rather than the default datastream.
+        // consider modifying only the selectedChatModel variable before invoking this
+          // Execute the stage 3 prototype chat stream
+          executeStage3PrototypeChatStream({
+            dataStream,
+            session,
+            messages,
+            selectedChatModel,
+            systemPromptForExecution,
+            userMessage,
+            id,
+            isProductionEnvironment,
+          });
+        } else {
+          // Execute the default chat stream for other intents
+          executeDefaultChatStream({
+            dataStream,
+            session,
+            messages,
+            selectedChatModel,
+            systemPromptForExecution,
+            userMessage,
+            id,
+            isProductionEnvironment,
+          });
+        }
       },
       onError: () => {
         return 'Oops, an error occurred!';
       },
     });
+
+    return dataStreamResponse;
+    
   } catch (error) {
     console.error('Error in POST', error);
     return new Response('An error occurred while processing your request!', {

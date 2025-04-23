@@ -8,6 +8,8 @@ export const codeDocumentHandler = createDocumentHandler<'code'>({
   kind: 'code',
   onCreateDocument: async ({ title, dataStream }) => {
     let draftContent = '';
+    
+    console.log('Creating code document');
 
     const { fullStream } = streamObject({
       model: myProvider.languageModel('artifact-model'),

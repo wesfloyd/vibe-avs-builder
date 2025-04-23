@@ -267,7 +267,7 @@ export const ThinkingMessage = () => {
     'Envisioning'
   ];
   
-  const randomThinkinWord = thinkingWords[Math.floor(Math.random() * thinkingWords.length)];
+  const randomThinkingWord = thinkingWords[Math.floor(Math.random() * thinkingWords.length)];
 
   return (
     <motion.div
@@ -291,7 +291,7 @@ export const ThinkingMessage = () => {
 
         <div className="flex flex-col gap-2 w-full">
           <div className="flex flex-col gap-4 text-muted-foreground">
-            {randomThinkinWord}...
+            {randomThinkingWord}...
           </div>
         </div>
       </div>
