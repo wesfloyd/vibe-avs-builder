@@ -76,6 +76,10 @@ export async function POST(request: Request) {
       ],
     });
 
+
+    // Todo: set a default chat model here rather than consuming from selectedChatModel (normal vs reasoning)?
+
+
     // Infer the user's current intent
     const likelyIntent = await inferUserIntent(
       userMessage.content,
@@ -103,7 +107,7 @@ export async function POST(request: Request) {
 
 
     // Log the system prompt for debugging in development
-    await logContentForDebug(systemPromptForExecution, `${id}-system-prompt-log.txt`, 'Chat API');
+    await logContentForDebug(systemPromptForExecution, `system-prompt-log.txt`, 'Chat API');
 
 
     

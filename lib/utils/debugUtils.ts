@@ -17,7 +17,10 @@ export async function logContentForDebug(
   if (process.env.NODE_ENV === 'development') {
     try {
       const debugDir = path.join(process.cwd(), '.debug');
-      const logFilePath = path.join(debugDir, filename);
+      const now = new Date();
+      const timeStr = now.toTimeString().split(' ')[0].replace(/:/g, '-');
+      const timestampedFilename = `${timeStr}_${filename}`;
+      const logFilePath = path.join(debugDir, timestampedFilename);
       await fs.mkdir(debugDir, { recursive: true }); // Ensure directory exists
       await fs.writeFile(logFilePath, content, 'utf8');
       console.log(`[DEV ONLY - ${callerInfo}] Content logged to: ${logFilePath}`);

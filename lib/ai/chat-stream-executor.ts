@@ -193,7 +193,7 @@ export async function executeStage3PrototypeChatStream({
 
   result.text.then(async (text) => {
     console.log('Raw LLM Response:', text);
-    await logContentForDebug(text, `${id}-raw-llm-response.txt`, 'Chat Stream Executor - Stage 3');
+    await logContentForDebug(text, `raw-llm-response.txt`, 'Chat Stream Executor - Stage 3');
   });
 
   // This is where the AI response is consumed

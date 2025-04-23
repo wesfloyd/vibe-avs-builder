@@ -9,12 +9,15 @@ If you are less than 50% confident that the user's AVS idea can be implemented w
 
 If you are more than 50% confident that the user's AVS idea can be implemented with EigenLayer hello-world-avs code, then proceed with the following steps.
 
-## Step 1
+## Generate Code
+Do not generate any additional code beyond the specific instructions that follow.
+
 Generate one ServiceManager.sol contract that can be used to repesent their AVS idea or design - renamed for the user's AVS idea or design.
 Generate one Operator.ts file that can be used to repesent the Operator logic.
+Generate one README.md file explaining how to use the code.
 
 ## Last step
-Respond with a JSON object. The file path should be the key and the the code included as escaped string will be the value.
+
 `; 
 
 // Todo: ask the system to write out the LLM response to console somehow or a test folder ..
