@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useActionState, useEffect, useState } from 'react';
 import { toast } from '@/components/toast';
 
@@ -13,6 +13,7 @@ import { login, type LoginActionState } from '../actions';
 
 export default function Page() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [email, setEmail] = useState('');
   const [isSuccessful, setIsSuccessful] = useState(false);
@@ -37,9 +38,17 @@ export default function Page() {
       });
     } else if (state.status === 'success') {
       setIsSuccessful(true);
-      router.refresh();
+      
+      // Get the callback URL but ensure it's not a static asset
+      const callbackUrl = searchParams.get('callbackUrl') || '/';
+      const safeCallbackUrl = callbackUrl.includes('favicon.ico') || 
+                            callbackUrl.includes('/_next/') ? 
+                            '/' : callbackUrl;
+                            
+      // Use router.push for redirect to safe URL on success
+      router.push(safeCallbackUrl);
     }
-  }, [state.status, router]);
+  }, [state.status, router, searchParams]);
 
   const handleSubmit = (formData: FormData) => {
     setEmail(formData.get('email') as string);

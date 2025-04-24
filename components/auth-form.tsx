@@ -3,10 +3,19 @@ import Form from 'next/form';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
-import { signIn } from "next-auth/react"
+import { signIn } from "@/app/(auth)/auth";
 import { FcGoogle } from 'react-icons/fc';
+import { useSearchParams } from 'next/navigation';
  
 export function GoogleAuthButton() {
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl') || '/';
+  
+  // Don't redirect to favicon or other static assets
+  const safeCallbackUrl = callbackUrl.includes('favicon.ico') || 
+                         callbackUrl.includes('/_next/') ? 
+                         '/' : callbackUrl;
+  
   return (
     <div className="space-y-6 mt-8">
       <div className="relative">
@@ -17,7 +26,7 @@ export function GoogleAuthButton() {
 
       <Button
         id="google-sign-in-button"
-        onClick={() => signIn("google", { callbackUrl: '/', redirect: true })}
+        onClick={() => signIn("google", { callbackUrl: safeCallbackUrl, redirect: true })}
         variant="outline"
         className="w-full flex items-center justify-center gap-5 py-5 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-800/50 transition-colors"
       >

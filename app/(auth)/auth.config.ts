@@ -16,6 +16,12 @@ export const authConfig: NextAuthConfig = {
       const isOnChat = nextUrl.pathname.startsWith('/');
       const isOnRegister = nextUrl.pathname.startsWith('/register');
       const isOnLogin = nextUrl.pathname.startsWith('/login');
+      const isFavicon = nextUrl.pathname === '/favicon.ico';
+
+      // Always allow favicon requests
+      if (isFavicon) {
+        return true;
+      }
 
       if (isLoggedIn && (isOnLogin || isOnRegister)) {
         return Response.redirect(new URL('/', nextUrl as unknown as URL));

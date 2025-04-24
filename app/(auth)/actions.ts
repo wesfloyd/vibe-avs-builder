@@ -25,10 +25,20 @@ export const login = async (
       password: formData.get('password'),
     });
 
+    // Get callbackUrl from formData if it exists
+    const callbackUrl = formData.get('callbackUrl') as string | null;
+    
+    // Ensure callbackUrl is not a static asset
+    const safeCallbackUrl = callbackUrl && 
+      (callbackUrl.includes('favicon.ico') || callbackUrl.includes('/_next/')) 
+      ? '/' 
+      : callbackUrl || false;
+    
     await signIn('credentials', {
       email: validatedData.email,
       password: validatedData.password,
       redirect: false,
+      ...(safeCallbackUrl && { callbackUrl: safeCallbackUrl }),
     });
 
     return { status: 'success' };
