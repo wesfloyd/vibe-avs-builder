@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { GoogleAuthButton } from '@/components/auth-form';
 
 export default function Page() {
@@ -16,7 +16,9 @@ export default function Page() {
           <p className="text-sm text-gray-500 dark:text-zinc-400 mb-4">
             Use your Google account to sign in or create a new account
           </p>
-          <GoogleAuthButton />
+          <Suspense fallback={<div>Loading...</div>}>
+            <GoogleAuthButton />
+          </Suspense>
         </div>
       </div>
     </div>
