@@ -1,3 +1,12 @@
+export const STAGE1_TEST_PROMPT1 = `
+Help me refine my AVS idea. My idea is for an AVS that generates cat images, then have a group of operators verify whether the likelihood of that operator being a cat image greater than 90%
+`;
+
+export const STAGE2_TEST_PROMPT1 = `
+Help me generate a design tech spec for my AVS idea. My idea is for an AVS that generates cat images, then have a group of operators verify whether the likelihood of that operator being a cat image greater than 90%
+`;
+
+
 export const STAGE3_TEST_PROMPT1 = `
 Help me generate a prototype implementation for my AVS using the following design tech spec
 

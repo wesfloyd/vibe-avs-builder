@@ -43,6 +43,7 @@ This is a guide for using artifacts tools: \`createDocument\` and \`updateDocume
 Do not update document right after creating it. Wait for user feedback or request to update it.
 `;
 
+const eigenLayerDocsOverview = await fetchEigenLayerDocsOverview();
 export const basicPrompt =
   'You are a friendly assistant! Keep your responses concise and helpful.';
 
@@ -54,8 +55,8 @@ export const systemPromptDefault = (params: {
   if (selectedChatModel === 'chat-model-reasoning') {
     return basicPrompt;
   }
-
-  return `${basicPrompt}\n\n${artifactsPrompt}`;
+  
+  return `${basicPrompt}\n\n${artifactsPrompt}\n\n${eigenLayerDocsOverview}`;
 };
 
 
