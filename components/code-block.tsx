@@ -18,7 +18,7 @@ export function CodeBlock({
     return (
       <code
         {...props}
-        className={`block text-sm w-full overflow-x-auto dark:bg-zinc-900 p-4 border border-zinc-200 dark:border-zinc-700 rounded-xl dark:text-zinc-50 text-white text-zinc-900 whitespace-pre-wrap break-words ${className || ''}`}
+        className={`block text-sm w-full overflow-x-auto dark:bg-zinc-900 p-4 border border-zinc-200 dark:border-zinc-700 rounded-xl dark:text-zinc-50 text-zinc-900 whitespace-pre-wrap break-words ${className || ''}`}
       >
         {children}
       </code>

@@ -111,12 +111,11 @@ export const stage3PrototypePrompt = async (): Promise<string> => {
     const eigenLayerDocsMiddleware = await fetchEigenLayerDocsMiddleware();
     const helloWorldAVSCode = await fetchHelloWorldAVSCode();
     const prompt = stage3PrototypePromptLLMGuidance // Use imported content
-      + '# And you can use the following EigenLayer documentation for additional context:'
-      + eigenLayerDocsOverview // Use fetched content
+      + '# And you can use the following Hello World AVS code for additional context:'
+      + helloWorldAVSCode // Use fetched content 
       + '# And you can use the following EigenLayer middleware overview for additional context:'
       + eigenLayerDocsMiddleware // Use fetched content
-      + '# And you can use the following Hello World AVS code for additional context:'
-      + helloWorldAVSCode; // Use fetched content
+      
 
 
     return prompt;
