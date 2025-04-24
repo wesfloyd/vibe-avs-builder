@@ -31,7 +31,13 @@ export const {
           
           // If user doesn't exist, create them
           if (!existingUsers || existingUsers.length === 0) {
-            await createGoogleUser(user.email);
+            // Create user with the ID assigned by NextAuth
+            await createGoogleUser(user.email, user.id);
+            console.log(`Created new Google user with ID ${user.id} and email ${user.email}`);
+          } else {
+            // Ensure the user object has the correct ID from the database
+            user.id = existingUsers[0].id;
+            console.log(`Using existing user with ID ${user.id} and email ${user.email}`);
           }
           
           return true;
