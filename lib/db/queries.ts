@@ -58,6 +58,20 @@ export async function createUser(email: string, password: string) {
   }
 }
 
+export async function createGoogleUser(email: string, id?: string) {
+  try {
+    return await db.insert(user).values({ 
+      id: id || undefined, // Use provided ID or let DB generate one
+      email,
+      // No password needed for OAuth users
+      password: null
+    });
+  } catch (error) {
+    console.error('Failed to create Google user in database');
+    throw error;
+  }
+}
+
 export async function saveChat({
   id,
   userId,

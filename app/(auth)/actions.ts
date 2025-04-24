@@ -82,3 +82,27 @@ export const register = async (
     return { status: 'failed' };
   }
 };
+
+export interface GoogleAuthActionState {
+  status: 'idle' | 'in_progress' | 'success' | 'failed';
+}
+
+export const googleAuth = async (
+  _: GoogleAuthActionState,
+  formData: FormData,
+): Promise<GoogleAuthActionState> => {
+  try {
+    const callbackUrl = formData.get('callbackUrl') as string || '/';
+    
+    // Sign in with Google - user creation will be handled by NextAuth callbacks
+    await signIn('google', {
+      callbackUrl,
+      redirect: true,
+    });
+    
+    return { status: 'success' };
+  } catch (error) {
+    console.error('Google auth error:', error);
+    return { status: 'failed' };
+  }
+};
