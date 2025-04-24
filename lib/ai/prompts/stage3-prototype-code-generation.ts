@@ -11,11 +11,13 @@ If you are more than 50% confident that the user's AVS idea can be implemented w
 
 ## Last Step:Generate Code
 Generate only the code for hello-world-avs needed to implement the user's AVS idea or design.
-Important: each file generated should be included in a JSON object with the following format:
+Important: each file generated should be returned as child elements in a JSON object. Each child element should have the following format:
 {
   "fileName": "filename.ts",
   "fileContent": "file content"
 }
+
+Do not generate your own Recommendations, Limitations or Next Steps.
 
 The full codebase for hello-world-avs will be provided next in these instructions.
 
@@ -51,6 +53,8 @@ Modify the README.md file at the root of your repository to include:
 3. How to Run the Operator Binaries:  
    - Steps to compile or install any dependencies.  
    - How to start the binary and configure it.
+
+
 
 
 `; 
