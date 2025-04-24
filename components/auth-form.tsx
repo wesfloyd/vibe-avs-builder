@@ -1,12 +1,37 @@
 "use client"
 import Form from 'next/form';
-
+import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { signIn } from "next-auth/react"
+import { FcGoogle } from 'react-icons/fc';
  
-export default function SignIn() {
-  return <button onClick={() => signIn("google")}></button>
+export function GoogleAuthButton() {
+  return (
+    <div className="space-y-6 mt-8">
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-zinc-200 dark:border-zinc-700" />
+        </div>
+      </div>
+
+      <Button
+        id="google-sign-in-button"
+        onClick={() => signIn("google")}
+        variant="outline"
+        className="w-full flex items-center justify-center gap-5 py-5 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-800/50 transition-colors"
+      >
+        <FcGoogle className="w-5 h-5" />
+        <span>Continue with Google</span>
+      </Button>
+
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-zinc-200 dark:border-zinc-700" />
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export function AuthForm({
