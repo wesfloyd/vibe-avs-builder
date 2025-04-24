@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Button } from './ui/button';
 import { memo } from 'react';
 import type { UseChatHelpers } from '@ai-sdk/react';
-import { STAGE3_TEST_PROMPT1 } from '@/tests/prompts/stage3';
+import { STAGE1_TEST_PROMPT1, STAGE2_TEST_PROMPT1, STAGE3_TEST_PROMPT1 } from '@/tests/prompts/avs';
 
 interface SuggestedActionsProps {
   chatId: string;
@@ -20,9 +20,19 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
         'I have an idea for an EigenLayer Autonomously Verified Service, but it needs to be refined. Let me tell you more about it, then get your feedback.',
     },
     {
+      title: '(Test) Refine an AVS idea',
+      label: STAGE1_TEST_PROMPT1.substring(0, 40) + '...',
+      action: STAGE1_TEST_PROMPT1,
+    },
+    {
       title: 'Generate a Design tech spec',
       label: `to help define my AVS idea in detail`,
       action: `Generate a Design tech spec based on my AVS idea.`,
+    },
+    {
+      title: '(Test) Generate a Design tech spec',
+      label: STAGE2_TEST_PROMPT1.substring(0, 40) + '...',
+      action: STAGE2_TEST_PROMPT1,
     },
     {
       title: 'Generate code for my AVS prototype',
@@ -30,15 +40,14 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
       action: `Generate code for my AVS prototype using Hello World example`,
     },
     {
-      title: '[TEMP-INTERNAL-TEST] Help me generate a prototype implementation for my AVS',
-      label: 'using the following design tech spec',
-      action:
-        STAGE3_TEST_PROMPT1,
+      title: '(Test) Generate code for my AVS prototype',
+      label: STAGE3_TEST_PROMPT1.substring(0, 40) + '...',
+      action: STAGE3_TEST_PROMPT1,
     },
   ];
 
   return (
-    <div data-testid="suggested-actions" className="grid  gap-2 w-full">
+    <div data-testid="suggested-actions" className="grid sm:grid-cols-2 gap-2 w-full">
       {suggestedActions.map((suggestedAction, index) => (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
