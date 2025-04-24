@@ -17,7 +17,7 @@ export function GoogleAuthButton() {
 
       <Button
         id="google-sign-in-button"
-        onClick={() => signIn("google")}
+        onClick={() => signIn("google", { callbackUrl: '/', redirect: true })}
         variant="outline"
         className="w-full flex items-center justify-center gap-5 py-5 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-800/50 transition-colors"
       >
