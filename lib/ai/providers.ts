@@ -11,13 +11,13 @@ import {
 // Note: image models are not supported via the anthropic provider & api, this section is removed for now.
 export const myProvider = customProvider({
   languageModels: {
-    'chat-model': anthropic('claude-3-5-haiku-20241022'),
+    'chat-model': anthropic('claude-3-7-sonnet-latest'),
     'chat-model-reasoning': wrapLanguageModel({
-      model: anthropic('claude-3-5-haiku-20241022'),
+      model: anthropic('claude-3-7-sonnet-latest'),
       middleware: extractReasoningMiddleware({ tagName: 'think' }),
     }),
-    'title-model': anthropic('claude-3-5-haiku-20241022'),
-    'artifact-model': anthropic('claude-3-5-haiku-20241022'),
+    'title-model': anthropic('claude-3-7-sonnet-latest'),
+    'artifact-model': anthropic('claude-3-7-sonnet-latest'),
   },
   // note image models are not supported via the anthropic provider & api, this section is removed for now.
 });
@@ -39,10 +39,6 @@ export const claude35haiku = customProvider({
 export const claude37sonnet = customProvider({
   languageModels: {
     'chat-model': anthropic('claude-3-7-sonnet-latest'),
-    'chat-model-reasoning': wrapLanguageModel({
-      model: anthropic('claude-3-7-sonnet-latest'),
-      middleware: extractReasoningMiddleware({ tagName: 'think' }),
-    }),
     'title-model': anthropic('claude-3-7-sonnet-latest'),
     'artifact-model': anthropic('claude-3-7-sonnet-latest'),
   },
