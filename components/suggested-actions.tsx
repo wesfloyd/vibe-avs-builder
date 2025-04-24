@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Button } from './ui/button';
 import { memo } from 'react';
 import type { UseChatHelpers } from '@ai-sdk/react';
+import { STAGE3_TEST_PROMPT1 } from '@/tests/prompts/stage3';
 
 interface SuggestedActionsProps {
   chatId: string;
@@ -28,12 +29,12 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
       label: `that I can run locally and demo`,
       action: `Generate code for my AVS prototype using Hello World example`,
     },
-    // {
-    //   title: 'Design your "Verifiable App" on EigenCloud',
-    //   label: 'enhance your app with verifiability',
-    //   action:
-    //     "Let's talk about my app design and how to enhance it with verifiability on EigenCloud",
-    // },
+    {
+      title: '[TEMP-INTERNAL-TEST] Help me generate a prototype implementation for my AVS',
+      label: 'using the following design tech spec',
+      action:
+        STAGE3_TEST_PROMPT1,
+    },
   ];
 
   return (
