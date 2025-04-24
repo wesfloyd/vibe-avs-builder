@@ -25,6 +25,8 @@ import { executeDefaultChatStream, executeStage3PrototypeChatStream } from '@/li
 export const maxDuration = 60;
 
 export async function POST(request: Request) {
+  
+  console.time('POST');
   try {
     const {
       id,
@@ -63,6 +65,7 @@ export async function POST(request: Request) {
       }
     }
 
+    console.time('saveMessages');
     await saveMessages({
       messages: [
         {
@@ -75,19 +78,20 @@ export async function POST(request: Request) {
         },
       ],
     });
-
+    console.timeEnd('saveMessages');
 
     // Todo: set a default chat model here rather than consuming from selectedChatModel (normal vs reasoning)?
 
-
+    console.time('inferUserIntent');
     // Infer the user's current intent
     const likelyIntent = await inferUserIntent(
       userMessage.content,
       selectedChatModel,// todo: modify this to use a minimal fast model?
     );
     console.log('Inferred user intent:', likelyIntent);
-    
+    console.timeEnd('inferUserIntent');
 
+    console.time('systemPromptForExecution');
     // Determine the system prompt based on intent *before* starting the stream execution
     let systemPromptForExecution = systemPromptDefault({ selectedChatModel });
     if (likelyIntent === 'Idea') {
@@ -103,21 +107,22 @@ export async function POST(request: Request) {
     }
     console.log('systemPromptForExecution char count: ', systemPromptForExecution.length);
     console.log('systemPromptForExecution token count should be approx 3.5x the char count, which is ', systemPromptForExecution.length * 3.5);
+    console.timeEnd('systemPromptForExecution');
 
-
-
+    console.time('logContentForDebug');
     // Log the system prompt for debugging in development
     await logContentForDebug(systemPromptForExecution, `system-prompt-log.txt`, 'Chat API');
+    console.timeEnd('logContentForDebug');  
 
-
-    
+    console.time('createDataStreamResponse');
     const dataStreamResponse = createDataStreamResponse({
       execute: (dataStream) => {
         // This is where the AI response is invoked
         if (likelyIntent === 'Prototype') {
-        
+          console.time('executeStage3PrototypeChatStream');  
         // Todo: modify so that Stage 3 is sent to claude 3.7 sonnet, rather than the default datastream.
         // consider modifying only the selectedChatModel variable before invoking this
+        
           // Execute the stage 3 prototype chat stream
           executeStage3PrototypeChatStream({
             dataStream,
@@ -129,8 +134,10 @@ export async function POST(request: Request) {
             id,
             isProductionEnvironment,
           });
+          console.timeEnd('executeStage3PrototypeChatStream');
         } else {
           // Execute the default chat stream for other intents
+          console.time('executeDefaultChatStream');
           executeDefaultChatStream({
             dataStream,
             session,
@@ -141,13 +148,15 @@ export async function POST(request: Request) {
             id,
             isProductionEnvironment,
           });
+          console.timeEnd('executeDefaultChatStream');
         }
       },
       onError: () => {
         return 'Oops, an error occurred!';
       },
     });
-
+    console.timeEnd('createDataStreamResponse');
+    console.timeEnd('POST');
     return dataStreamResponse;
     
   } catch (error) {

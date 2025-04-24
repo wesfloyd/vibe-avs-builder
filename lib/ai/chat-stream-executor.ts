@@ -101,9 +101,9 @@ export async function executeDefaultChatStream({
     },
   });
 
-  // Log the raw LLM response and usage
-  result.usage.then(usage => {
-    console.log('Result Usage Prompt Tokens:', usage.promptTokens);
+  result.text.then(async (text) => {
+    
+    await logContentForDebug(text, `raw-llm-response.txt`, 'Chat Stream Executor - Stage 3');
   });
 
   // This is where the AI response is consumed
@@ -181,18 +181,8 @@ export async function executeStage3PrototypeChatStream({
     },
   });
 
-  // Log the raw LLM response and usage
-  result.usage.then(usage => {
-    console.log('Result Usage Prompt Tokens:', usage.promptTokens);
-  });
-  
-  
-  result.reasoning.then(reasoning => {
-    console.log('Raw LLM Reasoning:', reasoning);
-  });
-
   result.text.then(async (text) => {
-    console.log('Raw LLM Response:', text);
+    
     await logContentForDebug(text, `raw-llm-response.txt`, 'Chat Stream Executor - Stage 3');
   });
 

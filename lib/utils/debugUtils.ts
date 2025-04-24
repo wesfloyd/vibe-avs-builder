@@ -23,7 +23,7 @@ export async function logContentForDebug(
       const logFilePath = path.join(debugDir, timestampedFilename);
       await fs.mkdir(debugDir, { recursive: true }); // Ensure directory exists
       await fs.writeFile(logFilePath, content, 'utf8');
-      console.log(`[DEV ONLY - ${callerInfo}] Content logged to: ${logFilePath}`);
+      //console.log(`[DEV ONLY - ${callerInfo}] Content logged to: ${logFilePath}`);
     } catch (logError) {
       console.error(`[DEV ONLY - ${callerInfo}] Failed to write debug log to ${filename}:`, logError);
     }

@@ -9,16 +9,56 @@ If you are less than 50% confident that the user's AVS idea can be implemented w
 
 If you are more than 50% confident that the user's AVS idea can be implemented with EigenLayer hello-world-avs code, then proceed with the following steps.
 
-## Generate Code
+## Last Step:Generate Code
+Generate only the code for hello-world-avs needed to implement the user's AVS idea or design.
+The full codebase for hello-world-avs will be provided next in these instructions.
+
+
+### 1. ServiceManager Smart Contracts
+
+- **Service Manager**:  
+  - Modify the primary AVS Service Manager contract to fit the logic of the new AVS. 
+  - Include the logic to track registered operators, assign tasks if necessary, and verify results.
+  - If needed: define relevant data structures, events, and helper functions.  
+  - If needed: add modifiers/functions that implement your custom validation approach. 
+  - Do not generate code for Slashing.
+
+### 2. Operator Typescript Code
+
+All Operator code should be written in TypeScript.
+- Use the /operator folder. 
+- Modify the index.ts file to represent the offchain Operator logic.
+- Include any necessary libraries or frameworks for your computation (e.g., cryptographic libraries).  
+- Operator Workflow:  
+  1. Initialization: Connect to the smart contract and register.  
+  2. Task Subscription: Subscribe to events (e.g., new tasks available).  
+  3. Compute: Perform the required computation or verification.  
+  4. Result Submission: Post results on-chain (or via a designated off-chain aggregator that eventually writes on-chain).  
+
+### 3. README
+
+Modify the README.md file at the root of your repository to include:
+1. Project Overview: Brief explanation of what the AVS does.  
+2. Installation Instructions: Prerequisites, environment variables, and libraries.  
+3. How to Run the Operator Binary:  
+   - Steps to compile or install any dependencies.  
+   - How to start the binary and configure it.
+4. Testing Instructions:  
+   - How to run unit tests for the contracts.  
+   - How to simulate end-to-end interaction with the AVS.  
+
+
+`; 
+
+/** Temp placeholder
+ ## Generate Code
 Do not generate any additional code beyond the specific instructions that follow.
 
 Generate one ServiceManager.sol contract that can be used to repesent their AVS idea or design - renamed for the user's AVS idea or design.
 Generate one Operator.ts file that can be used to repesent the Operator logic.
 Generate one README.md file explaining how to use the code.
 
-## Last step
-
-`; 
+ */
 
 // Todo: ask the system to write out the LLM response to console somehow or a test folder ..
 
@@ -85,9 +125,6 @@ Modify the README.md file at the root of your repository to include:
    - How to run unit tests for the contracts.  
    - How to simulate end-to-end interaction with the AVS.  
 
-### 4. Front End
-
-Modify the simple front end under /avs-frontend folder that allows users to generate Tasks and observe events on chain when they are completed.
 
 ## Final Checks
 Ensure the code executes correctly and resolve any compile errors. Try to build the smart contracts with build:forge and resolve any compilation errors.
