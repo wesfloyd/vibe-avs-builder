@@ -1,7 +1,13 @@
+"use client"
 import Form from 'next/form';
 
 import { Input } from './ui/input';
 import { Label } from './ui/label';
+import { signIn } from "next-auth/react"
+ 
+export default function SignIn() {
+  return <button onClick={() => signIn("google")}></button>
+}
 
 export function AuthForm({
   action,

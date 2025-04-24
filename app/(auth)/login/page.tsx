@@ -6,6 +6,8 @@ import { useActionState, useEffect, useState } from 'react';
 import { toast } from '@/components/toast';
 
 import { AuthForm } from '@/components/auth-form';
+import SignIn from '@/components/auth-form';
+
 import { SubmitButton } from '@/components/submit-button';
 
 import { login, type LoginActionState } from '../actions';
@@ -54,6 +56,7 @@ export default function Page() {
             Use your email and password to sign in
           </p>
         </div>
+        
         <AuthForm action={handleSubmit} defaultEmail={email}>
           <SubmitButton isSuccessful={isSuccessful}>Sign in</SubmitButton>
           <p className="text-center text-sm text-gray-600 mt-4 dark:text-zinc-400">
@@ -68,6 +71,7 @@ export default function Page() {
           </p>
         </AuthForm>
       </div>
+      <SignIn />
     </div>
   );
 }
