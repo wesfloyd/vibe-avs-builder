@@ -8,7 +8,6 @@ import {
 } from '@/lib/utils';
 import { createDocument } from '@/lib/ai/tools/create-document';
 import { updateDocument } from '@/lib/ai/tools/update-document';
-import { requestSuggestions } from '@/lib/ai/tools/request-suggestions';
 import { saveMessages } from '@/lib/db/queries';
 import { logContentForDebug } from '@/lib/utils/debugUtils';
 import { createRefinedIdea } from '@/lib/ai/tools/create-refined-idea';
@@ -49,7 +48,7 @@ export async function executeEnhancedChatStream({
         session,
         dataStream,
       }),*/
-      createRefinedIdea: createRefinedIdea({ session, dataStream }),
+      //tried but not displaying the result in the UI correctly .. createRefinedIdea: createRefinedIdea({ session, dataStream }),
     },
     onFinish: async ({ response }) => {
       if (session.user?.id) {

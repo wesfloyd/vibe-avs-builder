@@ -18,7 +18,7 @@ export const basicPrompt =
   - Stage 2: Generate their AVS Design Tech Spec
   - Stage 3: Generate their AVS Prototype code
 
-  For Stage 1: initiate createRefinedIdea tool.
+  For Stage 1: initiate createDocument tool.
   For Stage 2: intiate the createDocument tool.
   For Stage 3: respond with the following message only: "Wes is still working on building out the tooling for this stage. Coming soon!"
   `;

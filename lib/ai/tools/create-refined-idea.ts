@@ -22,10 +22,9 @@ export const createRefinedIdea  = ({
           'Create a refined idea document for the users AVS idea',
         parameters: z.object({
           title: z.string(),
-          kind: z.enum(artifactKinds),
         }),
-        execute: async ({ title, kind }) => {
-          console.log('tool:createRefinedIdea for', { title, kind });
+        execute: async ({ title }) => {
+          console.log('tool:createRefinedIdea for', { title });
           const id = generateUUID();
     
           dataStream.writeData({
@@ -51,7 +50,7 @@ export const createRefinedIdea  = ({
           const documentHandler = textDocumentHandler;
     
           if (!documentHandler) {
-            throw new Error(`No document handler found for kind: ${kind}`);
+            throw new Error(`No document handler found for kind: text`);
           }
     
           await documentHandler.onCreateDocument({
@@ -66,7 +65,7 @@ export const createRefinedIdea  = ({
           return {
             id,
             title,
-            kind,
+            kind: 'text',
             content: 'A refined idea document was created and is now visible to the user.',
           };
         },
