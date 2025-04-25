@@ -49,6 +49,7 @@ export async function executeEnhancedChatStream({
         dataStream,
       }),*/
       //tried but not displaying the result in the UI correctly .. createRefinedIdea: createRefinedIdea({ session, dataStream }),
+      
     },
     onFinish: async ({ response }) => {
       if (session.user?.id) {
