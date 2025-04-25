@@ -11,7 +11,8 @@ import { updateDocument } from '@/lib/ai/tools/update-document';
 import { requestSuggestions } from '@/lib/ai/tools/request-suggestions';
 import { saveMessages } from '@/lib/db/queries';
 import { logContentForDebug } from '@/lib/utils/debugUtils';
-import { refineIdea } from '@/lib/ai/tools/refine-idea';
+import { createRefinedIdea } from '@/lib/ai/tools/create-refined-idea';
+
 interface ExecuteChatStreamParams {
   dataStream: any; // Using 'any' for now as CoreDataStream seems incorrect
   session: Session;
@@ -22,12 +23,6 @@ interface ExecuteChatStreamParams {
   id: string; // chat id
   isProductionEnvironment: boolean;
 }
-
-
-
-
-
-
 
 export async function executeEnhancedChatStream({
   dataStream,
@@ -44,17 +39,17 @@ export async function executeEnhancedChatStream({
     model: myProvider.languageModel(selectedChatModel),
     system: systemPromptForExecution, // Use the pre-determined system prompt
     messages,// This contains the full conversation history
-    maxSteps: 5,
+    maxSteps: 10,
     experimental_transform: smoothStream({ chunking: 'word' }),
     experimental_generateMessageId: generateUUID,
     tools: {
       createDocument: createDocument({ session, dataStream }),
       updateDocument: updateDocument({ session, dataStream }),
-      requestSuggestions: requestSuggestions({
+      /**requestSuggestions: requestSuggestions({
         session,
         dataStream,
-      }),
-      //refineIdea,
+      }),*/
+      createRefinedIdea: createRefinedIdea({ session, dataStream }),
     },
     onFinish: async ({ response }) => {
       if (session.user?.id) {
@@ -98,7 +93,7 @@ export async function executeEnhancedChatStream({
     },
   });
 
-  console.time('CALL TO LLM');
+  
 
   result.text.then(async (text) => {
     
@@ -108,7 +103,7 @@ export async function executeEnhancedChatStream({
   // This is where the AI response is consumed
   result.consumeStream();
 
-  console.timeEnd('CALL TO LLM');
+  
   // This is where the AI response is merged into the data stream
   result.mergeIntoDataStream(dataStream, {
     sendReasoning: true,

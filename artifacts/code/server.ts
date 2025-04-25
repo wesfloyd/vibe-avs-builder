@@ -9,7 +9,7 @@ export const codeDocumentHandler = createDocumentHandler<'code'>({
   onCreateDocument: async ({ title, dataStream }) => {
     let draftContent = '';
     
-    console.log('Creating code document');
+    console.log('Creating code document with prompt', title, 'and systemPrompt', codePrompt);
 
     const { fullStream } = streamObject({
       model: myProvider.languageModel('artifact-model'),
@@ -42,6 +42,7 @@ export const codeDocumentHandler = createDocumentHandler<'code'>({
   },
   onUpdateDocument: async ({ document, description, dataStream }) => {
     let draftContent = '';
+    console.log('Updating code document with prompt', description, 'and systemPrompt', updateDocumentPrompt(document.content, 'code'));
 
     const { fullStream } = streamObject({
       model: myProvider.languageModel('artifact-model'),

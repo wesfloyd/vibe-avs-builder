@@ -88,4 +88,3 @@ export async function fetchHelloWorldAVSCode(): Promise<string> {
     return 'Error loading Hello World AVS code.';
   }
 } 
-

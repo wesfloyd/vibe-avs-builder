@@ -20,7 +20,7 @@ export const updateDocument = ({ session, dataStream }: UpdateDocumentProps) =>
     }),
     execute: async ({ id, description }) => {
       const document = await getDocumentById({ id });
-
+      console.log('tool:updateDocument for document id:', id);
       if (!document) {
         return {
           error: 'Document not found',
@@ -41,6 +41,7 @@ export const updateDocument = ({ session, dataStream }: UpdateDocumentProps) =>
         throw new Error(`No document handler found for kind: ${document.kind}`);
       }
 
+      // Invoke doc type specific update.
       await documentHandler.onUpdateDocument({
         document,
         description,

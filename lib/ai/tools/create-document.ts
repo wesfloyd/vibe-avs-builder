@@ -21,6 +21,7 @@ export const createDocument = ({ session, dataStream }: CreateDocumentProps) =>
       kind: z.enum(artifactKinds),
     }),
     execute: async ({ title, kind }) => {
+      console.log('tool:createDocument for', { title, kind });
       const id = generateUUID();
 
       dataStream.writeData({
