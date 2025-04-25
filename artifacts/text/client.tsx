@@ -77,7 +77,7 @@ export const textArtifact = new Artifact<'text', TextArtifactMetadata>({
         <div className="flex flex-row py-8 md:p-20 px-4">
           <Editor
             content={content}
-            suggestions={metadata ? metadata.suggestions : []}
+            suggestions={metadata?.suggestions ?? []}
             isCurrentVersion={isCurrentVersion}
             currentVersionIndex={currentVersionIndex}
             status={status}
