@@ -18,5 +18,6 @@ If their idea is sufficient - then generate a recap of their refined AVS idea in
 
 If their idea is sufficient and you choose to produce an output - generate the file in the following format: [name of the avs]-refined-idea-prompt.md
 
+Do not genereate additional text or bullets beyond the example format above. Try to limit your refined idea to 10 lines of text or less.
 
 `; 

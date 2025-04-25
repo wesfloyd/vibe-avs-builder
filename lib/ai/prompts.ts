@@ -17,6 +17,10 @@ export const basicPrompt =
   - Stage 1: Refine their AVS idea
   - Stage 2: Generate their AVS Design Tech Spec
   - Stage 3: Generate their AVS Prototype code
+
+  For Stage 1: initiate createRefinedIdea tool.
+  For Stage 2: intiate the createDocument tool.
+  For Stage 3: respond with the following message only: "Wes is still working on building out the tooling for this stage. Coming soon!"
   `;
 
 export const systemPromptDefault = (params: {
@@ -31,7 +35,8 @@ export const systemPromptDefault = (params: {
   */
   
   // Note: this is the core prompt sent to the LLM for the first stage of the chat.
-  return `${basicPrompt}\n\n${stage12CombinedPromptLLMGuidance}\n\n${eigenBasicsDoc}`;
+  // Todo: move stage12CombinedPromptLLMGuidance to their own dedicated tools.
+  return `${basicPrompt}\n\n${eigenBasicsDoc}`;
   
 };
 

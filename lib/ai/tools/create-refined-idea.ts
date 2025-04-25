@@ -1,10 +1,12 @@
-import { z } from 'zod';
-import { getDocumentById, saveSuggestions } from '@/lib/db/queries';
-import { Suggestion } from '@/lib/db/schema';
 import { generateUUID } from '@/lib/utils';
-import { myProvider } from '../providers';
-import { Session } from 'next-auth';
-import { DataStreamWriter, streamObject, tool } from 'ai';
+import { type DataStreamWriter, tool } from 'ai';
+import { z } from 'zod';
+import type { Session } from 'next-auth';
+import {
+  artifactKinds,
+  documentHandlersByArtifactKind,
+} from '@/lib/artifacts/server';
+import { textDocumentHandler } from '@/artifacts/text/server';
 
 interface RefinedIdeaProps {
   session: Session;
@@ -16,75 +18,56 @@ export const createRefinedIdea  = ({
       dataStream,
     }: RefinedIdeaProps) =>
       tool({
-        description: 'Generates a refined idea for an Autonomously Verified Service (AVS) idea provided by the user.',
+        description:
+          'Create a refined idea document for the users AVS idea',
         parameters: z.object({
-          documentId: z
-            .string()
-            .describe('The ID of the document to request edits'),
+          title: z.string(),
+          kind: z.enum(artifactKinds),
         }),
-        execute: async ({ documentId }) => {
-          const document = await getDocumentById({ id: documentId });
+        execute: async ({ title, kind }) => {
+          console.log('tool:createRefinedIdea for', { title, kind });
+          const id = generateUUID();
     
-          if (!document || !document.content) {
-            return {
-              error: 'Document not found',
-            };
-          }
-    
-          const suggestions: Array<
-            Omit<Suggestion, 'userId' | 'createdAt' | 'documentCreatedAt'>
-          > = [];
-    
-          // Todo stream object or text tbd
-          const { elementStream } = streamObject({
-            model: myProvider.languageModel('artifact-model'),
-            system:
-              'Todo',
-            prompt: 'todo', // todo: add prompt
-            output: 'array',
-            schema: z.object({
-              originalSentence: z.string().describe('The original sentence'),
-              suggestedSentence: z.string().describe('The suggested sentence'),
-              description: z.string().describe('The description of the suggestion'),
-            }),
+          dataStream.writeData({
+            type: 'kind',
+            content: 'text',
           });
     
-          for await (const element of elementStream) {
-            const suggestion = {
-              originalText: element.originalSentence,
-              suggestedText: element.suggestedSentence,
-              description: element.description,
-              id: generateUUID(),
-              documentId: documentId,
-              isResolved: false,
-            };
+          dataStream.writeData({
+            type: 'id',
+            content: id,
+          });
     
-            dataStream.writeData({
-              type: 'suggestion',
-              content: suggestion,
-            });
+          dataStream.writeData({
+            type: 'title',
+            content: title,
+          });
     
-            suggestions.push(suggestion);
+          dataStream.writeData({
+            type: 'clear',
+            content: '',
+          });
+    
+          const documentHandler = textDocumentHandler;
+    
+          if (!documentHandler) {
+            throw new Error(`No document handler found for kind: ${kind}`);
           }
     
-          if (session.user?.id) {
-            const userId = session.user.id;
+          await documentHandler.onCreateDocument({
+            id,
+            title,
+            dataStream,
+            session,
+          });
     
-            await saveSuggestions({
-              suggestions: suggestions.map((suggestion) => ({
-                ...suggestion,
-                userId,
-                createdAt: new Date(),
-                documentCreatedAt: document.createdAt,
-              })),
-            });
-          }
+          dataStream.writeData({ type: 'finish', content: '' });
     
           return {
-            id: documentId,
-            title: document.title,
-            kind: document.kind,
-            message: 'Suggestions have been added to the document',
+            id,
+            title,
+            kind,
+            content: 'A refined idea document was created and is now visible to the user.',
           };
         },
       });
