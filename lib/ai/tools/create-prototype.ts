@@ -21,7 +21,7 @@ export const createPrototype = ({ session, dataStream }: CreatePrototypeProps) =
     }),
     execute: async ({ idea, design}) => {
       
-      console.log('tool:createPrototype for', { idea, design });
+      //console.log('tool:createPrototype for', { idea, design });
 
       const promptForGeneration = `Idea: ${idea}\nDesign: ${design}`;
 
@@ -35,12 +35,10 @@ export const createPrototype = ({ session, dataStream }: CreatePrototypeProps) =
         prompt: promptForGeneration,
       });
 
-      
-      dataStream.writeData({ type: 'text', content: result.text });
-      dataStream.writeData({ type: 'finish', content: '' });
-
       logContentForDebug(result.text, 'createPrototype:result.text', 'Create Prototype Tool');
       
       return result.text
+    
+    
     },
   }); 

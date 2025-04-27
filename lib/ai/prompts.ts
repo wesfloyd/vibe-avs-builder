@@ -18,7 +18,7 @@ export const basicPrompt =
   - Stage 2: Generate their AVS Design Tech Spec
   - Stage 3: Generate their AVS Prototype code
 
-  For Stage 3: initiate createPrototype tool. Simply call the createPrototype tool. Do not create additional redundant code on your own. Do not generate a summary after invoking the tool.
+
   `;
 // todo add tool guidance for stage 1 and 2 here
 
