@@ -10,7 +10,6 @@ import { createDocument } from '@/lib/ai/tools/create-document';
 import { updateDocument } from '@/lib/ai/tools/update-document';
 import { saveMessages } from '@/lib/db/queries';
 import { logContentForDebug } from '@/lib/utils/debugUtils';
-import { createRefinedIdea } from '@/lib/ai/tools/create-refined-idea';
 import { createPrototype } from '@/lib/ai/tools/create-prototype';
 
 interface ExecuteChatStreamParams {
@@ -34,23 +33,24 @@ export async function executeEnhancedChatStream({
   id,
   isProductionEnvironment,
 }: ExecuteChatStreamParams) {
-   console.log('Initiating executeEnhancedChatStream');
+   console.log('executeEnhancedChatStream:initiating');
   const result = streamText({
     model: myProvider.languageModel(selectedChatModel),
     system: systemPromptForExecution, // Use the pre-determined system prompt
     messages,// This contains the full conversation history
-    maxSteps: 10,
+    maxSteps: 7,
     experimental_transform: smoothStream({ chunking: 'word' }),
     experimental_generateMessageId: generateUUID,
     tools: {
-      createDocument: createDocument({ session, dataStream }),
-      updateDocument: updateDocument({ session, dataStream }),
+      //createDocument: createDocument({ session, dataStream }),
+      //updateDocument: updateDocument({ session, dataStream }),
       /**requestSuggestions: requestSuggestions({
         session,
         dataStream,
       }),*/
       //tried but not displaying the result in the UI correctly .. createRefinedIdea: createRefinedIdea({ session, dataStream }),
       createPrototype: createPrototype({ session, dataStream }),
+      // todo: add determineFeasibility tool
     },
     onFinish: async ({ response }) => {
       if (session.user?.id) {
@@ -98,17 +98,17 @@ export async function executeEnhancedChatStream({
 
   result.text.then(async (text) => {
     
-    await logContentForDebug(text, `raw-llm-response.txt`, 'Chat Stream Executor - Stage 3');
+    await logContentForDebug(text, `chatStreamExecutor:response.txt`, 'Chat Stream Executor - Stage 3');
   });
 
   // This is where the AI response is consumed
-  result.consumeStream();
+  //result.consumeStream();
 
   
   // This is where the AI response is merged into the data stream
-  result.mergeIntoDataStream(dataStream, {
-    sendReasoning: true,
-  });
+  //result.mergeIntoDataStream(dataStream, {
+  //  sendReasoning: true,
+  //});
 } 
 
 
@@ -192,10 +192,6 @@ export async function executeDefaultChatStream({
     },
   });
 
-  result.text.then(async (text) => {
-    
-    await logContentForDebug(text, `raw-llm-response.txt`, 'Chat Stream Executor - Stage 3');
-  });
 
   // This is where the AI response is consumed
   result.consumeStream();

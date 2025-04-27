@@ -18,9 +18,9 @@ export const basicPrompt =
   - Stage 2: Generate their AVS Design Tech Spec
   - Stage 3: Generate their AVS Prototype code
 
-  For Stage 1 and 2 : initiate createDocument tool.
-  For Stage 3: initiate createPrototype tool. Simply call the createPrototype tool. Do not create additional redundant code on your own.
+  For Stage 3: initiate createPrototype tool. Simply call the createPrototype tool. Do not create additional redundant code on your own. Do not generate a summary after invoking the tool.
   `;
+// todo add tool guidance for stage 1 and 2 here
 
 export const systemPromptDefault = (params: {
   selectedChatModel: string;
@@ -107,6 +107,20 @@ export const stage3PrototypePrompt = async (): Promise<string> => {
     return 'Error loading detailed prompt context. Please describe your AVS idea.';
   }
 };
+
+
+
+export const determineFeasibilityPrompt = `
+You are a friendly EigenLayer Solution Engineer assistant! Keep your responses concise and helpful.
+
+Your Primary task:  your job is to to first determine a confidence on how likely the user's AVS idea can be implemented with EigenLayer hello-world-avs code.
+
+If you are less than 50% confident that the user's AVS idea can be implemented with EigenLayer hello-world-avs code, then respond with a message to the user explaining that you are not confident that the idea can be implemented with EigenLayer hello-world-avs code, include your confidence score and give specific reasons why.
+
+If you are more than 50% confident that the user's AVS idea can be implemented with EigenLayer hello-world-avs code, then proceed with the following steps.
+
+
+`;
 
 
 export const codePrompt = `

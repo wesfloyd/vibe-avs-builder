@@ -1,17 +1,16 @@
 export const stage3PrototypePromptLLMGuidance = `
-# Instructions for llm:
+# Begin Instructions for llm
 
-Dear LLM - use the following prompts to guide you in implementing the the prototype Autonomous Verifiable Service (AVS) on EigenLayer.
+Dear LLM - use the following prompts to guide you in implementing a prototype Autonomous Verifiable Service (AVS) on EigenLayer.
 
-Your Primary task:  your job is to to first determine a confidence on how likely the user's AVS idea can be implemented with EigenLayer hello-world-avs code.
+Your primary task: generate a task plan of code files to be modified in the Hello World AVS to represent the user's AVS idea or design. You do not need to represent all of their ideas, just as many as reasonable for the Hello World AVS codebase.
 
-If you are less than 50% confident that the user's AVS idea can be implemented with EigenLayer hello-world-avs code, then respond with a message to the user explaining that you are not confident that the idea can be implemented with EigenLayer hello-world-avs code, include your confidence score and give specific reasons why.
 
-If you are more than 50% confident that the user's AVS idea can be implemented with EigenLayer hello-world-avs code, then proceed with the following steps.
-
-Generate a task plan of code files to be modified in the Hello World AVS to represent the user's AVS idea or design. You do not need to represent all of their ideas, just as many as reasonable for the Hello World AVS codebase.
+Do not generate any additional code, simply generate the task plan for now.
 
 Add a funny dad joke at the end of the task plan.
+
+# End Instructions for llm
 `;
 
 

@@ -20,7 +20,7 @@ export const updateDocument = ({ session, dataStream }: UpdateDocumentProps) =>
     }),
     execute: async ({ id, description }) => {
       const document = await getDocumentById({ id });
-      console.log('tool:updateDocument for document id:', id);
+      console.log('updateDocument: for document id:', id);
       if (!document) {
         return {
           error: 'Document not found',

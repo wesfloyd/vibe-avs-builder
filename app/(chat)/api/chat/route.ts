@@ -82,7 +82,7 @@ export async function POST(request: Request) {
     let systemPromptForExecution = systemPromptDefault({ selectedChatModel });
 
     // Log the system prompt for debugging in development
-    await logContentForDebug(systemPromptForExecution, `system-prompt-log.txt`, 'Chat API');
+    await logContentForDebug(systemPromptForExecution, `api-chat-route:systemPromptForExecution.txt`, 'Chat API');
 
     const dataStreamResponse = createDataStreamResponse({
       execute: (dataStream) => {

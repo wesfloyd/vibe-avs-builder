@@ -6,8 +6,11 @@ export const STAGE2_TEST_PROMPT1 = `
 Help me generate a design tech spec for my AVS idea. My idea is for an AVS that generates cat images, then have a group of operators verify whether the likelihood of that operator being a cat image greater than 90%
 `;
 
-
 export const STAGE3_TEST_PROMPT1 = `
+Help me generate a prototype for my AVS idea. My idea is for an AVS that generates cat images, then have a group of operators verify whether the likelihood of that operator being a cat image greater than 90%
+`;
+
+export const STAGE3_TEST_PROMPT2 = `
 Help me generate a prototype implementation for my AVS using the following design tech spec
 
 CatLLM: AI Cat Image Generation and Validation AVS - Technical Design Specification

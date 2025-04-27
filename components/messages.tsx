@@ -56,7 +56,7 @@ function PureMessages({
         />
       ))}
 
-      {status === 'submitted' &&
+      {(status === 'submitted' || status === 'streaming') &&
         messages.length > 0 &&
         messages[messages.length - 1].role === 'user' && <ThinkingMessage />}
 

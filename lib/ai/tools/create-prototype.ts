@@ -1,4 +1,4 @@
-import { type DataStreamWriter, streamText, tool } from 'ai';
+import { type CoreMessage, type DataStreamWriter, generateText, tool, type ToolExecutionOptions } from 'ai';
 import { z } from 'zod';
 import type { Session } from 'next-auth';
 import { myProvider } from '@/lib/ai/providers';
@@ -17,26 +17,30 @@ export const createPrototype = ({ session, dataStream }: CreatePrototypeProps) =
     parameters: z.object({
       idea: z.string().describe('The core idea for the prototype'),
       design: z.string().describe('Text description of the desired design'),
+      userMessage: z.string().describe('The last user message'),
     }),
-    execute: async ({ idea, design }) => {
+    execute: async ({ idea, design}) => {
+      
       console.log('tool:createPrototype for', { idea, design });
 
-      const userPrompt = `Idea: ${idea}\n\nDesign: ${design}`;
+      const promptForGeneration = `Idea: ${idea}\nDesign: ${design}`;
 
-      logContentForDebug(userPrompt, 'user-prompt.txt', 'Create Prototype Tool');
-      logContentForDebug(await stage3PrototypePrompt(), 'system-prompt.txt', 'Create Prototype Tool');
-      const result = await streamText({
+      const systemPrompt = await stage3PrototypePrompt();
+      logContentForDebug(promptForGeneration, 'createPrototype:user-prompt.txt', 'Create Prototype Tool');
+      logContentForDebug(systemPrompt, 'createPrototype:system-prompt.txt', 'Create Prototype Tool');
+      
+      const result = await generateText({
         model: myProvider.languageModel(DEFAULT_CHAT_MODEL),
-        system: await stage3PrototypePrompt(),
-        prompt: userPrompt,
+        system: systemPrompt,
+        prompt: promptForGeneration,
       });
 
-      for await (const delta of result.textStream) {
-        dataStream.writeData({ type: 'text', content: delta });
-      }
-
+      
+      dataStream.writeData({ type: 'text', content: result.text });
       dataStream.writeData({ type: 'finish', content: '' });
 
-      return 'Working on building your AVS Prototype now. ';
+      logContentForDebug(result.text, 'createPrototype:result.text', 'Create Prototype Tool');
+      
+      return result.text
     },
   }); 
