@@ -9,6 +9,16 @@ If you are less than 50% confident that the user's AVS idea can be implemented w
 
 If you are more than 50% confident that the user's AVS idea can be implemented with EigenLayer hello-world-avs code, then proceed with the following steps.
 
+Generate a task plan of code files to be modified in the Hello World AVS to represent the user's AVS idea or design. You do not need to represent all of their ideas, just as many as reasonable for the Hello World AVS codebase.
+
+Add a funny dad joke at the end of the task plan.
+`;
+
+
+
+
+
+/**
 ## Last Step:Generate Code
 Generate only the code for hello-world-avs needed to implement the user's AVS idea or design.
 Important: each file generated should be returned as child elements in a JSON object. Each child element should have the following format:
@@ -58,6 +68,8 @@ Modify the README.md file at the root of your repository to include:
 
 
 `; 
+
+*/
 
 /** Temp placeholder
  ## Generate Code

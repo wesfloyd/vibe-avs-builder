@@ -2,7 +2,7 @@ import type { ArtifactKind } from '@/components/artifact';
 import {
   fetchEigenLayerDocsMiddleware,
   fetchEigenLayerDocsOverview,
-  fetchHelloWorldAVSCode,
+  fetchHelloWorldAVSCodeMin,
 } from './context/loadContext';
 import { eigenBasicsDoc } from './context/eigenBasics';
 import { stage1IdeaRefinementPromptLLMGuidance} from './prompts/stage1-idea-refinement';
@@ -19,7 +19,7 @@ export const basicPrompt =
   - Stage 3: Generate their AVS Prototype code
 
   For Stage 1 and 2 : initiate createDocument tool.
-  For Stage 3: respond with the following message only: "Wes is still working on building out the tooling for this stage. Coming soon!"
+  For Stage 3: initiate createPrototype tool. Simply call the createPrototype tool. Do not create additional redundant code on your own.
   `;
 
 export const systemPromptDefault = (params: {
@@ -51,8 +51,8 @@ export const stage1IdeasPrompt = async (): Promise<string> => {
     const eigenLayerDocsOverview = await fetchEigenLayerDocsOverview();
 
     const prompt = stage1IdeaRefinementPromptLLMGuidance // Use imported content
-      + '# And you can use the following EigenLayer documentation for additional context:'
-      + eigenLayerDocsOverview; // Use fetched content
+    + '# And you can use the following EigenLayer documentation for additional context:'
+    + eigenBasicsDoc // Eigen Basics text
     
     return prompt;
   } catch (error) {
@@ -72,7 +72,7 @@ export const stage2DesignPrompt = async (): Promise<string> => {
 
     const prompt = stage2DesignGenerationPromptLLMGuidance // Use imported content  
       + '# And you can use the following EigenLayer documentation for additional context:'
-      + eigenLayerDocsOverview // Use fetched content
+      + eigenBasicsDoc // Eigen Basics text
       + '# And you can use the following EigenLayer middleware overview for additional context:'
       + eigenLayerDocsMiddleware; // Use fetched content
 
@@ -88,17 +88,18 @@ export const stage2DesignPrompt = async (): Promise<string> => {
 export const stage3PrototypePrompt = async (): Promise<string> => {
   try {
     
-    console.log('Generating stage 3 code prompt');
-    const eigenLayerDocsOverview = await fetchEigenLayerDocsOverview();
+    console.log('prompts: Generating stage 3 code prompt');
+    
     const eigenLayerDocsMiddleware = await fetchEigenLayerDocsMiddleware();
-    const helloWorldAVSCode = await fetchHelloWorldAVSCode();
+    const helloWorldAVSCodeMin = await fetchHelloWorldAVSCodeMin();
+
     const prompt = stage3PrototypePromptLLMGuidance // Use imported content
       + '# And you can use the following Hello World AVS code for additional context:'
-      + helloWorldAVSCode // Use fetched content 
+      + helloWorldAVSCodeMin // Use fetched content 
+      + '# And you can use the following EigenLayer documentation for additional context:'
+      + eigenBasicsDoc // Eigen Basics text
       + '# And you can use the following EigenLayer middleware overview for additional context:'
       + eigenLayerDocsMiddleware // Use fetched content
-      
-
 
     return prompt;
   } catch (error) {

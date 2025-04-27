@@ -11,6 +11,7 @@ import { updateDocument } from '@/lib/ai/tools/update-document';
 import { saveMessages } from '@/lib/db/queries';
 import { logContentForDebug } from '@/lib/utils/debugUtils';
 import { createRefinedIdea } from '@/lib/ai/tools/create-refined-idea';
+import { createPrototype } from '@/lib/ai/tools/create-prototype';
 
 interface ExecuteChatStreamParams {
   dataStream: any; // Using 'any' for now as CoreDataStream seems incorrect
@@ -49,7 +50,7 @@ export async function executeEnhancedChatStream({
         dataStream,
       }),*/
       //tried but not displaying the result in the UI correctly .. createRefinedIdea: createRefinedIdea({ session, dataStream }),
-      
+      createPrototype: createPrototype({ session, dataStream }),
     },
     onFinish: async ({ response }) => {
       if (session.user?.id) {

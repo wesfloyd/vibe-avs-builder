@@ -1,0 +1,25 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Document View Rendering and Triggering
+
+The document view in this project is primarily managed by the following components:
+
+- [`components/document-preview.tsx`](mdc:components/document-preview.tsx): Main entry point for rendering a document preview, including header, content, and interaction logic.
+- [`components/document.tsx`](mdc:components/document.tsx): Contains UI for document tool results and calls, and handles user interactions to open documents.
+- [`components/artifact.tsx`](mdc:components/artifact.tsx): Manages the state and logic for document artifacts, including versioning, editing, and visibility.
+
+## How the Document View is Triggered
+- The document view is shown when a user creates, updates, or clicks on a document reference in the chat interface.
+- The `setArtifact` function from [`hooks/use-artifact.ts`](mdc:hooks/use-artifact.ts) is used to update the current document artifact state, which causes the document view to render.
+- The document preview is also invoked when a document is selected from a list of artifacts or as a result of an AI assistant action.
+
+## Related Files
+- [`components/document-preview.tsx`](mdc:components/document-preview.tsx)
+- [`components/document.tsx`](mdc:components/document.tsx)
+- [`components/artifact.tsx`](mdc:components/artifact.tsx)
+- [`hooks/use-artifact.ts`](mdc:hooks/use-artifact.ts)
+
+This rule helps you understand where and how the document view is rendered and what triggers its display in the application.
