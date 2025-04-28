@@ -3,7 +3,7 @@ import {
   createDataStreamResponse,
 } from 'ai';
 import { auth } from '@/app/(auth)/auth';
-import { systemPromptDefault, stage1IdeasPrompt, stage2DesignPrompt, stage3PrototypePrompt, artifactsPrompt } from '@/lib/ai/prompts';
+import { systemPromptDefault } from '@/lib/ai/prompts';
 import {
   deleteChatById,
   getChatById,
@@ -15,11 +15,8 @@ import {
 } from '@/lib/utils';
 import { generateTitleFromUserMessage } from '../../actions';
 import { isProductionEnvironment } from '@/lib/constants';
-import { myProvider } from '@/lib/ai/providers';
-import { inferUserIntent } from '@/lib/ai/intentManager';
-import { text } from 'stream/consumers';
 import { logContentForDebug } from '@/lib/utils/debugUtils';
-import { executeDefaultChatStream, executeEnhancedChatStream, executeStage3PrototypeChatStream } from '@/lib/ai/chat-stream-executor';
+import { executeChatStream } from '@/lib/ai/chat-stream-executor';
 
 
 export const maxDuration = 60;
@@ -76,20 +73,16 @@ export async function POST(request: Request) {
       ],
     });
 
-    // Todo: set a default chat model here rather than consuming from selectedChatModel (normal vs reasoning)?
 
     // Determine the system prompt based on intent *before* starting the stream execution
-    let systemPromptForExecution = systemPromptDefault({ selectedChatModel });
+    let systemPrompt = systemPromptDefault({ selectedChatModel });
 
     // Log the system prompt for debugging in development
-    await logContentForDebug(systemPromptForExecution, `system-prompt-log.txt`, 'Chat API');
+    await logContentForDebug(systemPrompt, `system-prompt-log.txt`, 'Chat API');
 
     const dataStreamResponse = createDataStreamResponse({
       execute: (dataStream) => {
-        // This is where the AI response is invoked
-        // todo consider modifying only the selectedChatModel variable before invoking this
-        //executeDefaultChatStream({ dataStream, session, messages, selectedChatModel, systemPromptForExecution, userMessage, id, isProductionEnvironment });
-        executeEnhancedChatStream({ dataStream, session, messages, selectedChatModel, systemPromptForExecution, userMessage, id, isProductionEnvironment });
+        executeChatStream({ dataStream, session, messages, selectedChatModel, systemPrompt, userMessage, id, isProductionEnvironment });
       },
       onError: () => {
         return 'Oops, an error occurred!';
