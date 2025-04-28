@@ -1,6 +1,7 @@
 import type { UIMessage } from 'ai';
 import {
   createDataStreamResponse,
+  streamText,
 } from 'ai';
 import { auth } from '@/app/(auth)/auth';
 import { systemPromptDefault, stage1IdeasPrompt, stage2DesignPrompt, stage3PrototypePrompt, artifactsPrompt } from '@/lib/ai/prompts';
@@ -15,12 +16,13 @@ import {
 } from '@/lib/utils';
 import { generateTitleFromUserMessage } from '../../actions';
 import { isProductionEnvironment } from '@/lib/constants';
+import { executeChatStream} from '@/lib/ai/chat-stream-executor';
 import { myProvider } from '@/lib/ai/providers';
-import { inferUserIntent } from '@/lib/ai/intentManager';
-import { text } from 'stream/consumers';
-import { logContentForDebug } from '@/lib/utils/debugUtils';
-import { executeDefaultChatStream, executeEnhancedChatStream, executeStage3PrototypeChatStream } from '@/lib/ai/chat-stream-executor';
-
+import { inferUserIntent } from '@/lib/ai/tools/intent-manager';
+// Sleep for 10 seconds utility
+async function sleep10Seconds() {
+  return new Promise(resolve => setTimeout(resolve, 10000));
+}
 
 export const maxDuration = 60;
 
@@ -76,26 +78,68 @@ export async function POST(request: Request) {
       ],
     });
 
-    // Todo: set a default chat model here rather than consuming from selectedChatModel (normal vs reasoning)?
+    
 
-    // Determine the system prompt based on intent *before* starting the stream execution
+    const likelyIntent = await inferUserIntent(
+      userMessage.content,
+      selectedChatModel,// todo: modify this to use a minimal fast model?
+    );
+    console.log('route.ts:Inferred user intent:', likelyIntent);
+
     let systemPromptForExecution = systemPromptDefault({ selectedChatModel });
+    if (likelyIntent === 'Idea') {
+    // todo: further testing on whether to include artifacts prompt or not for stage 1 and 2
+      // Append the stage 1 ideas prompt to the system prompt
+      systemPromptForExecution += await stage1IdeasPrompt(); 
+    } else if (likelyIntent === 'Design') {
+      // Append the stage 2 design prompt to the system prompt
+      systemPromptForExecution += await stage2DesignPrompt();
+    } else if (likelyIntent === 'Prototype') {
+      // Replace (not append) stage 3 prototype prompt to avoid tool usage
+      systemPromptForExecution = await stage3PrototypePrompt();
+    }
 
-    // Log the system prompt for debugging in development
-    await logContentForDebug(systemPromptForExecution, `system-prompt-log.txt`, 'Chat API');
 
-    const dataStreamResponse = createDataStreamResponse({
-      execute: (dataStream) => {
-        // This is where the AI response is invoked
-        // todo consider modifying only the selectedChatModel variable before invoking this
-        //executeDefaultChatStream({ dataStream, session, messages, selectedChatModel, systemPromptForExecution, userMessage, id, isProductionEnvironment });
-        executeEnhancedChatStream({ dataStream, session, messages, selectedChatModel, systemPromptForExecution, userMessage, id, isProductionEnvironment });
+    const response = createDataStreamResponse({
+      status: 200,
+      statusText: 'OK',
+      headers: {
+        'Custom-Header': 'value',
       },
-      onError: () => {
-        return 'Oops, an error occurred!';
+      async execute(dataStream) {
+    
+        
+        const result = streamText({
+          model: myProvider.languageModel(selectedChatModel),
+          system: 'no matter what the user asks, simply respond with this is system prompt number, you are welcome written 10 times ',
+          messages: messages,
+        });
+
+        // This is where the AI response is consumed
+        result.consumeStream();
+        result.mergeIntoDataStream(dataStream);
+
+        await sleep10Seconds();
+
+        dataStream.writeData({ type: 'text-delta', content: 'hello world' });
+
+
+        await sleep10Seconds();
+        
+        const result2 = streamText({
+          model: myProvider.languageModel(selectedChatModel),
+          system: 'no matter what the user asks, simply respond with this is system prompt number, you are the best written 10 times ',
+          messages: messages,
+        });
+        result2.consumeStream();
+        result2.mergeIntoDataStream(dataStream);
       },
+      onError: error => `Custom error: ${error instanceof Error ? error.message : String(error)}`,
     });
-    return dataStreamResponse;
+    
+    
+    return response;
+
   } catch (error) {
     console.error('Error in POST', error);
     return new Response('An error occurred while processing your request!', {
