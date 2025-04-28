@@ -1,6 +1,7 @@
 import type { UIMessage } from 'ai';
 import {
   createDataStreamResponse,
+  LangChainAdapter,
 } from 'ai';
 import { auth } from '@/app/(auth)/auth';
 import { systemPromptDefault } from '@/lib/ai/prompts';
@@ -17,6 +18,7 @@ import { generateTitleFromUserMessage } from '../../actions';
 import { isProductionEnvironment } from '@/lib/constants';
 import { logContentForDebug } from '@/lib/utils/debugUtils';
 import { executeChatStream } from '@/lib/ai/chat-stream-executor';
+import { ChatAnthropic } from "@langchain/anthropic";
 
 
 export const maxDuration = 60;
@@ -74,12 +76,26 @@ export async function POST(request: Request) {
     });
 
 
+
+
+    const llm = new ChatAnthropic({
+      model: "claude-3-7-sonnet-latest",
+      apiKey: process.env.ANTHROPIC_API_KEY,
+    });
+
+    
+    const stream = await llm.stream("pick a random number between 1 and 10, then make a quick joke about it");
+
+    return LangChainAdapter.toDataStreamResponse(stream);
+
+
+    
+
+    /**
     // Determine the system prompt based on intent *before* starting the stream execution
+    // Todo: move this to langchain
     let systemPrompt = systemPromptDefault({ selectedChatModel });
-
-    // Log the system prompt for debugging in development
-    await logContentForDebug(systemPrompt, `system-prompt-log.txt`, 'Chat API');
-
+    
     const dataStreamResponse = createDataStreamResponse({
       execute: (dataStream) => {
         executeChatStream({ dataStream, session, messages, selectedChatModel, systemPrompt, userMessage, id, isProductionEnvironment });
@@ -88,7 +104,11 @@ export async function POST(request: Request) {
         return 'Oops, an error occurred!';
       },
     });
+
     return dataStreamResponse;
+ */
+
+    
   } catch (error) {
     console.error('Error in POST', error);
     return new Response('An error occurred while processing your request!', {
