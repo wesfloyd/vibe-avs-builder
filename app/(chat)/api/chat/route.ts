@@ -15,10 +15,9 @@ import {
   getMostRecentUserMessage,
 } from '@/lib/utils';
 import { generateTitleFromUserMessage } from '../../actions';
-import { isProductionEnvironment } from '@/lib/constants';
-import { logContentForDebug } from '@/lib/utils/debugUtils';
-import { executeChatStream } from '@/lib/ai/chat-stream-executor';
 import { ChatAnthropic } from "@langchain/anthropic";
+import { tool } from "@langchain/core/tools";
+import { z } from "zod";
 
 
 export const maxDuration = 60;
@@ -76,6 +75,7 @@ export async function POST(request: Request) {
     });
 
 
+    
 
 
     const llm = new ChatAnthropic({
@@ -83,30 +83,33 @@ export async function POST(request: Request) {
       apiKey: process.env.ANTHROPIC_API_KEY,
     });
 
+    // todo: invoke llm to determine user intent is idea generation, design, prototype, or other
+
+    // todo: invoke another llm to confirm user intent and write a poem about it
+
+    // todo: add system prompt to llm with context on EigenLayer, find out how best to do this with langchain
+
+
+    // const stream = await llm.stream("pick a random number between 1 and 10, then make a quick joke about it");
+    // return LangChainAdapter.toDataStreamResponse(stream);
+
+
+
+    // // Determine the system prompt based on intent *before* starting the stream execution
+    // // Todo: move this to langchain
+    // let systemPrompt = systemPromptDefault({ selectedChatModel });
     
-    const stream = await llm.stream("pick a random number between 1 and 10, then make a quick joke about it");
+    // const dataStreamResponse = createDataStreamResponse({
+    //   execute: (dataStream) => {
+    //     executeChatStream({ dataStream, session, messages, selectedChatModel, systemPrompt, userMessage, id, isProductionEnvironment });
+    //   },
+    //   onError: () => {
+    //     return 'Oops, an error occurred!';
+    //   },
+    // });
 
-    return LangChainAdapter.toDataStreamResponse(stream);
+    // return dataStreamResponse;
 
-
-    
-
-    /**
-    // Determine the system prompt based on intent *before* starting the stream execution
-    // Todo: move this to langchain
-    let systemPrompt = systemPromptDefault({ selectedChatModel });
-    
-    const dataStreamResponse = createDataStreamResponse({
-      execute: (dataStream) => {
-        executeChatStream({ dataStream, session, messages, selectedChatModel, systemPrompt, userMessage, id, isProductionEnvironment });
-      },
-      onError: () => {
-        return 'Oops, an error occurred!';
-      },
-    });
-
-    return dataStreamResponse;
- */
 
     
   } catch (error) {
