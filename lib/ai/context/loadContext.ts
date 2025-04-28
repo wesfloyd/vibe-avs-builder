@@ -1,12 +1,12 @@
 // URL constants for fetching context data
 const EIGENLAYER_DOCS_OVERVIEW_URL = 'https://af52o4jcdfzphbst.public.blob.vercel-storage.com/context/repomix-output-eigenlayer-docs-overview-min-wtABuLj3MuRM9JklyGY2tt8v6gPJNY.md';
 const EIGENLAYER_MIDDLEWARE_DOCS_URL = 'https://af52o4jcdfzphbst.public.blob.vercel-storage.com/context/repomix-output-eigenlayer-middleware-docs-Hz9TpntXTCiddC0ilxAJq2ztglt8DI.md';
-const HELLO_WORLD_AVS_CODE_URL = 'https://af52o4jcdfzphbst.public.blob.vercel-storage.com/context/repomix-output-Layr-Labs-hello-world-avs-minified-GA9JC545l89gNAYte8iDADNteNBqXj.txt';
+const HELLO_WORLD_AVS_CODE_MIN_URL = 'https://af52o4jcdfzphbst.public.blob.vercel-storage.com/context/repomix-output-Layr-Labs-hello-world-avs-minified-GA9JC545l89gNAYte8iDADNteNBqXj.txt';
 
 // Cache variables to store fetched data
 let eigenLayerDocsCache: string | null = null;
 let eigenLayerDocsMiddlewareCache: string | null = null;
-let helloWorldAVSCodeCache: string | null = null;
+let helloWorldAVSCodeMinCache: string | null = null;
 
 /**
  * Fetches the EigenLayer docs overview, using a cached version if available.
@@ -65,21 +65,21 @@ export async function fetchEigenLayerDocsMiddleware(): Promise<string> {
 /**
  * Fetches the Hello World AVS code, using a cached version if available.
  */
-export async function fetchHelloWorldAVSCode(): Promise<string> {
+export async function fetchHelloWorldAVSCodeMin(): Promise<string> {
   // Return cached code if available
-  if (helloWorldAVSCodeCache) {
-    return helloWorldAVSCodeCache;
+  if (helloWorldAVSCodeMinCache) {
+    return helloWorldAVSCodeMinCache;
   }
 
   try {
-    const response = await fetch(HELLO_WORLD_AVS_CODE_URL);
+    const response = await fetch(HELLO_WORLD_AVS_CODE_MIN_URL);
     if (!response.ok) {
       throw new Error(`Failed to fetch Hello World AVS code: ${response.statusText}`);
     }
     const helloWorldAVSCode = await response.text();
 
     // Cache the code for future use
-    helloWorldAVSCodeCache = helloWorldAVSCode;
+    helloWorldAVSCodeMinCache = helloWorldAVSCode;
 
     return helloWorldAVSCode;
   } catch (error) {
@@ -88,4 +88,3 @@ export async function fetchHelloWorldAVSCode(): Promise<string> {
     return 'Error loading Hello World AVS code.';
   }
 } 
-
