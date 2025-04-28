@@ -1,13 +1,6 @@
 import type { ArtifactKind } from '@/components/artifact';
-import {
-  fetchEigenLayerDocsMiddleware,
-  fetchEigenLayerDocsOverview,
-  fetchHelloWorldAVSCodeMin,
-} from './context/loadContext';
 import { eigenBasicsDoc } from './context/eigenBasics';
-import { stage1IdeaRefinementPromptLLMGuidance} from './prompts/stage1-idea-refinement';
 import { stage3PrototypePromptLLMGuidanceTaskPlan, stage3PrototypePromptLLMGuidanceFull } from './prompts/stage3-prototype-code-generation';
-import { stage2DesignGenerationPromptText } from './prompts/stage2-design-generation';
 import { stage12CombinedPromptLLMGuidance } from './prompts/stage12-combined';
 
 
@@ -18,10 +11,9 @@ export const basicPrompt =
   - Stage 2: Generate their AVS Design Tech Spec
   - Stage 3: Generate their AVS Prototype code
 
-  For Stage 3: simply respond with a task plan to implement their use case, do not 
+  For Stage 3: simply respond with a task plan to implement their use case, do not generate any code.
   `;
   // Todo: modify Stage 3
-
 
 export const systemPromptDefault = (params: {
   selectedChatModel: string;
