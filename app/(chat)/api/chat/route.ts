@@ -34,7 +34,7 @@ const modelName = "claude-3-5-sonnet-latest";
 // First LLM: classify intent
 async function classifyUserIntent(messages: UIMessage[]): Promise<UserIntent> {
   const chat = new ChatAnthropic({
-    streaming: true,
+    streaming: false, // Switch to non-streaming for classification since we only need the final result
     model: modelName,
   });
 
@@ -48,32 +48,37 @@ Given the user's recent messages, determine:
 Return only one of: RefineIdea, GenerateDesign, BuildPrototype, Other.
   `;
 
-  const userText = messages.map(m => m.content).join("\n");
+  // Only use the last few messages for intent classification to improve efficiency
+  const recentMessages = messages.slice(-3);
+  const userText = recentMessages.map(m => m.content).join("\n");
 
-  const result = await chat.invoke([
-    new SystemMessage(systemPrompt),
-    new HumanMessage(userText)
-  ]);
+  try {
+    const result = await chat.invoke([
+      new SystemMessage(systemPrompt),
+      new HumanMessage(userText)
+    ]);
 
-  let raw = "";
-  if (typeof result.content === 'string') {
-    raw = result.content.trim();
-  } else if (Array.isArray(result.content)) {
-    // Handle complex message content by converting to string
-    raw = JSON.stringify(result.content).trim();
-  } else {
-    raw = String(result.content).trim();
-  }
+    let raw = "";
+    if (typeof result.content === 'string') {
+      raw = result.content.trim();
+    } else if (Array.isArray(result.content)) {
+      // Handle complex message content by converting to string
+      raw = JSON.stringify(result.content).trim();
+    } else {
+      raw = String(result.content).trim();
+    }
 
-  switch (raw) {
-    case "RefineIdea":
-      return UserIntent.RefineIdea;
-    case "GenerateDesign":
-      return UserIntent.GenerateDesign;
-    case "BuildPrototype":
-      return UserIntent.BuildPrototype;
-    default:
-      return UserIntent.Other;
+    // Use direct object lookup instead of switch for better performance
+    const intentMap: Record<string, UserIntent> = {
+      "RefineIdea": UserIntent.RefineIdea,
+      "GenerateDesign": UserIntent.GenerateDesign,
+      "BuildPrototype": UserIntent.BuildPrototype
+    };
+
+    return intentMap[raw] || UserIntent.Other;
+  } catch (error) {
+    console.error("Intent classification failed:", error);
+    return UserIntent.Other; // Fallback to Other on error
   }
 }
 
@@ -84,15 +89,26 @@ async function generatePoem(messages: UIMessage[], intent: UserIntent) {
     model: modelName,
   });
 
-  const systemPrompt = `Line1:Explain the user intent is ${intent}. Line2:Write a 3 line poem about the user's message and their identified intent.
+  const systemPrompt = `
+I'll help you respond to the user's request about ${intent}.
+First, I'll briefly acknowledge their intent is classified as ${intent}.
+Then, I'll create a short 3-line poem that reflects their message and this intent.
+Keep the response focused and creative.
   `;
 
-  const userText = messages.map(m => m.content).join("\n");
+  // Focus on the most recent user message for poem generation
+  const userText = messages.slice(-1).map(m => m.content).join("\n");
 
-  return chat.stream([
-    new SystemMessage(systemPrompt),
-    new HumanMessage(userText)
-  ]);
+
+  try {
+    return chat.stream([
+      new SystemMessage(systemPrompt),
+      new HumanMessage(userText)
+    ]);
+  } catch (error) {
+    console.error("Poem generation failed:", error);
+    throw error; // Rethrow to be handled by the POST handler
+  }
 }
 
 
@@ -118,13 +134,9 @@ export async function POST(request: Request) {
 
     const userMessage = getMostRecentUserMessage(messages);
 
-    // if (!userMessage) {
-    //   console.error('No user message found');
-    //   return new Response('No user message found', { status: 400 });
-    // }
 
-    // // Get current chat
     // Todo: consider re-enabling this in the future.
+    // // Get current chat
     // const chat = await getChatById({ id });
     // // If no current chat exists, create and save it
     // if (!chat) {
@@ -151,10 +163,19 @@ export async function POST(request: Request) {
     //   ],
     // });
 
-    const intent = await classifyUserIntent(messages);
-    const stream = await generatePoem(messages, intent);
-    // Todo: consider mergeing the above into a single stream or custom RunnableSequence
-    return LangChainAdapter.toDataStreamResponse(stream);
+    if (!userMessage) {
+      console.error('No user message found');
+      return new Response('No user message found', { status: 400 });
+    }
+
+    try {
+      const intent = await classifyUserIntent(messages);
+      const stream = await generatePoem(messages, intent);
+      return LangChainAdapter.toDataStreamResponse(stream);
+    } catch (error) {
+      console.error('Error processing AI response:', error);
+      return new Response('Error generating response', { status: 500 });
+    }
 
 
     // todo: invoke llm to determine user intent is idea generation, design, prototype, or other
