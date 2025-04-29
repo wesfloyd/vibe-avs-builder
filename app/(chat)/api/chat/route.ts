@@ -19,35 +19,9 @@ import { logContentForDebug } from '@/lib/utils/debugUtils';
 import { SystemMessage, HumanMessage } from '@langchain/core/messages';
 import { modelFullStreaming, modelLiteGenerative } from '@/lib/ai/providers';
 import { UserIntent, classifyUserIntent } from '@/lib/ai/intentManager';
+import { generateLLMResponse } from '@/lib/ai/chat-stream-executor';
 
 
-
-  
-// Second LLM: generate poem
-async function generatePoem(messages: UIMessage[], intent: UserIntent) {
-  const chat = modelFullStreaming;
-
-  const systemPrompt = `
-I'll help you respond to the user's request about ${intent}.
-First, I'll briefly acknowledge their intent is classified as ${intent}.
-Then, I'll create a short 3-line poem that reflects their message and this intent.
-Keep the response focused and creative.
-  `;
-
-  // Focus on the most recent user message for poem generation
-  const userText = messages.slice(-1).map(m => m.content).join("\n");
-
-
-  try {
-    return chat.stream([
-      new SystemMessage(systemPrompt),
-      new HumanMessage(userText)
-    ]);
-  } catch (error) {
-    console.error("Poem generation failed:", error);
-    throw error; // Rethrow to be handled by the POST handler
-  }
-}
 
 export const maxDuration = 60;
 
@@ -104,16 +78,15 @@ export async function POST(request: Request) {
     });
 
 
-    
+    // Note: primary LLM backend invocation starts here.
     try {
-      // Todo: move logic to external file
       const intent = await classifyUserIntent(messages);
       // Todo: modify to invoke conditional logic based on intent
-      const stream = await generatePoem(messages, intent);
-      
+      // const stream = await generatePoem(messages, intent);
+      const stream = await generateLLMResponse(messages, intent);
       return LangChainAdapter.toDataStreamResponse(stream);
     } catch (error) {
-      console.error('Error processing AI response:', error);
+      console.error('Error generating response:', error);
       return new Response('Error generating response', { status: 500 });
     }
   } catch (error) {
