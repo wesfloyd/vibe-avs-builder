@@ -1,10 +1,8 @@
 import type { UIMessage } from 'ai';
 import {
-  createDataStreamResponse,
   LangChainAdapter,
 } from 'ai';
 import { auth } from '@/app/(auth)/auth';
-import { systemPromptDefault } from '@/lib/ai/prompts';
 import {
   deleteChatById,
   getChatById,
@@ -15,10 +13,7 @@ import {
   getMostRecentUserMessage,
 } from '@/lib/utils';
 import { generateTitleFromUserMessage } from '../../actions';
-import { logContentForDebug } from '@/lib/utils/debugUtils';
-import { SystemMessage, HumanMessage } from '@langchain/core/messages';
-import { modelFullStreaming, modelLiteGenerative } from '@/lib/ai/providers';
-import { UserIntent, classifyUserIntent } from '@/lib/ai/intentManager';
+import { classifyUserIntent } from '@/lib/ai/intentManager';
 import { generateLLMResponse } from '@/lib/ai/chat-stream-executor';
 
 
@@ -80,11 +75,14 @@ export async function POST(request: Request) {
 
     // Note: primary LLM backend invocation starts here.
     try {
-      const intent = await classifyUserIntent(messages);
-      // Todo: modify to invoke conditional logic based on intent
-      // const stream = await generatePoem(messages, intent);
-      const stream = await generateLLMResponse(messages, intent);
-      return LangChainAdapter.toDataStreamResponse(stream);
+      const stream = await generateLLMResponse(messages);
+      return LangChainAdapter.toDataStreamResponse(stream, {
+        init: {
+          headers: {
+            'Content-Type': 'text/event-stream',
+          }
+        },
+      });
     } catch (error) {
       console.error('Error generating response:', error);
       return new Response('Error generating response', { status: 500 });
