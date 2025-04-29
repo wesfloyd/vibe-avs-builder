@@ -1,6 +1,7 @@
 import type { UIMessage } from 'ai';
 import {
   createDataStreamResponse,
+  LangChainAdapter,
 } from 'ai';
 import { auth } from '@/app/(auth)/auth';
 import { systemPromptDefault } from '@/lib/ai/prompts';
@@ -14,10 +15,39 @@ import {
   getMostRecentUserMessage,
 } from '@/lib/utils';
 import { generateTitleFromUserMessage } from '../../actions';
-import { isProductionEnvironment } from '@/lib/constants';
 import { logContentForDebug } from '@/lib/utils/debugUtils';
-import { executeChatStream } from '@/lib/ai/chat-stream-executor';
+import { SystemMessage, HumanMessage } from '@langchain/core/messages';
+import { modelFullStreaming, modelLiteGenerative } from '@/lib/ai/providers';
+import { UserIntent, classifyUserIntent } from '@/lib/ai/intentManager';
 
+
+
+  
+// Second LLM: generate poem
+async function generatePoem(messages: UIMessage[], intent: UserIntent) {
+  const chat = modelFullStreaming;
+
+  const systemPrompt = `
+I'll help you respond to the user's request about ${intent}.
+First, I'll briefly acknowledge their intent is classified as ${intent}.
+Then, I'll create a short 3-line poem that reflects their message and this intent.
+Keep the response focused and creative.
+  `;
+
+  // Focus on the most recent user message for poem generation
+  const userText = messages.slice(-1).map(m => m.content).join("\n");
+
+
+  try {
+    return chat.stream([
+      new SystemMessage(systemPrompt),
+      new HumanMessage(userText)
+    ]);
+  } catch (error) {
+    console.error("Poem generation failed:", error);
+    throw error; // Rethrow to be handled by the POST handler
+  }
+}
 
 export const maxDuration = 60;
 
@@ -74,21 +104,18 @@ export async function POST(request: Request) {
     });
 
 
-    // Determine the system prompt based on intent *before* starting the stream execution
-    let systemPrompt = systemPromptDefault({ selectedChatModel });
-
-    // Log the system prompt for debugging in development
-    await logContentForDebug(systemPrompt, `system-prompt-log.txt`, 'Chat API');
-
-    const dataStreamResponse = createDataStreamResponse({
-      execute: (dataStream) => {
-        executeChatStream({ dataStream, session, messages, selectedChatModel, systemPrompt, userMessage, id, isProductionEnvironment });
-      },
-      onError: () => {
-        return 'Oops, an error occurred!';
-      },
-    });
-    return dataStreamResponse;
+    
+    try {
+      // Todo: move logic to external file
+      const intent = await classifyUserIntent(messages);
+      // Todo: modify to invoke conditional logic based on intent
+      const stream = await generatePoem(messages, intent);
+      
+      return LangChainAdapter.toDataStreamResponse(stream);
+    } catch (error) {
+      console.error('Error processing AI response:', error);
+      return new Response('Error generating response', { status: 500 });
+    }
   } catch (error) {
     console.error('Error in POST', error);
     return new Response('An error occurred while processing your request!', {
