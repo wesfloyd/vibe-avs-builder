@@ -18,6 +18,82 @@ import { generateTitleFromUserMessage } from '../../actions';
 import { ChatAnthropic } from "@langchain/anthropic";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
+import { SystemMessage } from '@langchain/core/messages';
+import { HumanMessage } from '@langchain/core/messages';
+
+export enum UserIntent {
+  RefineIdea = "RefineIdea",
+  GenerateDesign = "GenerateDesign",
+  BuildPrototype = "BuildPrototype",
+  Other = "Other"
+}
+
+const modelName = "claude-3-5-sonnet-latest";
+
+
+// First LLM: classify intent
+async function classifyUserIntent(messages: UIMessage[]): Promise<UserIntent> {
+  const chat = new ChatAnthropic({
+    streaming: true,
+    model: modelName,
+  });
+
+  const systemPrompt = `
+You are a classifier.
+Given the user's recent messages, determine:
+1) Refine idea
+2) Generate design
+3) Build prototype code
+4) Other
+Return only one of: RefineIdea, GenerateDesign, BuildPrototype, Other.
+  `;
+
+  const userText = messages.map(m => m.content).join("\n");
+
+  const result = await chat.invoke([
+    new SystemMessage(systemPrompt),
+    new HumanMessage(userText)
+  ]);
+
+  let raw = "";
+  if (typeof result.content === 'string') {
+    raw = result.content.trim();
+  } else if (Array.isArray(result.content)) {
+    // Handle complex message content by converting to string
+    raw = JSON.stringify(result.content).trim();
+  } else {
+    raw = String(result.content).trim();
+  }
+
+  switch (raw) {
+    case "RefineIdea":
+      return UserIntent.RefineIdea;
+    case "GenerateDesign":
+      return UserIntent.GenerateDesign;
+    case "BuildPrototype":
+      return UserIntent.BuildPrototype;
+    default:
+      return UserIntent.Other;
+  }
+}
+
+// Second LLM: generate poem
+async function generatePoem(messages: UIMessage[], intent: UserIntent) {
+  const chat = new ChatAnthropic({
+    streaming: true,
+    model: modelName,
+  });
+
+  const systemPrompt = `Line1:Explain the user intent is ${intent}. Line2:Write a 3 line poem about the user's message and their identified intent.
+  `;
+
+  const userText = messages.map(m => m.content).join("\n");
+
+  return chat.stream([
+    new SystemMessage(systemPrompt),
+    new HumanMessage(userText)
+  ]);
+}
 
 
 export const maxDuration = 60;
@@ -42,48 +118,47 @@ export async function POST(request: Request) {
 
     const userMessage = getMostRecentUserMessage(messages);
 
-    if (!userMessage) {
-      console.error('No user message found');
-      return new Response('No user message found', { status: 400 });
-    }
+    // if (!userMessage) {
+    //   console.error('No user message found');
+    //   return new Response('No user message found', { status: 400 });
+    // }
 
-    const chat = await getChatById({ id });
+    // // Get current chat
+    // Todo: consider re-enabling this in the future.
+    // const chat = await getChatById({ id });
+    // // If no current chat exists, create and save it
+    // if (!chat) {
+    //   const title = await generateTitleFromUserMessage({
+    //     message: userMessage,
+    //   });
+    //   await saveChat({ id, userId: session.user.id, title });
+    // } else {
+    //   if (chat.userId !== session.user.id) {
+    //     return new Response('Unauthorized', { status: 401 });
+    //   }
+    // }
+    // // Save user message
+    // await saveMessages({
+    //   messages: [
+    //     {
+    //       chatId: id,
+    //       id: userMessage.id,
+    //       role: 'user',
+    //       parts: userMessage.parts,
+    //       attachments: userMessage.experimental_attachments ?? [],
+    //       createdAt: new Date(),
+    //     },
+    //   ],
+    // });
 
-    if (!chat) {
-      const title = await generateTitleFromUserMessage({
-        message: userMessage,
-      });
+    const intent = await classifyUserIntent(messages);
+    const stream = await generatePoem(messages, intent);
+    // Todo: consider mergeing the above into a single stream or custom RunnableSequence
+    return LangChainAdapter.toDataStreamResponse(stream);
 
-      await saveChat({ id, userId: session.user.id, title });
-    } else {
-      if (chat.userId !== session.user.id) {
-        return new Response('Unauthorized', { status: 401 });
-      }
-    }
-
-    await saveMessages({
-      messages: [
-        {
-          chatId: id,
-          id: userMessage.id,
-          role: 'user',
-          parts: userMessage.parts,
-          attachments: userMessage.experimental_attachments ?? [],
-          createdAt: new Date(),
-        },
-      ],
-    });
-
-
-    
-
-
-    const llm = new ChatAnthropic({
-      model: "claude-3-7-sonnet-latest",
-      apiKey: process.env.ANTHROPIC_API_KEY,
-    });
 
     // todo: invoke llm to determine user intent is idea generation, design, prototype, or other
+
 
     // todo: invoke another llm to confirm user intent and write a poem about it
 
@@ -98,7 +173,7 @@ export async function POST(request: Request) {
     // // Determine the system prompt based on intent *before* starting the stream execution
     // // Todo: move this to langchain
     // let systemPrompt = systemPromptDefault({ selectedChatModel });
-    
+
     // const dataStreamResponse = createDataStreamResponse({
     //   execute: (dataStream) => {
     //     executeChatStream({ dataStream, session, messages, selectedChatModel, systemPrompt, userMessage, id, isProductionEnvironment });
@@ -111,7 +186,7 @@ export async function POST(request: Request) {
     // return dataStreamResponse;
 
 
-    
+
   } catch (error) {
     console.error('Error in POST', error);
     return new Response('An error occurred while processing your request!', {
