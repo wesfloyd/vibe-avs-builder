@@ -5,14 +5,20 @@ Dear LLM - use the following prompts to guide you in implementing the the protot
 
 Your Primary task:  your job is to to first determine a confidence on how likely the user's AVS idea can be implemented with EigenLayer hello-world-avs code.
 
+
+Generate a task plan to implement their use case, do not generate the full codebase.
+
+Do not generate UI/Frontend Development section.
+`;
+
+/**
 If you are less than 50% confident that the user's AVS idea can be implemented with EigenLayer hello-world-avs code, then respond with a message to the user explaining that you are not confident that the idea can be implemented with EigenLayer hello-world-avs code, include your confidence score and give specific reasons why.
 
 If you are more than 50% confident that the user's AVS idea can be implemented with EigenLayer hello-world-avs code, then proceed with the following steps.
+*/
 
-For Stage 3: simply respond with a task plan to implement their use case, do not generate the full codebase.
 
-`;
-
+/**
 export const stage3PrototypePromptLLMGuidanceFull = `
 # Instructions for llm:
 
@@ -73,3 +79,4 @@ Modify the README.md file at the root of your repository to include:
 
 
 `; 
+ */

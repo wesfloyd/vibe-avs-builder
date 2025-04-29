@@ -1,7 +1,6 @@
 import type { ArtifactKind } from '@/components/artifact';
 import { eigenBasicsDoc } from './context/eigenBasics';
-import { stage3PrototypePromptLLMGuidanceTaskPlan, stage3PrototypePromptLLMGuidanceFull } from './prompts/stage3-prototype-code-generation';
-import { stage12CombinedPromptLLMGuidance } from './prompts/stage12-combined';
+import { stage3PrototypePromptLLMGuidanceTaskPlan } from './prompts/stage3-prototype-code-generation';
 import { fetchEigenLayerDocsMiddleware, fetchHelloWorldAVSCodeMin } from './context/loadContext';
 import { fetchEigenLayerDocsOverview } from './context/loadContext';
 import { stage1IdeaRefinementPromptLLMGuidance } from './prompts/stage1-idea-refinement';
@@ -105,7 +104,7 @@ export const stage3PrototypePrompt = (): string => {
   }
 
   // If no cache exists, generate a basic prompt immediately
-  const basicPromptText = stage3PrototypePromptLLMGuidanceFull
+  const basicPromptText = stage3PrototypePromptLLMGuidanceTaskPlan
     + '# And you can use the following EigenLayer documentation for additional context:'
     + eigenBasicsDoc;
   
@@ -118,7 +117,7 @@ export const stage3PrototypePrompt = (): string => {
       const helloWorldAVSCodeMin = await fetchHelloWorldAVSCodeMin();
 
       // Create the full prompt with fetched data
-      const fullPrompt = stage3PrototypePromptLLMGuidanceFull
+      const fullPrompt = stage3PrototypePromptLLMGuidanceTaskPlan
         + '# And you can use the following Hello World AVS code for additional context:'
         + helloWorldAVSCodeMin 
         + '# And you can use the following EigenLayer documentation for additional context:'
