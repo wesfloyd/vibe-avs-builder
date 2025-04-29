@@ -1,32 +1,56 @@
-import { generateObject } from 'ai';
 import { z } from 'zod';
 import { myProvider } from './providers';
+import { modelLiteGenerative } from '@/lib/ai/providers';
+import type { UIMessage } from 'ai';
+import { SystemMessage, HumanMessage } from '@langchain/core/messages';
 
-export type UserIntent = 'Idea' | 'Design' | 'Prototype' | 'Other';
+export enum UserIntent {
+  RefineIdea = "RefineIdea",
+  GenerateDesign = "GenerateDesign",
+  BuildPrototype = "BuildPrototype",
+  Other = "Other"
+}
 
-/**
- * Infers the user's intent based on their message content.
- *
- * @param userMessageContent The content of the user's message
- * @param selectedChatModel The model to use for inference
- * @returns The inferred user intent
- */
-export async function inferUserIntent(
-  userMessageContent: string,
-  selectedChatModel: string,
-): Promise<UserIntent> {
-  const { object: intentResult } = await generateObject({
-    model: myProvider.languageModel(selectedChatModel),
-    schema: z.object({
-      intent: z
-        .enum(['Idea', 'Design', 'Prototype', 'Other'])
-        .describe(
-          "The user's likely intent: refining an Idea, generating a Design Tech Spec, generating Prototype code, or Other.",
-        ),
-    }),
-    system: `Review the user's prompt and determine their primary intent. Choose one of: Idea, Design, Prototype, or Other.`,
-    prompt: userMessageContent,
-  });
+// Schema for the intent classification output
+const IntentClassificationSchema = z.object({
+  intent: z.enum([
+    UserIntent.RefineIdea,
+    UserIntent.GenerateDesign, 
+    UserIntent.BuildPrototype,
+    UserIntent.Other
+  ]).describe("The classified intent of the user's messages")
+});
 
-  return intentResult.intent;
+// First LLM: classify intent
+export async function classifyUserIntent(messages: UIMessage[]): Promise<UserIntent> {
+
+  // Create a model with structured output
+  const structuredModel = modelLiteGenerative.withStructuredOutput(IntentClassificationSchema);
+
+  const systemPrompt = `
+    You are a classifier.
+    Given the user's recent messages, determine:
+    1) Refine idea
+    2) Generate design
+    3) Build prototype code
+    4) Other
+    Classify the intent based on the conversation.
+  `;
+
+  // Only use the last few messages for intent classification to improve efficiency
+  const recentMessages = messages.slice(-3);
+  const userText = recentMessages.map(m => m.content).join("\n");
+
+  try {
+    const result = await structuredModel.invoke([
+      new SystemMessage(systemPrompt),
+      new HumanMessage(userText)
+    ]);
+
+    // Result is already structured according to our schema
+    return result.intent;
+  } catch (error) {
+    console.error("Intent classification failed:", error);
+    return UserIntent.Other; // Fallback to Other on error
+  }
 }

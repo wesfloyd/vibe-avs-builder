@@ -1,9 +1,8 @@
 import type { UIMessage } from 'ai';
 import {
-  createDataStreamResponse,
+  LangChainAdapter,
 } from 'ai';
 import { auth } from '@/app/(auth)/auth';
-import { systemPromptDefault } from '@/lib/ai/prompts';
 import {
   deleteChatById,
   getChatById,
@@ -14,9 +13,9 @@ import {
   getMostRecentUserMessage,
 } from '@/lib/utils';
 import { generateTitleFromUserMessage } from '../../actions';
-import { isProductionEnvironment } from '@/lib/constants';
-import { logContentForDebug } from '@/lib/utils/debugUtils';
-import { executeChatStream } from '@/lib/ai/chat-stream-executor';
+import { classifyUserIntent } from '@/lib/ai/intentManager';
+import { generateLLMResponse } from '@/lib/ai/chat-stream-executor';
+
 
 
 export const maxDuration = 60;
@@ -74,21 +73,20 @@ export async function POST(request: Request) {
     });
 
 
-    // Determine the system prompt based on intent *before* starting the stream execution
-    let systemPrompt = systemPromptDefault({ selectedChatModel });
-
-    // Log the system prompt for debugging in development
-    await logContentForDebug(systemPrompt, `system-prompt-log.txt`, 'Chat API');
-
-    const dataStreamResponse = createDataStreamResponse({
-      execute: (dataStream) => {
-        executeChatStream({ dataStream, session, messages, selectedChatModel, systemPrompt, userMessage, id, isProductionEnvironment });
-      },
-      onError: () => {
-        return 'Oops, an error occurred!';
-      },
-    });
-    return dataStreamResponse;
+    // Note: primary LLM backend invocation starts here.
+    try {
+      const stream = await generateLLMResponse(messages);
+      return LangChainAdapter.toDataStreamResponse(stream, {
+        init: {
+          headers: {
+            'Content-Type': 'text/event-stream',
+          }
+        },
+      });
+    } catch (error) {
+      console.error('Error generating response:', error);
+      return new Response('Error generating response', { status: 500 });
+    }
   } catch (error) {
     console.error('Error in POST', error);
     return new Response('An error occurred while processing your request!', {

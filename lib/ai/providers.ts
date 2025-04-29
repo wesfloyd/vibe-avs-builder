@@ -1,11 +1,26 @@
 import { anthropic } from '@ai-sdk/anthropic';
 import { openai } from '@ai-sdk/openai';
+import { ChatAnthropic } from "@langchain/anthropic";
 
 import {
   customProvider,
   extractReasoningMiddleware,
   wrapLanguageModel,
 } from 'ai';
+
+
+
+// Higher quality, streaming model
+export const modelFullStreaming = new ChatAnthropic({
+  streaming: true,
+  model: "claude-3-7-sonnet-latest",
+});
+
+// Fast, inexpensive, non-streaming model.
+export const modelLiteGenerative = new ChatAnthropic({
+  streaming: false, // Switch to non-streaming for classification since we only need the final result
+  model: "claude-3-5-sonnet-latest",
+});
 
 // This provider will be used as the least expensive "default" provider.
 // Note: image models are not supported via the anthropic provider & api, this section is removed for now.

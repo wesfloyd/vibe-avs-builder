@@ -1,7 +1,10 @@
+import {
+  getMostRecentUserMessage,
+} from '@/lib/utils';
 import type { UIMessage } from 'ai';
 import type { Session } from 'next-auth';
 import { streamText, smoothStream, appendResponseMessages } from 'ai';
-import { myProvider } from '@/lib/ai/providers';
+import { modelFullStreaming, myProvider } from '@/lib/ai/providers';
 import {
   generateUUID,
   getTrailingMessageId,
@@ -11,6 +14,11 @@ import { updateDocument } from '@/lib/ai/tools/update-document';
 import { requestSuggestions } from '@/lib/ai/tools/request-suggestions';
 import { saveMessages } from '@/lib/db/queries';
 import { logContentForDebug } from '@/lib/utils/debugUtils';
+import { HumanMessage } from '@langchain/core/messages';
+import { SystemMessage } from '@langchain/core/messages';
+import { classifyUserIntent, UserIntent } from './intentManager';
+import { basicPrompt, stage1IdeasPrompt, stage2DesignPrompt, stage3PrototypePrompt } from './prompts';
+import { AIMessage } from '@langchain/core/messages';
 
 interface ExecuteChatStreamParams {
   dataStream: any; // Using 'any' for now as CoreDataStream seems incorrect
@@ -23,82 +31,72 @@ interface ExecuteChatStreamParams {
   isProductionEnvironment: boolean;
 }
 
+// Convert UI messages to LangChain message format
+function convertUIMessagesToLangChainMessages(messages: UIMessage[]) {
+  return messages.map(message => {
+    const content = typeof message.content === 'string' 
+      ? message.content 
+      : JSON.stringify(message.content);
+      
+    if (message.role === 'user') {
+      return new HumanMessage(content);
+    } else if (message.role === 'assistant') {
+      return new AIMessage(content);
+    }
+    // Skip system messages as we'll add a separate system message
+    return null;
+  }).filter((message): message is HumanMessage | AIMessage => message !== null); // Type guard to remove null values
+}
 
-export async function executeChatStream({
-  dataStream,
-  session,
-  messages,
-  selectedChatModel,
-  systemPrompt,
-  userMessage,
-  id,
-  isProductionEnvironment,
-}: ExecuteChatStreamParams) {
-   
-  const result = streamText({
-    model: myProvider.languageModel(selectedChatModel),
-    system: systemPrompt, // Use the pre-determined system prompt
-    messages,// This contains the full conversation history
-    maxSteps: 5,
-    experimental_transform: smoothStream({ chunking: 'word' }),
-    experimental_generateMessageId: generateUUID,
-    tools: {
-      // no tools for now
-    },
-    onFinish: async ({ response }) => {
-      if (session.user?.id) {
-        try {
-          const assistantId = getTrailingMessageId({
-            messages: response.messages.filter(
-              (message) => message.role === 'assistant',
-            ),
-          });
+export async function generateLLMResponse(messages: UIMessage[]) {
+  
+  let systemPrompt = basicPrompt;
 
-          if (!assistantId) {
-            throw new Error('No assistant message found!');
-          }
+  const intent = await classifyUserIntent(messages);
+  console.log('chat-stream-executor: intent', intent);
+  
+  switch (intent) {
+    case UserIntent.RefineIdea:
+      systemPrompt += stage1IdeasPrompt();
+      break;
+    case UserIntent.GenerateDesign:
+      systemPrompt += stage2DesignPrompt();
+      break;
+    case UserIntent.BuildPrototype:
+      systemPrompt += stage3PrototypePrompt();
+      break;
+    default:
+      // do nothing
+      break;
+  }
 
-          const [, assistantMessage] = appendResponseMessages({
-            messages: [userMessage],
-            responseMessages: response.messages,
-          });
+  logContentForDebug(systemPrompt, `chat-stream-executor-system-prompt.txt`, 'Chat Stream Executor - System Prompt');
 
-          await saveMessages({
-            messages: [
-              {
-                id: assistantId,
-                chatId: id,
-                role: assistantMessage.role,
-                parts: assistantMessage.parts,
-                attachments:
-                  assistantMessage.experimental_attachments ?? [],
-                createdAt: new Date(),
-              },
-            ],
-          });
-        } catch (_) {
-          console.error('Failed to save chat');
-        }
-      }
-    },
-    experimental_telemetry: {
-      isEnabled: isProductionEnvironment,
-      functionId: 'stream-text',
-    },
-  });
-
-  result.text.then(async (text) => {
+  try {
+    // Convert UI messages to LangChain format
+    const langChainMessages = [
+      new SystemMessage(systemPrompt),
+      ...convertUIMessagesToLangChainMessages(messages)
+    ];
     
-    await logContentForDebug(text, `raw-llm-response.txt`, 'Chat Stream Executor - Stage 3');
-  });
+    
+    if(intent === UserIntent.BuildPrototype) {
+      // Invoke a Use a Multi-Step Chain using Use RunnableSequence or RouterRunnable.
+      // Todo: implement this.
+      return modelFullStreaming.stream(langChainMessages);
+    } else {
+      // Generate a streaming response per usual.
+      return modelFullStreaming.stream(langChainMessages);
+    }
+  } catch (error) {
+    console.error("LLM response generation failed:", error);
+    throw error; // Rethrow to be handled by the POST handler
+  }
+}
 
-  // This is where the AI response is consumed
-  result.consumeStream();
 
-  // This is where the AI response is merged into the data stream
-  result.mergeIntoDataStream(dataStream, {
-    sendReasoning: true,
-  });
-} 
+
+
+
 
 
