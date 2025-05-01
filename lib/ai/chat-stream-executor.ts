@@ -22,6 +22,7 @@ import { AIMessage } from '@langchain/core/messages';
 import { ChatAnthropic } from "@langchain/anthropic";
 import { ChatOpenAI } from "@langchain/openai";
 
+
 interface ExecuteChatStreamParams {
   dataStream: any; // Using 'any' for now as CoreDataStream seems incorrect
   session: Session;
@@ -50,6 +51,7 @@ function convertUIMessagesToLangChainMessages(messages: UIMessage[]) {
   }).filter((message): message is HumanMessage | AIMessage => message !== null); // Type guard to remove null values
 }
 
+
 // Get the appropriate LLM model based on selected chat model
 function getModelProvider(selectedChatModel: string) {
   console.log('chat-stream-executor: Using model:', selectedChatModel);
@@ -75,21 +77,25 @@ function getModelProvider(selectedChatModel: string) {
 }
 
 export async function generateLLMResponse(messages: UIMessage[], selectedChatModel?: string) {
+
   
   let systemPrompt = basicPrompt;
 
   const intent = await classifyUserIntent(messages);
   console.log('chat-stream-executor: intent', intent);
   
+
+  // Update the system prompt based on the user intent.
   switch (intent) {
     case UserIntent.RefineIdea:
-      systemPrompt += stage1IdeasPrompt();
+      systemPrompt = stage1IdeasPrompt();
       break;
     case UserIntent.GenerateDesign:
-      systemPrompt += stage2DesignPrompt();
+      systemPrompt = stage2DesignPrompt();
       break;
     case UserIntent.BuildPrototype:
-      systemPrompt += stage3PrototypePrompt();
+      systemPrompt = stage3PrototypePrompt();
+
       break;
     default:
       // do nothing
@@ -105,16 +111,20 @@ export async function generateLLMResponse(messages: UIMessage[], selectedChatMod
       ...convertUIMessagesToLangChainMessages(messages)
     ];
     
+
     // Use the selected model or default to claude (modelFullStreaming)
     const modelToUse = selectedChatModel ? getModelProvider(selectedChatModel) : modelFullStreaming;
+
     
     if(intent === UserIntent.BuildPrototype) {
       // Invoke a Use a Multi-Step Chain using Use RunnableSequence or RouterRunnable.
       // Todo: implement this.
+
       return modelToUse.stream(langChainMessages);
     } else {
       // Generate a streaming response per usual.
       return modelToUse.stream(langChainMessages);
+
     }
   } catch (error) {
     console.error("LLM response generation failed:", error);

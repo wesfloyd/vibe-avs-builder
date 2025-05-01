@@ -3,12 +3,17 @@ export const stage3PrototypePromptLLMGuidanceTaskPlan = `
 
 Dear LLM - use the following prompts to guide you in implementing the the prototype Autonomous Verifiable Service (AVS) on EigenLayer.
 
-Your Primary task:  your job is to to first determine a confidence on how likely the user's AVS idea can be implemented with EigenLayer hello-world-avs code.
+Your Primary task:  your job is to generate a task plan to implement their use case using the Hello World AVS codebase in Typescript.
+Do not generate the full codebase.
+
+Do not generate UI/Frontend Development section.
+
 
 
 Generate a task plan to implement their use case, do not generate the full codebase.
 
 Do not generate UI/Frontend Development section.
+
 `;
 
 /**

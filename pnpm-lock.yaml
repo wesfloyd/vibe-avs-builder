@@ -38,6 +38,7 @@ importers:
       '@langchain/core':
         specifier: ^0.3.49
         version: 0.3.49(openai@4.96.0(ws@8.18.1(bufferutil@4.0.9))(zod@3.24.2))
+
       '@langchain/openai':
         specifier: ^0.5.8
         version: 0.5.8(@langchain/core@0.3.49(openai@4.96.0(ws@8.18.1(bufferutil@4.0.9))(zod@3.24.2)))(ws@8.18.1(bufferutil@4.0.9))
@@ -1051,6 +1052,7 @@ packages:
 
   '@langchain/openai@0.5.8':
     resolution: {integrity: sha512-ppHsM3CiaGFglwwC9iFZ6XdRcr2kiX9WMXJWAxFbcyeB32n2tyoYOLZj7fSBD+6ASu/VuM1uhwVbgg25RrULpA==}
+
     engines: {node: '>=18'}
     peerDependencies:
       '@langchain/core': '>=0.3.48 <0.4.0'
@@ -4728,7 +4730,9 @@ snapshots:
     transitivePeerDependencies:
       - openai
 
+
   '@langchain/openai@0.5.8(@langchain/core@0.3.49(openai@4.96.0(ws@8.18.1(bufferutil@4.0.9))(zod@3.24.2)))(ws@8.18.1(bufferutil@4.0.9))':
+
     dependencies:
       '@langchain/core': 0.3.49(openai@4.96.0(ws@8.18.1(bufferutil@4.0.9))(zod@3.24.2))
       js-tiktoken: 1.0.20
@@ -6644,7 +6648,9 @@ snapshots:
   langchain@0.3.24(@langchain/anthropic@0.3.19(@langchain/core@0.3.49(openai@4.96.0(ws@8.18.1(bufferutil@4.0.9))(zod@3.24.2))))(@langchain/core@0.3.49(openai@4.96.0(ws@8.18.1(bufferutil@4.0.9))(zod@3.24.2)))(openai@4.96.0(ws@8.18.1(bufferutil@4.0.9))(zod@3.24.2))(ws@8.18.1(bufferutil@4.0.9)):
     dependencies:
       '@langchain/core': 0.3.49(openai@4.96.0(ws@8.18.1(bufferutil@4.0.9))(zod@3.24.2))
+
       '@langchain/openai': 0.5.8(@langchain/core@0.3.49(openai@4.96.0(ws@8.18.1(bufferutil@4.0.9))(zod@3.24.2)))(ws@8.18.1(bufferutil@4.0.9))
+
       '@langchain/textsplitters': 0.1.0(@langchain/core@0.3.49(openai@4.96.0(ws@8.18.1(bufferutil@4.0.9))(zod@3.24.2)))
       js-tiktoken: 1.0.20
       js-yaml: 4.1.0
