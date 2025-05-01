@@ -9,6 +9,7 @@ import { useSidebar } from './ui/sidebar';
 import { memo } from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 import type { VisibilityType } from './visibility-selector';
+import { ModelSelector } from './model-selector';
 
 function PureChatHeader({
   chatId,
@@ -68,8 +69,6 @@ function PureChatHeader({
         <TooltipContent>Visit EigenLayer</TooltipContent>
       </Tooltip>
 
-      {/* 
-      // Commenting out until we want to add this functionlity in the future: Model selection and/or private/public visibility
       {!isReadonly && (
         <ModelSelector
           selectedModelId={selectedModelId}
@@ -77,6 +76,8 @@ function PureChatHeader({
         />
       )}
 
+      {/* 
+      // Commenting out until we want to add this functionality in the future: private/public visibility
       {!isReadonly && (
         <VisibilitySelector
           chatId={chatId}

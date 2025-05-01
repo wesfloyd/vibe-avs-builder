@@ -44,6 +44,7 @@ export function ModelSelector({
           variant="outline"
           className="md:px-2 md:h-[34px]"
         >
+          <span className="mr-1">AI Model:</span>
           {selectedChatModel?.name}
           <ChevronDownIcon />
         </Button>

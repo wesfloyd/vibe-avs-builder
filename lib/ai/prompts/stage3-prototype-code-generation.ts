@@ -9,6 +9,11 @@ Do not generate the full codebase.
 Do not generate UI/Frontend Development section.
 
 
+
+Generate a task plan to implement their use case, do not generate the full codebase.
+
+Do not generate UI/Frontend Development section.
+
 `;
 
 /**

@@ -75,7 +75,9 @@ export async function POST(request: Request) {
 
     // Note: primary LLM backend invocation starts here.
     try {
-      const stream = await generateLLMResponse(messages);
+
+      const stream = await generateLLMResponse(messages, selectedChatModel);
+
       return LangChainAdapter.toDataStreamResponse(stream, {
         init: {
           headers: {

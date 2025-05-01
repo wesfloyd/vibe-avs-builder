@@ -4,7 +4,7 @@ import {
 import type { UIMessage } from 'ai';
 import type { Session } from 'next-auth';
 import { streamText, smoothStream, appendResponseMessages } from 'ai';
-import { modelFullStreaming, myProvider } from '@/lib/ai/providers';
+import { modelFullStreaming, myProvider, claude37sonnet, openaiProvider } from '@/lib/ai/providers';
 import {
   generateUUID,
   getTrailingMessageId,
@@ -19,6 +19,9 @@ import { SystemMessage } from '@langchain/core/messages';
 import { classifyUserIntent, UserIntent } from './intentManager';
 import { basicPrompt, stage1IdeasPrompt, stage2DesignPrompt, stage3PrototypePrompt } from './prompts';
 import { AIMessage } from '@langchain/core/messages';
+import { ChatAnthropic } from "@langchain/anthropic";
+import { ChatOpenAI } from "@langchain/openai";
+
 
 interface ExecuteChatStreamParams {
   dataStream: any; // Using 'any' for now as CoreDataStream seems incorrect
@@ -48,13 +51,40 @@ function convertUIMessagesToLangChainMessages(messages: UIMessage[]) {
   }).filter((message): message is HumanMessage | AIMessage => message !== null); // Type guard to remove null values
 }
 
-export async function generateLLMResponse(messages: UIMessage[]) {
+
+// Get the appropriate LLM model based on selected chat model
+function getModelProvider(selectedChatModel: string) {
+  console.log('chat-stream-executor: Using model:', selectedChatModel);
+  
+  switch(selectedChatModel) {
+    case 'claude':
+      return new ChatAnthropic({
+        streaming: true,
+        model: "claude-3-7-sonnet-latest",
+      });
+    case 'chatgpt':
+      return new ChatOpenAI({
+        streaming: true,
+        model: "gpt-4o-mini",
+      });
+    default:
+      console.log('Unknown model, defaulting to Claude');
+      return new ChatAnthropic({
+        streaming: true,
+        model: "claude-3-7-sonnet-latest",
+      });
+  }
+}
+
+export async function generateLLMResponse(messages: UIMessage[], selectedChatModel?: string) {
+
   
   let systemPrompt = basicPrompt;
 
   const intent = await classifyUserIntent(messages);
   console.log('chat-stream-executor: intent', intent);
   
+
   // Update the system prompt based on the user intent.
   switch (intent) {
     case UserIntent.RefineIdea:
@@ -65,6 +95,7 @@ export async function generateLLMResponse(messages: UIMessage[]) {
       break;
     case UserIntent.BuildPrototype:
       systemPrompt = stage3PrototypePrompt();
+
       break;
     default:
       // do nothing
@@ -80,17 +111,20 @@ export async function generateLLMResponse(messages: UIMessage[]) {
       ...convertUIMessagesToLangChainMessages(messages)
     ];
     
+
+    // Use the selected model or default to claude (modelFullStreaming)
+    const modelToUse = selectedChatModel ? getModelProvider(selectedChatModel) : modelFullStreaming;
+
     
     if(intent === UserIntent.BuildPrototype) {
       // Invoke a Use a Multi-Step Chain using Use RunnableSequence or RouterRunnable.
       // Todo: implement this.
-      // 
-      return modelFullStreaming.stream(langChainMessages);
 
+      return modelToUse.stream(langChainMessages);
     } else {
-      
       // Generate a streaming response per usual.
-      return modelFullStreaming.stream(langChainMessages);
+      return modelToUse.stream(langChainMessages);
+
     }
   } catch (error) {
     console.error("LLM response generation failed:", error);
