@@ -55,15 +55,16 @@ export async function generateLLMResponse(messages: UIMessage[]) {
   const intent = await classifyUserIntent(messages);
   console.log('chat-stream-executor: intent', intent);
   
+  // Update the system prompt based on the user intent.
   switch (intent) {
     case UserIntent.RefineIdea:
-      systemPrompt += stage1IdeasPrompt();
+      systemPrompt = stage1IdeasPrompt();
       break;
     case UserIntent.GenerateDesign:
-      systemPrompt += stage2DesignPrompt();
+      systemPrompt = stage2DesignPrompt();
       break;
     case UserIntent.BuildPrototype:
-      systemPrompt += stage3PrototypePrompt();
+      systemPrompt = stage3PrototypePrompt();
       break;
     default:
       // do nothing
@@ -83,8 +84,11 @@ export async function generateLLMResponse(messages: UIMessage[]) {
     if(intent === UserIntent.BuildPrototype) {
       // Invoke a Use a Multi-Step Chain using Use RunnableSequence or RouterRunnable.
       // Todo: implement this.
+      // 
       return modelFullStreaming.stream(langChainMessages);
+
     } else {
+      
       // Generate a streaming response per usual.
       return modelFullStreaming.stream(langChainMessages);
     }
