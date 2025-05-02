@@ -111,7 +111,7 @@ export const stage3PrototypePrompt = (): string => {
   // Start background fetch to update the cache for next time
   (async () => {
     try {
-      console.log('prompts: generating stage 3 code prompt in background');
+      
       
       const eigenLayerDocsMiddleware = await fetchEigenLayerDocsMiddleware();
       const helloWorldAVSCodeMin = await fetchHelloWorldAVSCodeMin();

@@ -13,7 +13,7 @@ import { createDocument } from '@/lib/ai/tools/create-document';
 import { updateDocument } from '@/lib/ai/tools/update-document';
 import { requestSuggestions } from '@/lib/ai/tools/request-suggestions';
 import { saveMessages } from '@/lib/db/queries';
-import { logContentForDebug, logStreamResponse } from '@/lib/utils/debugUtils';
+import { logContentForDebug, logStreamForDebug } from '@/lib/utils/debugUtils';
 import { HumanMessage } from '@langchain/core/messages';
 import { SystemMessage } from '@langchain/core/messages';
 import { classifyUserIntent, UserIntent } from './intentManager';
@@ -120,16 +120,18 @@ export async function generateLLMResponse(messages: UIMessage[], selectedChatMod
     // todo invoke different logic for prototype step a Use a Multi-Step Chain using Use RunnableSequence or RouterRunnable.
   
 
-    const streamResponse = modelToUse.stream(langChainMessages);
-    
-    // Log the stream response in development mode without awaiting it
-    // This ensures we correctly return a ReadableStream
-    return logStreamResponse(
-      streamResponse,
-      `llm-stream-response-${new Date().toISOString().slice(0, 10)}.txt`,
-      'LLM Stream Response'
+    // Get the raw stream from the model
+    const [streamForUser, streamForLog] = (await modelToUse.stream(langChainMessages)).tee();
+
+    // 2) fire off the logging branch without holding up your response
+    logStreamForDebug(
+      streamForLog, 
+      `llm-stream-${Date.now()}.txt`,
+      'Raw LLM response'
     );
     
+    // 3) hand back the other branch to the caller
+    return streamForUser;
   } catch (error) {
     console.error("LLM response generation failed:", error);
     throw error; // Rethrow to be handled by the POST handler
