@@ -1,15 +1,8 @@
 import { z } from 'zod';
-import { myProvider } from './providers';
 import { modelLiteGenerative } from '@/lib/ai/providers';
 import type { UIMessage } from 'ai';
 import { SystemMessage, HumanMessage } from '@langchain/core/messages';
-
-export enum UserIntent {
-  RefineIdea = "RefineIdea",
-  GenerateDesign = "GenerateDesign",
-  BuildPrototype = "BuildPrototype",
-  Other = "Other"
-}
+import { UserIntent } from './types'; // Import from the new file
 
 // Schema for the intent classification output
 const IntentClassificationSchema = z.object({

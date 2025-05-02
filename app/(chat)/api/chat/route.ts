@@ -14,6 +14,7 @@ import {
 } from '@/lib/utils';
 import { generateTitleFromUserMessage } from '../../actions';
 import { classifyUserIntent } from '@/lib/ai/intentManager';
+import { UserIntent } from '@/lib/ai/types';
 import { generateLLMResponse } from '@/lib/ai/chat-stream-executor';
 
 
@@ -26,10 +27,12 @@ export async function POST(request: Request) {
       id,
       messages,
       selectedChatModel,
+      initialIntent,
     }: {
       id: string;
       messages: Array<UIMessage>;
       selectedChatModel: string;
+      initialIntent?: UserIntent;
     } = await request.json();
 
     const session = await auth();
@@ -76,7 +79,7 @@ export async function POST(request: Request) {
     // Note: primary LLM backend invocation starts here.
     try {
 
-      const stream = await generateLLMResponse(messages, selectedChatModel);
+      const stream = await generateLLMResponse(messages, selectedChatModel, initialIntent);
 
       return LangChainAdapter.toDataStreamResponse(stream, {
         init: {
