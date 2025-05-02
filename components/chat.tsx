@@ -15,6 +15,7 @@ import { useArtifactSelector } from '@/hooks/use-artifact';
 import { toast } from 'sonner';
 import { unstable_serialize } from 'swr/infinite';
 import { getChatHistoryPaginationKey } from './sidebar-history';
+import { SSEListener } from './sse-listener';
 
 export function Chat({
   id,
@@ -71,9 +72,49 @@ export function Chat({
 
   const [attachments, setAttachments] = useState<Array<Attachment>>([]);
   const isArtifactVisible = useArtifactSelector((state) => state.isVisible);
+  
+  // Handle code updates from SSE
+  const handleCodeUpdate = (data: any) => {
+    if (data.enhancedCode && Array.isArray(data.enhancedCode) && data.enhancedCode.length > 0) {
+      // Append a new message from the assistant with the enhanced code
+      const enhancedCodeMessage: UIMessage = {
+        id: generateUUID(),
+        role: 'assistant',
+        content: data.content || "Here's an improved version of the code:",
+        parts: [{
+          type: 'text', 
+          text: data.content || "Here's an improved version of the code:"
+        }],
+        createdAt: new Date(),
+      };
+      
+      // Add code blocks to the message
+      data.enhancedCode.forEach((codeBlock: string) => {
+        enhancedCodeMessage.parts.push({
+          type: 'text',
+          text: '```\n' + codeBlock + '\n```'
+        });
+      });
+      
+      setMessages([...messages, enhancedCodeMessage]);
+      mutate(unstable_serialize(getChatHistoryPaginationKey));
+    }
+  };
+  
+  // Handle processing errors
+  const handleProcessingError = (error: string) => {
+    toast.error(error || 'An error occurred during code processing');
+  };
 
   return (
     <>
+      {/* SSE Listener component */}
+      <SSEListener 
+        chatId={id}
+        onCodeUpdate={handleCodeUpdate}
+        onProcessingError={handleProcessingError}
+      />
+      
       <div id="chat" className="flex flex-col min-w-0 h-dvh bg-background">
         <ChatHeader
           chatId={id}

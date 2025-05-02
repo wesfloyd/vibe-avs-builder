@@ -16,6 +16,8 @@ import { generateTitleFromUserMessage } from '../../actions';
 import { classifyUserIntent } from '@/lib/ai/intentManager';
 import { UserIntent } from '@/lib/ai/types';
 import { generateLLMResponse } from '@/lib/ai/chat-stream-executor';
+import { processStreamInBackground } from '@/lib/utils/backgroundProcessor';
+import { logStreamForDebug } from '@/lib/utils/debugUtils';
 
 
 
@@ -78,10 +80,36 @@ export async function POST(request: Request) {
 
     // Note: primary LLM backend invocation starts here.
     try {
-
       const stream = await generateLLMResponse(messages, selectedChatModel, initialIntent);
+      
+      // Clone the stream for background processing
+      const [streamForResponse, streamForBackground] = stream.tee();
+      
+      // Start background processing without waiting for it to complete
+      // Uses the userId from session for SSE messages
+      processStreamInBackground(
+        streamForBackground, 
+        session.user.id,
+        id
+      ).catch(err => {
+        console.error('Background processing error:', err);
+      });
+      
+      // Log stream for debugging in development
+      if (process.env.NODE_ENV === 'development') {
+        const [streamForLogging, streamForClient] = streamForResponse.tee();
+        logStreamForDebug(streamForLogging, `chat-${id}.txt`, 'Chat API');
+        
+        return LangChainAdapter.toDataStreamResponse(streamForClient, {
+          init: {
+            headers: {
+              'Content-Type': 'text/event-stream',
+            }
+          },
+        });
+      }
 
-      return LangChainAdapter.toDataStreamResponse(stream, {
+      return LangChainAdapter.toDataStreamResponse(streamForResponse, {
         init: {
           headers: {
             'Content-Type': 'text/event-stream',

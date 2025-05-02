@@ -1,5 +1,6 @@
 import { anthropic } from '@ai-sdk/anthropic';
 import { ChatAnthropic } from "@langchain/anthropic";
+import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
 
 import {
   customProvider,
@@ -10,16 +11,16 @@ import {
 
 
 // Higher quality, streaming model
-export const modelFullStreaming = new ChatAnthropic({
+export const modelFullStreaming = new ChatGoogleGenerativeAI({
   streaming: true,
-  model: "claude-3-7-sonnet-latest",
+  model: "gemini-2.0-flash",
   cache: true,
 });
 
 // Fast, inexpensive, non-streaming model.
-export const modelLiteGenerative = new ChatAnthropic({
+export const modelLiteGenerative = new ChatGoogleGenerativeAI({
   streaming: false, // Switch to non-streaming for classification since we only need the final result
-  model: "claude-3-5-sonnet-latest",
+  model: "gemini-2.0-flash",
   cache: true,
 });
 
