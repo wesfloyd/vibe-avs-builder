@@ -14,12 +14,14 @@ import {
 export const modelFullStreaming = new ChatAnthropic({
   streaming: true,
   model: "claude-3-7-sonnet-latest",
+  cache: true,
 });
 
 // Fast, inexpensive, non-streaming model.
 export const modelLiteGenerative = new ChatAnthropic({
   streaming: false, // Switch to non-streaming for classification since we only need the final result
   model: "claude-3-5-sonnet-latest",
+  cache: true,
 });
 
 // This provider will be used as the least expensive "default" provider.
