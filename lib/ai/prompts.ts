@@ -1,8 +1,7 @@
 import type { ArtifactKind } from '@/components/artifact';
 import { eigenBasicsDoc } from './context/eigenBasics';
 import { stage3PrototypePromptLLMGuidanceTaskPlan } from './prompts/stage3-prototype-code-generation';
-import { fetchEigenLayerDocsMiddleware, fetchHelloWorldAVSCodeMin } from './context/loadContext';
-import { fetchEigenLayerDocsOverview } from './context/loadContext';
+import { fetchEigenLayerDocsMiddleware, fetchHelloWorldAVSCodeMin, fetchEigenLayerDocsOverview } from './context/loadContext';
 import { stage1IdeaRefinementPromptLLMGuidance } from './prompts/stage1-idea-refinement';
 import { stage2DesignGenerationPromptText } from './prompts/stage2-design-generation';
 
@@ -16,126 +15,73 @@ export const basicPrompt =
   `;
   
 
-// Cache for the generated prompts
-let stage1IdeasPromptCache: string | null = null;
-let stage2DesignPromptCache: string | null = null;
-let stage3PrototypePromptCache: string | null = null;
+// Function to get the stage 1 ideas prompt - Now fetches on demand
+export async function stage1IdeasPrompt(): Promise<string> {
+  try {
+    console.log('prompts: generating stage 1 ideas prompt on demand');
+    const eigenLayerDocsOverview = await fetchEigenLayerDocsOverview();
 
-// Synchronous function that returns the cached prompt or initiates a fetch
-export const stage1IdeasPrompt = (): string => {
-  // If we have a cached prompt, return it immediately
-  if (stage1IdeasPromptCache) {
-    return stage1IdeasPromptCache;
+    // Create the full prompt with fetched data
+    const fullPrompt = stage1IdeaRefinementPromptLLMGuidance 
+      + '# And you can use the following EigenLayer documentation for additional context:'
+      + eigenBasicsDoc 
+      + '# And you can use the following EigenLayer docs overview for additional context:'
+      + eigenLayerDocsOverview;
+
+    return fullPrompt;
+  } catch (error) {
+    console.error("Error constructing stage 1 ideas prompt:", error);
+    // Fallback to the basic prompt if fetching fails
+    // Construct a basic version if fetch fails
+    return stage1IdeaRefinementPromptLLMGuidance + '\n# And you can use the following EigenLayer documentation for additional context:\n' + eigenBasicsDoc;
   }
+}
 
-  // If no cache exists, generate a basic prompt immediately
-  const basicPromptText = stage1IdeaRefinementPromptLLMGuidance 
-    + '# And you can use the following EigenLayer documentation for additional context:'
-    + eigenBasicsDoc;
-  
-  // Start background fetch to update the cache for next time
-  (async () => {
-    try {
-      console.log('prompts: generating stage 1 ideas prompt in background');
-      const eigenLayerDocsOverview = await fetchEigenLayerDocsOverview();
-      
-      // Create the full prompt with fetched data
-      const fullPrompt = stage1IdeaRefinementPromptLLMGuidance 
-        + '# And you can use the following EigenLayer documentation for additional context:'
-        + eigenBasicsDoc
-        + '# And you can use the following EigenLayer docs overview for additional context:'
-        + eigenLayerDocsOverview;
-      
-      // Update the cache
-      stage1IdeasPromptCache = fullPrompt;
-    } catch (error) {
-      console.error("Error constructing stage 1 ideas prompt in background:", error);
-      // On error, we still have the basic prompt cached, so no need to update
-    }
-  })();
-  
-  // Return the basic prompt immediately
-  return basicPromptText;
-};
+// Custom prompt for Stage 2: AVS idea refinement - Now fetches on demand
+export async function stage2DesignPrompt(): Promise<string> {
+  try {
+    console.log('prompts: generating stage 2 design prompt on demand');
+    const eigenLayerDocsMiddleware = await fetchEigenLayerDocsMiddleware();
 
-// Custom prompt for Stage 2: AVS idea refinement
-export const stage2DesignPrompt = (): string => {
-  // If we have a cached prompt, return it immediately
-  if (stage2DesignPromptCache) {
-    return stage2DesignPromptCache;
+    // Create the full prompt with fetched data
+    const fullPrompt = stage2DesignGenerationPromptText
+      + '# And you can use the following EigenLayer documentation for additional context:'
+      + eigenBasicsDoc
+      + '# And you can use the following EigenLayer middleware overview for additional context:'
+      + eigenLayerDocsMiddleware;
+
+    return fullPrompt;
+  } catch (error) {
+    console.error("Error constructing stage 2 design prompt:", error);
+    // Fallback to the basic prompt if fetching fails
+    return stage2DesignGenerationPromptText + '\n# And you can use the following EigenLayer documentation for additional context:\n' + eigenBasicsDoc;
   }
-
-  // If no cache exists, generate a basic prompt immediately
-  const basicPromptText = stage2DesignGenerationPromptText 
-    + '# And you can use the following EigenLayer documentation for additional context:'
-    + eigenBasicsDoc;
-  
-  // Start background fetch to update the cache for next time
-  (async () => {
-    try {
-      console.log('prompts: generating stage 2 design prompt in background');
-      const eigenLayerDocsMiddleware = await fetchEigenLayerDocsMiddleware();
-      
-      // Create the full prompt with fetched data
-      const fullPrompt = stage2DesignGenerationPromptText
-        + '# And you can use the following EigenLayer documentation for additional context:'
-        + eigenBasicsDoc
-        + '# And you can use the following EigenLayer middleware overview for additional context:'
-        + eigenLayerDocsMiddleware;
-      
-      // Update the cache
-      stage2DesignPromptCache = fullPrompt;
-    } catch (error) {
-      console.error("Error constructing stage 2 design prompt in background:", error);
-      // On error, we still have the basic prompt cached, so no need to update
-    }
-  })();
-  
-  // Return the basic prompt immediately
-  return basicPromptText;
-};
+}
 
 
-// Custom prompt for Stage 3: AVS code generation
-export const stage3PrototypePrompt = (): string => {
-  // If we have a cached prompt, return it immediately
-  if (stage3PrototypePromptCache) {
-    return stage3PrototypePromptCache;
+// Custom prompt for Stage 3: AVS code generation - Now fetches on demand
+export async function stage3PrototypePrompt(): Promise<string> {
+  try {
+    console.log('prompts: generating stage 3 code prompt on demand');
+    const eigenLayerDocsMiddleware = await fetchEigenLayerDocsMiddleware();
+    const helloWorldAVSCodeMin = await fetchHelloWorldAVSCodeMin();
+
+    // Create the full prompt with fetched data
+    const fullPrompt = stage3PrototypePromptLLMGuidanceTaskPlan
+      + '# And you can use the following Hello World AVS code for additional context:'
+      + helloWorldAVSCodeMin 
+      + '# And you can use the following EigenLayer documentation for additional context:'
+      + eigenBasicsDoc
+      + '# And you can use the following EigenLayer middleware overview for additional context:'
+      + eigenLayerDocsMiddleware;
+
+    return fullPrompt;
+  } catch (error) {
+    console.error("Error constructing stage 3 code prompt:", error);
+    // Fallback to the basic prompt if fetching fails
+    return stage3PrototypePromptLLMGuidanceTaskPlan + '\n# And you can use the following EigenLayer documentation for additional context:\n' + eigenBasicsDoc;
   }
-
-  // If no cache exists, generate a basic prompt immediately
-  const basicPromptText = stage3PrototypePromptLLMGuidanceTaskPlan
-    + '# And you can use the following EigenLayer documentation for additional context:'
-    + eigenBasicsDoc;
-  
-  // Start background fetch to update the cache for next time
-  (async () => {
-    try {
-      console.log('prompts: generating stage 3 code prompt in background');
-      
-      const eigenLayerDocsMiddleware = await fetchEigenLayerDocsMiddleware();
-      const helloWorldAVSCodeMin = await fetchHelloWorldAVSCodeMin();
-
-      // Create the full prompt with fetched data
-      const fullPrompt = stage3PrototypePromptLLMGuidanceTaskPlan
-        + '# And you can use the following Hello World AVS code for additional context:'
-        + helloWorldAVSCodeMin 
-        + '# And you can use the following EigenLayer documentation for additional context:'
-        + eigenBasicsDoc
-        + '# And you can use the following EigenLayer middleware overview for additional context:'
-        + eigenLayerDocsMiddleware;
-      
-      // Update the cache
-      stage3PrototypePromptCache = fullPrompt;
-    } catch (error) {
-      console.error("Error constructing stage 3 code prompt in background:", error);
-      // On error, we still have the basic prompt cached, so no need to update
-    }
-  })();
-  
-  // Return the basic prompt immediately
-  return basicPromptText;
-};
+}
 
 
 
