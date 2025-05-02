@@ -30,9 +30,8 @@
     "@codemirror/view": "^6.35.3",
     "@langchain/anthropic": "^0.3.19",
     "@langchain/core": "^0.3.49",
-
+    "@langchain/google-genai": "^0.2.5",
     "@langchain/openai": "^0.5.8",
-
     "@radix-ui/react-alert-dialog": "^1.1.2",
     "@radix-ui/react-dialog": "^1.1.2",
     "@radix-ui/react-dropdown-menu": "^2.1.2",

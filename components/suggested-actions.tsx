@@ -5,6 +5,7 @@ import { Button } from './ui/button';
 import { memo } from 'react';
 import type { UseChatHelpers } from '@ai-sdk/react';
 import { STAGE1_TEST_PROMPT1, STAGE2_TEST_PROMPT1, STAGE3_TEST_PROMPT1 } from '@/tests/prompts/avs';
+import { UserIntent } from '@/lib/ai/types';
 
 interface SuggestedActionsProps {
   chatId: string;
@@ -18,31 +19,37 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
       label: 'Is this a good idea for an AVS? ..',
       action:
         'I have an idea for an EigenLayer Autonomously Verified Service, but it needs to be refined. Let me tell you more about it, then get your feedback.',
+      initialIntent: UserIntent.RefineIdea    
     },
     {
       title: '(Test) Refine an AVS idea',
       label: STAGE1_TEST_PROMPT1.substring(0, 40) + '...',
       action: STAGE1_TEST_PROMPT1,
+      initialIntent: UserIntent.RefineIdea
     },
     {
       title: 'Generate a Design tech spec',
       label: `to help define my AVS idea in detail`,
       action: `Generate a Design tech spec based on my AVS idea.`,
+      initialIntent: UserIntent.GenerateDesign
     },
     {
       title: '(Test) Generate a Design tech spec',
       label: STAGE2_TEST_PROMPT1.substring(0, 40) + '...',
       action: STAGE2_TEST_PROMPT1,
+      initialIntent: UserIntent.GenerateDesign
     },
     {
       title: 'Generate code for my AVS prototype',
       label: `that I can run locally and demo`,
       action: `Generate code for my AVS prototype using Hello World example`,
+      initialIntent: UserIntent.BuildPrototype
     },
     {
       title: '(Test) Generate code for my AVS prototype',
       label: STAGE3_TEST_PROMPT1.substring(0, 40) + '...',
       action: STAGE3_TEST_PROMPT1,
+      initialIntent: UserIntent.BuildPrototype
     },
   ];
 
@@ -62,10 +69,17 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
             onClick={async () => {
               window.history.replaceState({}, '', `/chat/${chatId}`);
 
-              append({
-                role: 'user',
-                content: suggestedAction.action,
-              });
+              append(
+                {
+                  role: 'user',
+                  content: suggestedAction.action,
+                },
+                {
+                  body: {
+                    initialIntent: suggestedAction.initialIntent,
+                  },
+                },
+              );
             }}
             className="text-left border rounded-xl px-4 py-3.5 text-sm flex-1 gap-1 sm:flex-col w-full h-auto justify-start items-start"
           >

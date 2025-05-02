@@ -1,27 +1,20 @@
-import {
-  getMostRecentUserMessage,
-} from '@/lib/utils';
 import type { UIMessage } from 'ai';
 import type { Session } from 'next-auth';
-import { streamText, smoothStream, appendResponseMessages } from 'ai';
-import { modelFullStreaming, myProvider, claude37sonnet, openaiProvider } from '@/lib/ai/providers';
-import {
-  generateUUID,
-  getTrailingMessageId,
-} from '@/lib/utils';
-import { createDocument } from '@/lib/ai/tools/create-document';
-import { updateDocument } from '@/lib/ai/tools/update-document';
-import { requestSuggestions } from '@/lib/ai/tools/request-suggestions';
-import { saveMessages } from '@/lib/db/queries';
-import { logContentForDebug, logStreamForDebug } from '@/lib/utils/debugUtils';
-import { HumanMessage } from '@langchain/core/messages';
-import { SystemMessage } from '@langchain/core/messages';
-import { classifyUserIntent, UserIntent } from './intentManager';
-import { basicPrompt, stage1IdeasPrompt, stage2DesignPrompt, stage3PrototypePrompt } from './prompts';
-import { AIMessage } from '@langchain/core/messages';
+
+// External libraries
 import { ChatAnthropic } from "@langchain/anthropic";
+import { AIMessage, HumanMessage, SystemMessage } from '@langchain/core/messages';
+import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { ChatOpenAI } from "@langchain/openai";
 
+// Internal absolute imports
+import { modelFullStreaming } from '@/lib/ai/providers';
+import { logContentForDebug, logStreamForDebug } from '@/lib/utils/debugUtils';
+
+// Internal relative imports
+import { classifyUserIntent } from './intentManager';
+import { UserIntent } from './types';
+import { basicPrompt, stage1IdeasPrompt, stage2DesignPrompt, stage3PrototypePrompt } from './prompts';
 
 interface ExecuteChatStreamParams {
   dataStream: any; // Using 'any' for now as CoreDataStream seems incorrect
@@ -67,22 +60,32 @@ function getModelProvider(selectedChatModel: string) {
         streaming: true,
         model: "gpt-4o-mini",
       });
-    default:
-      console.log('Unknown model, defaulting to Claude');
-      return new ChatAnthropic({
+    case 'gemini':
+      return new ChatGoogleGenerativeAI({
         streaming: true,
-        model: "claude-3-7-sonnet-latest",
+        model: "gemini-2.5-pro-preview-03-25",
+      });
+    default:
+      console.log('Unknown model, defaulting to ChatGPT');
+      return new ChatOpenAI({
+        streaming: true,
+        model: "gpt-4o-mini",
       });
   }
 }
 
-export async function generateLLMResponse(messages: UIMessage[], selectedChatModel?: string) {
+export async function generateLLMResponse(
+  messages: UIMessage[], 
+  selectedChatModel?: string,
+  initialIntent?: UserIntent
+) {
 
   
   let systemPrompt = basicPrompt;
 
-  const intent = await classifyUserIntent(messages);
-  console.log('chat-stream-executor: intent', intent);
+  // Determine intent: Use initialIntent if provided, otherwise classify
+  const intent = initialIntent ?? await classifyUserIntent(messages);
+  console.log('chat-stream-executor: intent used:', intent);
   
 
   // Update the system prompt based on the user intent.
