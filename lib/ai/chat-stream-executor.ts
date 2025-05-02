@@ -88,13 +88,13 @@ export async function generateLLMResponse(messages: UIMessage[], selectedChatMod
   // Update the system prompt based on the user intent.
   switch (intent) {
     case UserIntent.RefineIdea:
-      systemPrompt = stage1IdeasPrompt();
+      systemPrompt = await stage1IdeasPrompt();
       break;
     case UserIntent.GenerateDesign:
-      systemPrompt = stage2DesignPrompt();
+      systemPrompt = await stage2DesignPrompt();
       break;
     case UserIntent.BuildPrototype:
-      systemPrompt = stage3PrototypePrompt();
+      systemPrompt = await stage3PrototypePrompt();
 
       break;
     default:
