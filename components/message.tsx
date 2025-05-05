@@ -3,7 +3,7 @@
 import type { UIMessage } from 'ai';
 import cx from 'classnames';
 import { AnimatePresence, motion } from 'framer-motion';
-import { memo, useState } from 'react';
+import { memo, useState, useEffect } from 'react';
 import type { Vote } from '@/lib/db/schema';
 import { DocumentToolCall, DocumentToolResult } from './document';
 import { PencilEditIcon, SparklesIcon } from './icons';
@@ -267,7 +267,18 @@ export const ThinkingMessage = () => {
     'Envisioning'
   ];
   
-  const randomThinkingWord = thinkingWords[Math.floor(Math.random() * thinkingWords.length)];
+  const [currentWord, setCurrentWord] = useState(
+    thinkingWords[Math.floor(Math.random() * thinkingWords.length)]
+  );
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setCurrentWord(thinkingWords[Math.floor(Math.random() * thinkingWords.length)]);
+    }, 4000); // Update every 4 seconds
+
+    // Cleanup function to clear the interval when the component unmounts
+    return () => clearInterval(intervalId);
+  }, []); // Empty dependency array ensures this effect runs only once on mount
 
   return (
     <motion.div
@@ -290,8 +301,18 @@ export const ThinkingMessage = () => {
         </div>
 
         <div className="flex flex-col gap-2 w-full">
-          <div className="flex flex-col gap-4 text-muted-foreground">
-            {randomThinkingWord}...
+          <div className="flex flex-col gap-4 text-muted-foreground relative h-6 overflow-hidden">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentWord}
+                initial={{ y: 10, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -10, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                {currentWord}...
+              </motion.div>
+            </AnimatePresence>
           </div>
         </div>
       </div>
