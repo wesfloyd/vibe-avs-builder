@@ -95,20 +95,7 @@ export async function POST(request: Request) {
         console.error('Background processing error:', err);
       });
       
-      // Log stream for debugging in development
-      if (process.env.NODE_ENV === 'development') {
-        const [streamForLogging, streamForClient] = streamForResponse.tee();
-        logStreamForDebug(streamForLogging, `chat-${id}.txt`, 'Chat API');
-        
-        return LangChainAdapter.toDataStreamResponse(streamForClient, {
-          init: {
-            headers: {
-              'Content-Type': 'text/event-stream',
-            }
-          },
-        });
-      }
-
+    
       return LangChainAdapter.toDataStreamResponse(streamForResponse, {
         init: {
           headers: {

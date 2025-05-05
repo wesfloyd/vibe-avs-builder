@@ -18,7 +18,7 @@ export const basicPrompt =
 // Function to get the stage 1 ideas prompt - Now fetches on demand
 export async function stage1IdeasPrompt(): Promise<string> {
   try {
-    console.log('prompts: generating stage 1 ideas prompt on demand');
+    console.log('prompts: generating stage 1 ideas prompt');
     const eigenLayerDocsOverview = await fetchEigenLayerDocsOverview();
 
     // Create the full prompt with fetched data
@@ -40,7 +40,7 @@ export async function stage1IdeasPrompt(): Promise<string> {
 // Custom prompt for Stage 2: AVS idea refinement - Now fetches on demand
 export async function stage2DesignPrompt(): Promise<string> {
   try {
-    console.log('prompts: generating stage 2 design prompt on demand');
+    console.log('prompts: generating stage 2 design prompt');
     const eigenLayerDocsMiddleware = await fetchEigenLayerDocsMiddleware();
 
     // Create the full prompt with fetched data
@@ -62,7 +62,7 @@ export async function stage2DesignPrompt(): Promise<string> {
 // Custom prompt for Stage 3: AVS code generation - Now fetches on demand
 export async function stage3PrototypePrompt(): Promise<string> {
   try {
-    console.log('prompts: generating stage 3 code prompt on demand');
+    console.log('prompts: generating stage 3 code prompt');
     const eigenLayerDocsMiddleware = await fetchEigenLayerDocsMiddleware();
     const helloWorldAVSCodeMin = await fetchHelloWorldAVSCodeMin();
 

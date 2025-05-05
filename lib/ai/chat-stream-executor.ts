@@ -84,14 +84,12 @@ export async function generateLLMResponse(
   initialIntent?: UserIntent
 ) {
 
-  
-  let systemPrompt = basicPrompt;
-
+  console.log('chat-stream-executor: initialIntent:', initialIntent ?? 'no initial intent provided');
   // Determine intent: Use initialIntent if provided, otherwise classify
   const intent = initialIntent ?? await classifyUserIntent(messages);
   console.log('chat-stream-executor: intent used:', intent);
   
-
+  let systemPrompt = basicPrompt;
   // Update the system prompt based on the user intent.
   switch (intent) {
     case UserIntent.RefineIdea:
@@ -118,27 +116,18 @@ export async function generateLLMResponse(
       ...convertUIMessagesToLangChainMessages(messages)
     ];
     
-
-
+    // Get the current model to use
     const modelToUse = getModelProvider(selectedChatModel);
-
-    
-    //if(intent === UserIntent.BuildPrototype) {
-    // todo invoke different logic for prototype step a Use a Multi-Step Chain using Use RunnableSequence or RouterRunnable.
   
-
     // Get the raw stream from the model
     const [llmResponseStream, llmResponseStreamCopy] = (await modelToUse.stream(langChainMessages)).tee();
 
-    //2) fire off the logging branch without holding up your response
+    // log the stream copy without holding up your response
     logStreamForDebug(
       llmResponseStreamCopy, 
       `llm-stream-${Date.now()}.txt`,
       'Raw LLM response'
     );
-
-    
-
     
     // 3) hand back the other branch to the caller
     return llmResponseStream;
