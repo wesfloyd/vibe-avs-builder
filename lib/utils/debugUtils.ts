@@ -112,3 +112,52 @@ export async function logStreamForDebug<T>(
     }
   })();
 }
+
+/**
+ * Consumes a ReadableStream and returns all chunks combined as a single string.
+ * Uses the same chunk parsing logic as logStreamForDebug.
+ *
+ * @param stream The ReadableStream to consume
+ * @return Promise resolving to the full text content from the stream
+ */
+export async function consumeStreamToText<T>(
+  stream: ReadableStream<T>
+): Promise<string> {
+  let fullText = '';
+  
+  try {
+    // Convert ReadableStream to AsyncIterable for consumption
+    const iterable = toAsyncIterable(stream);
+    
+    // Consume and accumulate each chunk
+    for await (const chunk of iterable) {
+      let chunkStr = '';
+      
+      if (typeof chunk === 'string') {
+        // Handle string chunks directly
+        chunkStr = chunk;
+      } else if (chunk && typeof chunk === 'object') {
+        // Handle AIMessageChunk structure where content is in kwargs.content
+        const chunkObj = chunk as any;
+        
+        if (chunkObj.kwargs && typeof chunkObj.kwargs === 'object' && 'content' in chunkObj.kwargs) {
+          // Most likely an AIMessageChunk with content in kwargs.content
+          chunkStr = chunkObj.kwargs.content || '';
+        } else if ('content' in chunkObj) {
+          // Direct content property
+          chunkStr = chunkObj.content || '';
+        } else {
+          // Fallback to JSON if structure doesn't match expected
+          chunkStr = `[Unparseable chunk: ${JSON.stringify(chunk).substring(0, 100)}...]`;
+        }
+      }
+      
+      fullText += chunkStr;
+    }
+    
+    return fullText;
+  } catch (error) {
+    console.error(`debugUtils.ts: consumeStreamToText: Error consuming stream:`, error);
+    throw error;
+  }
+}

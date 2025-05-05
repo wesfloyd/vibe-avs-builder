@@ -8,7 +8,6 @@ import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { ChatOpenAI } from "@langchain/openai";
 
 // Internal absolute imports
-import { modelFullStreaming } from '@/lib/ai/providers';
 import { logContentForDebug, logStreamForDebug } from '@/lib/utils/debugUtils';
 
 // Internal relative imports
@@ -46,9 +45,13 @@ function convertUIMessagesToLangChainMessages(messages: UIMessage[]) {
 
 
 // Get the appropriate LLM model based on selected chat model
-function getModelProvider(selectedChatModel: string) {
+function getModelProvider(selectedChatModel?: string) {
   console.log('chat-stream-executor: Using model:', selectedChatModel);
   
+  if (!selectedChatModel) {
+    selectedChatModel = 'gemini';
+  }
+
   switch(selectedChatModel) {
     case 'claude':
       return new ChatAnthropic({
@@ -81,12 +84,14 @@ export async function generateLLMResponse(
 ) {
 
   
-  let systemPrompt = basicPrompt;
+  
 
+  console.log('chat-stream-executor: initialIntent:', initialIntent ?? 'no initial intent provided');
   // Determine intent: Use initialIntent if provided, otherwise classify
   const intent = initialIntent ?? await classifyUserIntent(messages);
   console.log('chat-stream-executor: intent used:', intent);
   
+  let systemPrompt = basicPrompt;
 
   // Update the system prompt based on the user intent.
   switch (intent) {
@@ -109,32 +114,28 @@ export async function generateLLMResponse(
 
   try {
     // Convert UI messages to LangChain format
-    const langChainMessages = [
+    const messageHistory = [
       new SystemMessage(systemPrompt),
       ...convertUIMessagesToLangChainMessages(messages)
     ];
     
-
-    // Use the selected model or default to claude (modelFullStreaming)
-    const modelToUse = selectedChatModel ? getModelProvider(selectedChatModel) : modelFullStreaming;
+    // Get the current model to use
+    const modelToUse = getModelProvider(selectedChatModel);
+    
+    // Get the raw stream from the model
+    const [llmResponseStream, llmResponseStreamCopy] = (await modelToUse.stream(messageHistory)).tee();
 
     
-    //if(intent === UserIntent.BuildPrototype) {
-    // todo invoke different logic for prototype step a Use a Multi-Step Chain using Use RunnableSequence or RouterRunnable.
-  
 
-    // Get the raw stream from the model
-    const [streamForUser, streamForLog] = (await modelToUse.stream(langChainMessages)).tee();
-
-    // 2) fire off the logging branch without holding up your response
+    // log the stream copy without holding up your response
     logStreamForDebug(
-      streamForLog, 
+      llmResponseStreamCopy, 
       `llm-stream-${Date.now()}.txt`,
       'Raw LLM response'
     );
     
     // 3) hand back the other branch to the caller
-    return streamForUser;
+    return llmResponseStream;
   } catch (error) {
     console.error("LLM response generation failed:", error);
     throw error; // Rethrow to be handled by the POST handler
