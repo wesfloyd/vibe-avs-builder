@@ -14,7 +14,10 @@ export function CodeBlock({
   children,
   ...props
 }: CodeBlockProps) {
-  if (!inline) {
+
+  console.log('code-block: inline:', inline);
+
+  if (false) {
     return (
       <code
         {...props}
@@ -24,6 +27,7 @@ export function CodeBlock({
       </code>
     );
   } else {
+    console.log('code-block: inline, children:', { inline, children });
     return (
       <code
         className={`${className} text-sm bg-zinc-100 dark:bg-zinc-800  py-0.5 px-1 rounded-md`}

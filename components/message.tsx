@@ -123,7 +123,12 @@ const PurePreviewMessage = ({
                             message.role === 'user',
                         })}
                       >
-                        <Markdown>{part.text}</Markdown>
+                        {/* Check if the text starts with a JSON code block */}
+                        {typeof part.text === 'string' && part.text.trim().startsWith('```json') ? (
+                          <div>hello world</div>
+                        ) : (
+                          <Markdown>{part.text}</Markdown>
+                        )}
                       </div>
                     </div>
                   );

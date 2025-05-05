@@ -110,7 +110,7 @@ export async function generateLLMResponse(
       break;
   }
 
-  logContentForDebug(systemPrompt, `chat-stream-executor-system-prompt.txt`, 'Chat Stream Executor - System Prompt');
+  logContentForDebug(systemPrompt, `systemPrompt-chat-stream-executor.txt`, 'Chat Stream Executor - System Prompt');
 
   try {
     // Convert UI messages to LangChain format
@@ -130,12 +130,15 @@ export async function generateLLMResponse(
     // log the stream copy without holding up your response
     logStreamForDebug(
       llmResponseStreamCopy, 
-      `llm-stream-${Date.now()}.txt`,
+      `llmResponseStreamCopy-chat-stream-executor.txt`,
       'Raw LLM response'
     );
     
     // 3) hand back the other branch to the caller
     return llmResponseStream;
+
+    // Todo: eventually add back in saving of messages to the database
+    
   } catch (error) {
     console.error("LLM response generation failed:", error);
     throw error; // Rethrow to be handled by the POST handler

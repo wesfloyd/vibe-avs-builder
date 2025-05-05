@@ -15,6 +15,17 @@ Your Primary task:  your job is to generate the the code needed to  implement th
 - Modified Operator code.
 - Modified README.md file.
 
+Include a summary of each file generated and its relative file path in the directory tree.
+
+ Each file be included inside a JSON object with the following format:
+  {
+    "path": "path/to/file",
+    "summary": "summary of the file",
+    "content": "full contents of the file"
+  }
+
+Only respond with the JSON objects, no other text or comments.
+
 **END OF INSTRUCTIONS FOR LLM**
 `;
 
