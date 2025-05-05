@@ -1,6 +1,6 @@
 import type { ArtifactKind } from '@/components/artifact';
 import { eigenBasicsDoc } from './context/eigenBasics';
-import { stage3PrototypePromptLLMGuidanceTaskPlan } from './prompts/stage3-prototype-code-generation';
+import { stage3PrototypePromptOverviewOnly } from './prompts/stage3-prototype-code-generation';
 import { fetchEigenLayerDocsMiddleware, fetchHelloWorldAVSCodeMin, fetchEigenLayerDocsOverview } from './context/loadContext';
 import { stage1IdeaRefinementPromptLLMGuidance } from './prompts/stage1-idea-refinement';
 import { stage2DesignGenerationPromptText } from './prompts/stage2-design-generation';
@@ -18,7 +18,7 @@ export const basicPrompt =
 // Function to get the stage 1 ideas prompt - Now fetches on demand
 export async function stage1IdeasPrompt(): Promise<string> {
   try {
-    console.log('prompts: generating stage 1 ideas prompt on demand');
+    console.log('prompts: generating stage 1 ideas prompt');
     const eigenLayerDocsOverview = await fetchEigenLayerDocsOverview();
 
     // Create the full prompt with fetched data
@@ -40,7 +40,7 @@ export async function stage1IdeasPrompt(): Promise<string> {
 // Custom prompt for Stage 2: AVS idea refinement - Now fetches on demand
 export async function stage2DesignPrompt(): Promise<string> {
   try {
-    console.log('prompts: generating stage 2 design prompt on demand');
+    console.log('prompts: generating stage 2 design prompt');
     const eigenLayerDocsMiddleware = await fetchEigenLayerDocsMiddleware();
 
     // Create the full prompt with fetched data
@@ -62,12 +62,12 @@ export async function stage2DesignPrompt(): Promise<string> {
 // Custom prompt for Stage 3: AVS code generation - Now fetches on demand
 export async function stage3PrototypePrompt(): Promise<string> {
   try {
-    console.log('prompts: generating stage 3 code prompt on demand');
+    console.log('prompts: generating stage 3 code prompt');
     const eigenLayerDocsMiddleware = await fetchEigenLayerDocsMiddleware();
     const helloWorldAVSCodeMin = await fetchHelloWorldAVSCodeMin();
 
     // Create the full prompt with fetched data
-    const fullPrompt = stage3PrototypePromptLLMGuidanceTaskPlan
+    const fullPrompt = stage3PrototypePromptOverviewOnly
       + '# And you can use the following Hello World AVS code for additional context:'
       + helloWorldAVSCodeMin 
       + '# And you can use the following EigenLayer documentation for additional context:'
@@ -79,7 +79,7 @@ export async function stage3PrototypePrompt(): Promise<string> {
   } catch (error) {
     console.error("Error constructing stage 3 code prompt:", error);
     // Fallback to the basic prompt if fetching fails
-    return stage3PrototypePromptLLMGuidanceTaskPlan + '\n# And you can use the following EigenLayer documentation for additional context:\n' + eigenBasicsDoc;
+    return stage3PrototypePromptOverviewOnly + '\n# And you can use the following EigenLayer documentation for additional context:\n' + eigenBasicsDoc;
   }
 }
 
@@ -141,6 +141,5 @@ Improve the following spreadsheet based on the given prompt.
 ${currentContent}
 `
         : '';
-
 
 
