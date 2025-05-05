@@ -2,7 +2,7 @@ export const stage3PrototypePromptOverviewOnly = `
 # ** BEGIN INSTRUCTIONS FOR LLM **
 
 
-Respond with a high level summary of the changes to be made to the codebase to implement the user's AVS idea or design. Respond in text format, not in markdown.
+Respond with a high level summary of the changes to be made to the codebase to implement the user's AVS idea or design. Respond in text format. Do not include any markdown formatting or code blocks with backticks.
 
 **END OF INSTRUCTIONS FOR LLM**
 `;
