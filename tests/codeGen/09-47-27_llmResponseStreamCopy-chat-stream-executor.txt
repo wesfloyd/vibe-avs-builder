@@ -1,0 +1,1542 @@
+
+[
+
+ 
+ {
+
+   
+ "
+path
+":
+ "
+contracts
+/src
+/C
+at
+Image
+Service
+Manager
+.sol
+",
+
+   
+ "
+summary
+":
+ "
+Im
+plements
+ the
+ Cat
+ Image
+ Service
+ Manager
+ contract
+ where
+ tasks
+ for
+ generating
+ and
+ verifying
+ cat
+ images
+ are
+ managed
+.",
+
+   
+ "
+content
+":
+ "//
+ SPDX
+-License
+-Identifier
+:
+ UN
+LICENSE
+D
+\n
+pragma
+ solidity
+ ^
+0
+.
+8
+.
+9
+;\
+n
+\n
+import
+ {
+ECD
+SA
+Service
+Manager
+Base
+}
+ from
+ \"
+@
+e
+igen
+layer
+-m
+iddleware
+/src
+/
+una
+ud
+ited
+/E
+CD
+SA
+Service
+Manager
+Base
+.sol
+\"
+;\
+n
+import
+ {
+I
+Service
+Manager
+}
+ from
+ \"
+@
+e
+igen
+layer
+-m
+iddleware
+/src
+/interfaces
+/I
+Service
+Manager
+.sol
+\"
+;\
+n
+import
+ {
+I
+Image
+Service
+Manager
+}
+ from
+ \"
+./
+I
+Image
+Service
+Manager
+.sol
+\"
+;\
+n
+\n
+contract
+ Cat
+Image
+Service
+Manager
+ is
+ E
+CD
+SA
+Service
+Manager
+Base
+,
+ I
+Image
+Service
+Manager
+ {\
+n
+   
+ uint
+32
+ public
+ latest
+Task
+Num
+;\
+n
+   
+ mapping
+(uint
+32
+ =>
+ Task
+)
+ public
+ all
+Tasks
+;\
+n
+   
+ mapping
+(uint
+32
+ =>
+ address
+[])
+ public
+ task
+Ver
+ifiers
+;\
+n
+\n
+   
+ struct
+ Task
+ {\
+n
+       
+ string
+ cat
+Image
+Url
+;\
+n
+       
+ uint
+32
+ created
+Block
+;\
+n
+       
+ uint
+32
+ verification
+Threshold
+;\
+n
+       
+ uint
+32
+ verified
+Count
+;\
+n
+   
+ }\
+n
+\n
+   
+ constructor
+(\
+n
+       
+ address
+ _
+avs
+Directory
+,\
+n
+       
+ address
+ _
+stake
+Registry
+,\
+n
+       
+ address
+ _
+re
+wards
+Coordinator
+,\
+n
+       
+ address
+ _
+deleg
+ation
+Manager
+,\
+n
+       
+ address
+ _
+allocation
+Manager
+\n
+   
+ )
+ \
+n
+       
+ E
+CD
+SA
+Service
+Manager
+Base
+(\
+n
+           
+ _
+avs
+Directory
+,\
+n
+           
+ _
+stake
+Registry
+,\
+n
+           
+ _
+re
+wards
+Coordinator
+,\
+n
+           
+ _
+deleg
+ation
+Manager
+,\
+n
+           
+ _
+allocation
+Manager
+\n
+       
+ )
+ {}\
+n
+\n
+   
+ function
+ create
+Cat
+Image
+Task
+(string
+ memory
+ image
+Url
+)
+ external
+ returns
+ (
+Task
+ memory
+)
+ {\
+n
+       
+ Task
+ memory
+ new
+Task
+ =
+ Task
+(image
+Url
+,
+ uint
+32
+(block
+.number
+),
+ 
+90
+,
+ 
+0
+);\
+n
+       
+ all
+Tasks
+[
+latest
+Task
+Num
+]
+ =
+ new
+Task
+;\
+n
+       
+ emit
+ New
+Task
+Created
+(lat
+est
+Task
+Num
+,
+ new
+Task
+);\
+n
+       
+ latest
+Task
+Num
+++
+;\
+n
+       
+ return
+ new
+Task
+;\
+n
+   
+ }\
+n
+\n
+   
+ function
+ verify
+Cat
+Image
+(uint
+32
+ task
+Index
+,
+ bool
+ is
+Cat
+Image
+)
+ external
+ {\
+n
+       
+ require
+(task
+Index
+ <
+ latest
+Task
+Num
+,
+ \"
+Task
+ does
+ not
+ exist
+\
+");
+\
+n
+       
+ Task
+ storage
+ task
+ =
+ all
+Tasks
+[
+task
+Index
+];
+\
+n
+       
+ task
+Ver
+ifiers
+[
+task
+Index
+].
+push
+(msg
+.sender
+);\
+n
+\n
+       
+ if
+ (
+is
+Cat
+Image
+)
+ {\
+n
+           
+ task
+.
+verified
+Count
+++
+;\
+n
+       
+ }\
+n
+\n
+       
+ if
+ (
+task
+.
+verified
+Count
+ >=
+ task
+.ver
+ification
+Threshold
+)
+ {\
+n
+           
+ emit
+ Task
+Verified
+(task
+Index
+,
+ task
+);\
+n
+       
+ }\
+n
+   
+ }\
+n
+\n
+   
+ //
+ Event
+ emitted
+ when
+ a
+ new
+ task
+ is
+ created
+\n
+   
+ event
+ New
+Task
+Created
+(uint
+32
+ indexed
+ task
+Index
+,
+ Task
+ task
+);\
+n
+   
+ //
+ Event
+ emitted
+ when
+ a
+ task
+ is
+ verified
+\n
+   
+ event
+ Task
+Verified
+(uint
+32
+ indexed
+ task
+Index
+,
+ Task
+ task
+);\
+n
+}\
+n
+"
+
+ 
+ },
+
+ 
+ {
+
+   
+ "
+path
+":
+ "
+contracts
+/src
+/I
+Image
+Service
+Manager
+.sol
+",
+
+   
+ "
+summary
+":
+ "
+Interface
+ for
+ Cat
+ Image
+ Service
+ Manager
+ contract
+ outlining
+ the
+ core
+ functionalities
+.",
+
+   
+ "
+content
+":
+ "//
+ SPDX
+-License
+-Identifier
+:
+ UN
+LICENSE
+D
+\n
+pragma
+ solidity
+ ^
+0
+.
+8
+.
+9
+;\
+n
+\n
+interface
+ I
+Image
+Service
+Manager
+ {\
+n
+   
+ struct
+ Task
+ {\
+n
+       
+ string
+ cat
+Image
+Url
+;\
+n
+       
+ uint
+32
+ created
+Block
+;\
+n
+       
+ uint
+32
+ verification
+Threshold
+;\
+n
+       
+ uint
+32
+ verified
+Count
+;\
+n
+   
+ }\
+n
+\n
+   
+ function
+ create
+Cat
+Image
+Task
+(string
+ memory
+ image
+Url
+)
+ external
+ returns
+ (
+Task
+ memory
+);\
+n
+   
+ function
+ verify
+Cat
+Image
+(uint
+32
+ task
+Index
+,
+ bool
+ is
+Cat
+Image
+)
+ external
+;\
+n
+   
+ event
+ New
+Task
+Created
+(uint
+32
+ indexed
+ task
+Index
+,
+ Task
+ task
+);\
+n
+   
+ event
+ Task
+Verified
+(uint
+32
+ indexed
+ task
+Index
+,
+ Task
+ task
+);\
+n
+}\
+n
+"
+
+ 
+ },
+
+ 
+ {
+
+   
+ "
+path
+":
+ "
+contracts
+/test
+/C
+at
+Image
+Service
+Manager
+.t
+.sol
+",
+
+   
+ "
+summary
+":
+ "
+Unit
+ tests
+ for
+ the
+ Cat
+ Image
+ Service
+ Manager
+ contract
+ to
+ ensure
+ tasks
+ are
+ created
+ and
+ verified
+ correctly
+.",
+
+   
+ "
+content
+":
+ "//
+ SPDX
+-License
+-Identifier
+:
+ UN
+LICENSE
+D
+\n
+pragma
+ solidity
+ ^
+0
+.
+8
+.
+12
+;\
+n
+\n
+import
+ {
+Cat
+Image
+Service
+Manager
+}
+ from
+ \"
+../
+src
+/C
+at
+Image
+Service
+Manager
+.sol
+\"
+;\
+n
+import
+ {
+Test
+}
+ from
+ \"
+forge
+-
+std
+/Test
+.sol
+\"
+;\
+n
+\n
+contract
+ Cat
+Image
+Service
+Manager
+Test
+ is
+ Test
+ {\
+n
+   
+ Cat
+Image
+Service
+Manager
+ service
+Manager
+;\
+n
+\n
+   
+ function
+ set
+Up
+()
+ public
+ {\
+n
+       
+ service
+Manager
+ =
+ new
+ Cat
+Image
+Service
+Manager
+(
+0
+x
+123
+456
+789
+012
+345
+678
+901
+234
+567
+890
+123
+456
+789
+0
+,
+ 
+0
+x
+123
+456
+789
+012
+345
+678
+901
+234
+567
+890
+123
+456
+789
+0
+,
+ 
+0
+x
+123
+456
+789
+012
+345
+678
+901
+234
+567
+890
+123
+456
+789
+0
+,
+ 
+0
+x
+123
+456
+789
+012
+345
+678
+901
+234
+567
+890
+123
+456
+789
+0
+,
+ 
+0
+x
+123
+456
+789
+012
+345
+678
+901
+234
+567
+890
+123
+456
+789
+0
+);\
+n
+   
+ }\
+n
+\n
+   
+ function
+ test
+Create
+Cat
+Image
+Task
+()
+ public
+ {\
+n
+       
+ string
+ memory
+ image
+Url
+ =
+ \"
+https
+://
+example
+.com
+/c
+at
+.jpg
+\"
+;\
+n
+       
+ Cat
+Image
+Service
+Manager
+.Task
+ memory
+ task
+ =
+ service
+Manager
+.create
+Cat
+Image
+Task
+(image
+Url
+);\
+n
+       
+ assert
+Eq
+(task
+.cat
+Image
+Url
+,
+ image
+Url
+,
+ \"
+Cat
+ image
+ URL
+ should
+ match
+\
+");
+\
+n
+   
+ }\
+n
+\n
+   
+ function
+ test
+Verify
+Cat
+Image
+()
+ public
+ {\
+n
+       
+ string
+ memory
+ image
+Url
+ =
+ \"
+https
+://
+example
+.com
+/c
+at
+.jpg
+\"
+;\
+n
+       
+ service
+Manager
+.create
+Cat
+Image
+Task
+(image
+Url
+);\
+n
+       
+ service
+Manager
+.verify
+Cat
+Image
+(
+0
+,
+ true
+);\
+n
+       
+ assert
+Eq
+(service
+Manager
+.all
+Tasks
+(
+0
+).
+verified
+Count
+,
+ 
+1
+,
+ \"
+Verified
+ count
+ should
+ increment
+\
+");
+\
+n
+   
+ }\
+n
+}\
+n
+"
+
+ 
+ },
+
+ 
+ {
+
+   
+ "
+path
+":
+ "
+contracts
+/config
+/
+hello
+-world
+/
+313
+37
+.json
+",
+
+   
+ "
+summary
+":
+ "
+Configuration
+ for
+ deploying
+ the
+ Cat
+ Image
+ Service
+ on
+ a
+ test
+ network
+.",
+
+   
+ "
+content
+":
+ "{
+\
+n
+ 
+ \"
+addresses
+\":
+ {\
+n
+   
+ \"
+re
+wards
+Owner
+\":
+ \"
+0
+x
+Your
+Rewards
+Owner
+Address
+\",\
+n
+   
+ \"
+re
+wards
+Initi
+ator
+\":
+ \"
+0
+x
+Your
+Rewards
+Initi
+ator
+Address
+\"\
+n
+ 
+ },
+\
+n
+ 
+ \"
+keys
+\":
+ {\
+n
+   
+ \"
+re
+wards
+Owner
+\":
+ \"
+0
+x
+Your
+Rewards
+Owner
+Key
+\",\
+n
+   
+ \"
+re
+wards
+Initi
+ator
+\":
+ \"
+0
+x
+Your
+Rewards
+Initi
+ator
+Key
+\"\
+n
+ 
+ }\
+n
+}\
+n
+"
+
+ 
+ },
+
+ 
+ {
+
+   
+ "
+path
+":
+ "
+README
+.md
+",
+
+   
+ "
+summary
+":
+ "
+Updated
+ README
+ file
+ to
+ include
+ information
+ about
+ the
+ Cat
+ Image
+ Service
+ AV
+S
+.",
+
+   
+ "
+content
+":
+ "#
+ Cat
+ Image
+ AV
+S
+\n
+\n
+This
+ project
+ showcases
+ a
+ simple
+ AV
+S
+ that
+ generates
+ cat
+ images
+ and
+ allows
+ a
+ group
+ of
+ Operators
+ to
+ verify
+ whether
+ the
+ likelihood
+ of
+ an
+ image
+ meeting
+ a
+ specified
+ threshold
+ (
+90
+%)
+ as
+ being
+ a
+ cat
+ image
+.\
+n
+\n
+##
+ Overview
+\n
+1
+.
+ **
+Task
+ Creation
+**
+:
+ Generate
+ a
+ task
+ for
+ creating
+ a
+ new
+ cat
+ image
+.\
+n
+2
+.
+ **
+Verification
+**
+:
+ Have
+ registered
+ Operators
+ verify
+ the
+ image
+ and
+ submit
+ their
+ assessments
+.\
+n
+3
+.
+ **
+Consensus
+**
+:
+ Once
+ enough
+ ver
+ifications
+ have
+ been
+ received
+,
+ the
+ task
+ is
+ marked
+ as
+ verified
+.\
+n
+\n
+##
+ Local
+ Development
+\n
+-
+ Follow
+ instructions
+ for
+ setting
+ up
+ the
+ environment
+ and
+ deploying
+ contracts
+ as
+ documented
+.\
+n
+\n
+##
+ Deploy
+ing
+\n
+To
+ deploy
+ the
+ Cat
+ Image
+ AV
+S
+:\
+n
+1
+.
+ Setup
+ the
+ configuration
+ files
+ in
+ `
+contracts
+/config
+/
+hello
+-world
+/
+313
+37
+.json
+`
+.\
+n
+2
+.
+ Build
+ and
+ deploy
+ the
+ contracts
+ using
+ the
+ provided
+ scripts
+.\
+n
+3
+.
+ Inter
+act
+ with
+ the
+ service
+ using
+ the
+ deployed
+ `
+Cat
+Image
+Service
+Manager
+`
+.\
+n
+\n
+##
+ Con
+tributing
+\n
+Con
+tributions
+ are
+ welcome
+!
+ Please
+ create
+ an
+ issue
+ or
+ a
+ pull
+ request
+ for
+ any
+ enhancements
+ or
+ bug
+ fixes
+."
+
+ 
+ }
+
+]
+
+
