@@ -19,6 +19,7 @@ import { MessageEditor } from './message-editor';
 import { DocumentPreview } from './document-preview';
 import { MessageReasoning } from './message-reasoning';
 import type { UseChatHelpers } from '@ai-sdk/react';
+import { RenderJson } from './render-json';
 
 const PurePreviewMessage = ({
   chatId,
@@ -124,8 +125,8 @@ const PurePreviewMessage = ({
                         })}
                       >
                         {/* Check if the text starts with a JSON code block */}
-                        {typeof part.text === 'string' && part.text.trim().startsWith('```json') ? (
-                          <div>hello world</div>
+                        {typeof part.text === 'string' && part.text.trim().match(/^[\[{]/) ? (
+                          <RenderJson jsonString={part.text} />
                         ) : (
                           <Markdown>{part.text}</Markdown>
                         )}

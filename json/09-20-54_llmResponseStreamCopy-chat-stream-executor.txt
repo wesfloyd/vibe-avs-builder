@@ -1,0 +1,41 @@
+{
+  "files": [
+    {
+      "path": "contracts/src/CatImageServiceManager.sol",
+      "summary": "Cat Image Service Manager contract that generates cat images and manages operator verifications.",
+      "content": "// SPDX-License-Identifier: UNLICENSED\npragma solidity ^0.8.9;\n\nimport {ECDSAServiceManagerBase} from \"@eigenlayer-middleware/src/unaudited/ECDSAServiceManagerBase.sol\";\nimport {ICatImageServiceManager} from \"./ICatImageServiceManager.sol\";\n\ncontract CatImageServiceManager is ECDSAServiceManagerBase, ICatImageServiceManager {\n    struct CatImage {\n        string url;\n        bool isVerified;\n    }\n    \n    CatImage[] public catImages;\n    uint32 public latestTaskNum;\n\n    modifier onlyOperator() {\n        require(ECDSAStakeRegistry(stakeRegistry).operatorRegistered(msg.sender), \"Operator must be the caller\");\n        _;\n    }\n\n    constructor(address _avsDirectory, address _stakeRegistry, address _rewardsCoordinator, address _delegationManager, address _allocationManager)\n        ECDSAServiceManagerBase(_avsDirectory, _stakeRegistry, _rewardsCoordinator, _delegationManager, _allocationManager)\n    {}\n\n    function generateCatImage(string memory url) external returns (CatImage memory) {\n        CatImage memory newImage = CatImage({url: url, isVerified: false});\n        catImages.push(newImage);\n        emit NewCatImageGenerated(url);\n        return newImage;\n    }\n\n    function verifyCatImage(uint32 taskIndex, bool isCatImage) external onlyOperator {\n        require(taskIndex < catImages.length, \"Invalid task index\");\n        require(!catImages[taskIndex].isVerified, \"Image already verified\");\n        catImages[taskIndex].isVerified = isCatImage;\n        emit CatImageVerified(taskIndex, isCatImage);\n    }\n}",
+      "comments": [
+        "This contract allows generating cat images and verifying their likelihood with operators.",
+        "Operators can mark images as verified based on their likelihood being greater than 90%.",
+        "The verification process emits events for transparency and tracking."
+      ]
+    },
+    {
+      "path": "contracts/src/ICatImageServiceManager.sol",
+      "summary": "Interface for the Cat Image Service Manager contract.",
+      "content": "// SPDX-License-Identifier: UNLICENSED\npragma solidity ^0.8.9;\n\ninterface ICatImageServiceManager {\n    event NewCatImageGenerated(string url);\n    event CatImageVerified(uint32 indexed taskIndex, bool isCatImage);\n\n    function generateCatImage(string memory url) external returns (CatImage memory);\n    function verifyCatImage(uint32 taskIndex, bool isCatImage) external;\n\n    struct CatImage {\n        string url;\n        bool isVerified;\n    }\n}",
+      "comments": [
+        "This interface defines the main functions and events for interacting with the Cat Image Service Manager.",
+        "It includes the ability to generate cat images and verify their likelihood."
+      ]
+    },
+    {
+      "path": "contracts/test/CatImageServiceManager.t.sol",
+      "summary": "Tests for the Cat Image Service Manager contract.",
+      "content": "// SPDX-License-Identifier: UNLICENSED\npragma solidity ^0.8.12;\n\nimport \"../src/CatImageServiceManager.sol\";\nimport \"forge-std/Test.sol\";\n\ncontract CatImageServiceManagerTest is Test {\n    CatImageServiceManager catImageServiceManager;\n    \n    function setUp() public {\n        catImageServiceManager = new CatImageServiceManager(address(0), address(0), address(0), address(0), address(0));\n    }\n    \n    function testGenerateCatImage() public {\n        string memory imageUrl = \"https://example.com/cat.jpg\";\n        CatImageServiceManager.CatImage memory newImage = catImageServiceManager.generateCatImage(imageUrl);\n        assertEq(newImage.url, imageUrl);\n        assertFalse(newImage.isVerified);\n    }\n    \n    function testVerifyCatImage() public {\n        catImageServiceManager.generateCatImage(\"https://example.com/cat.jpg\");\n        catImageServiceManager.verifyCatImage(0, true);\n        CatImageServiceManager.CatImage memory verifiedImage = catImageServiceManager.catImages(0);\n        assertTrue(verifiedImage.isVerified);\n    }\n}",
+      "comments": [
+        "These tests validate the functionality of the Cat Image Service Manager, ensuring that cat images can be generated and verified correctly.",
+        "Tests check proper state changes and event emissions."
+      ]
+    },
+    {
+      "path": "README.md",
+      "summary": "Documentation for the Cat Image AVS project.",
+      "content": "# Cat Image AVS\n\n## Overview\nThis Autonomous Verifiable Service (AVS) generates images of cats and allows a group of operators to verify their quality by ensuring they are genuine cat images with a criterion of at least 90% likelihood.\n\n## Contract Structure\n- **CatImageServiceManager**: Manages the generation of cat images and their verifications.\n- **ICatImageServiceManager**: Interface for interacting with the Cat Image Service Manager.\n\n## Local Devnet Deployment\n### Steps\n1. Deploy the contracts using Foundry.\n2. Test the functionality of generating and verifying cat images with the provided tests.\n\n## Future Development\n- Add functionality for more image types and likelihood calculations.\n- Enhanced operator incentives based on successful verification.",
+      "comments": [
+        "The README provides an overview of the project, its purpose, and how to deploy and test it.",
+        "Future development ideas are suggested for enhancing the service."
+      ]
+    }
+  ]
+}

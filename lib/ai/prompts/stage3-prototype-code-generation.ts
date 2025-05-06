@@ -25,6 +25,7 @@ Include a summary of each file generated and its relative file path in the direc
   }
 
 Only respond with the JSON objects, no other text or comments.
+Do not surround the JSON object with three backticks.
 
 **END OF INSTRUCTIONS FOR LLM**
 `;
