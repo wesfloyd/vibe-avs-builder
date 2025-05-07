@@ -3,7 +3,7 @@ import path from 'path';
 import { generateZipFromJSON } from '../../lib/code/generate-zip';
 
 // Read the input JSON from the file
-const inputFilePath = path.join(__dirname, '09-47-27_llmResponseStreamCopy-chat-stream-executor.txt');
+const inputFilePath = path.join(__dirname, 'example-code-project-json.txt');
 const jsonInput = fs.readFileSync(inputFilePath, 'utf8');
 
 // Test the generateZipFromJSON function

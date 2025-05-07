@@ -40,6 +40,11 @@ Note: this app was forked from [Vercel Next.js AI Chatbot](https://vercel.com/te
 
 
 
+# Testing
 
+Tests:
+```
+npx jest tests/codeGen/generateZipFromJSON.test.ts
+```
 
 
