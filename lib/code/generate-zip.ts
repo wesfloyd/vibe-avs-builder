@@ -3,13 +3,20 @@ import fs from 'fs';
 import path from 'path';
 import archiver from 'archiver';
 import bodyParser from 'body-parser';
+import { PassThrough, Readable } from 'stream';
+import { put } from '@vercel/blob';
 
 type CodeFile = {
     path: string;
     content: string;
   };
 
-export function generateZipFromJSON(jsonInput: string): Promise<string> {
+// Define a type for the response if not already available
+type BlobResponse = {
+    url: string;
+};
+
+export async function generateZipFromJSON(jsonInput: string): Promise<string> {
     let files: CodeFile[];
 
     try {
@@ -31,24 +38,29 @@ export function generateZipFromJSON(jsonInput: string): Promise<string> {
         }
     });
 
-    const zipPath = path.join(__dirname, 'temp', 'project.zip').toString();
-    const output = fs.createWriteStream(zipPath);
+    // Create the zip archive and collect output in a buffer
     const archive = archiver('zip');
+    const chunks: Buffer[] = [];
 
-    return new Promise((resolve, reject) => {
-        archive.pipe(output);
+    archive.on('data', (chunk) => chunks.push(chunk));
+    archive.on('error', (err) => { throw err; });
 
-        files.forEach(file => {
-            const fullPath = path.join('temp', file.path);
-            const dir = path.dirname(fullPath);
-            fs.mkdirSync(dir, { recursive: true });
-            fs.writeFileSync(fullPath, file.content, 'utf8');
-            archive.file(fullPath, { name: file.path });
-        });
-
-        archive.finalize();
-
-        output.on('close', () => resolve(zipPath));
-        archive.on('error', (err: Error) => reject(err));
+    files.forEach(file => {
+        archive.append(file.content, { name: file.path });
     });
+
+    await archive.finalize();
+
+    const buffer = Buffer.concat(chunks);
+
+    // Upload to Vercel Blob Storage
+    const response: BlobResponse = await put(
+        `projectCodeZipArchives/${Date.now()}.zip`,
+        buffer,
+        {
+            access: 'public',
+            contentType: 'application/zip',
+        }
+    );
+    return response.url;
 }

@@ -1,6 +1,9 @@
 import fs from 'fs';
 import path from 'path';
 import { generateZipFromJSON } from '../../lib/code/generate-zip';
+import fetch from 'node-fetch';
+import dotenv from 'dotenv';
+dotenv.config({ path: '.env.local' });
 
 // Read the input JSON from the file
 const inputFilePath = path.join(__dirname, 'example-code-project-json.txt');
@@ -10,15 +13,14 @@ const jsonInput = fs.readFileSync(inputFilePath, 'utf8');
 describe('generateZipFromJSON', () => {
   it('should create a zip file with the expected content', async () => {
     // Call the function
-    generateZipFromJSON(jsonInput);
+    const url = await generateZipFromJSON(jsonInput);
 
-    // Define the expected zip file path
-    const expectedZipPath = path.join(__dirname, '../../lib/code/temp/project.zip');
+    console.log(url);
 
     // Check if the zip file exists
-    expect(fs.existsSync(expectedZipPath)).toBe(true);
-    
-    // Clean up: remove the created zip file
-    fs.unlinkSync(expectedZipPath);
+    expect(url).toBeDefined();
+
+    const response = await fetch(url);
+    expect(response.status).toBe(200);
   });
 }); 
