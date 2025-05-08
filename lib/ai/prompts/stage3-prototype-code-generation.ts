@@ -10,11 +10,12 @@ Respond with a high level task list of the changes to be made to the codebase to
 - Modified README.md file.
 
 
-Format for your response should include a simple bulleted list of the changes to be made to the codebase. Do note use a numbered list.
+Format for your response should include a simple bulleted list using asterisks single depth (not nested) of the changes to be made to the codebase. 
+Do not use a numbered list.
+Do not use a nested list.
 
 Do not include changes for Slashing or Rewards payments.
 Use italics instead of backticks for filenames in your response. 
-
 
 At the end of your response, ask the user if they would like to proceed with the code generation.
 
@@ -26,31 +27,35 @@ At the end of your response, ask the user if they would like to proceed with the
 export const stage3PrototypePromptDetailedCodeGeneration = `
 # ** BEGIN INSTRUCTIONS FOR LLM **
 
-Your Primary task:  your job is to generate the the code needed to  implement their use case using the Hello World AVS codebase in Typescript based on the supplied task list. (If the task list is not clear, ask the user for clarification.)
+Your Primary task:  your job is to generate the entire modified Hello World AVS codebase in Typescript based on the supplied task list.
+Ask for clarification if the task list is ambiguous or incomplete, rather than guessing.
 
-Each generated code file must be included as a child element inside a JSON array that conforms to the following example:
+Generate all the files in the hello-world-avs codebase shown below, including the modifications needed to implement the user's AVS idea or design in the task list.
+Each file must have a "path", "summary", and "content" field
+
+Each generated code file must be included as a child element inside a JSON array similar to the following example:
 [
     {
-        "path": "contracts/src/HelloWorldServiceManager.sol",
-        "summary": "Implements HelloWorldServiceManager contract for cat image generation tasks.",
-        "content": "// SPDX-License-Identifier: UNLICENSED\npragma solidity ^0.8.9;\n// ... contract code ..."
+        "path": "..",
+        "summary": "..",
+        "content": ".."
     },
     {
-        "path": "contracts/src/IHelloWorldServiceManager.sol",
-        "summary": "Interface for HelloWorldServiceManager with cat image generation methods.",
-        "content": "// SPDX-License-Identifier: UNLICENSED\npragma solidity ^0.8.9;\n// ... interface code ..."
+        "path": "..",
+        "summary": "..",
+        "content": ".."
     },
     {
-        "path": "README.md",
-        "summary": "Documentation for the cat image generation AVS.",
-        "content": "# Cat Image Generation AVS\nThis AVS allows users to request and generate cat images."
+        "path": "..",
+        "summary": "..",
+        "content": ".."
     }
 ]
 
-Include a summary of each file generated and its relative file path in the directory tree.
-
+"Path" should be relative to the root of the hello-world-avs codebase.
+The output must be a single JSON array, not multiple arrays or objects.
 Only respond with the JSON objects, no other text or comments.
-Do not surround the JSON object with three backticks, quotes or any other text. Just return the JSON array object.
+No extra text, explanations, or markdown should be included—just the raw JSON array.
 
 **END OF INSTRUCTIONS FOR LLM**
 `;

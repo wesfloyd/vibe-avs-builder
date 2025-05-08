@@ -124,7 +124,7 @@ export async function generateZipFromJSON(jsonInput: string): Promise<string> {
 
     // Upload to Vercel Blob Storage
     const response: BlobResponse = await put(
-        `projectCodeZipArchives/${Date.now()}.zip`,
+        `projectCodeZipArchives/hello-world-avs-custom-project-${Date.now()}.zip`,
         buffer,
         {
             access: 'public',

@@ -22,12 +22,7 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
     //   action: `Generate code for my AVS prototype using Hello World example`,
     //   initialIntent: UserIntent.GenerateTaskList
     // },
-    {
-      title: 'Generate code for my AVS prototype',
-      label: STAGE3_TEST_PROMPT1.substring(0, 80) + '...',
-      action: STAGE3_TEST_PROMPT1,
-      initialIntent: UserIntent.GenerateTaskList
-    },
+    
     
     
     // {
@@ -36,12 +31,7 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
     //   action: `Generate a Design tech spec based on my AVS idea.`,
     //   initialIntent: UserIntent.GenerateDesign
     // },
-    {
-      title: 'Generate a Design tech spec',
-      label: STAGE2_TEST_PROMPT1.substring(0, 80) + '...',
-      action: STAGE2_TEST_PROMPT1,
-      initialIntent: UserIntent.GenerateDesign
-    },
+
     
 
     // {
@@ -52,13 +42,26 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
     //   initialIntent: UserIntent.RefineIdea    
     // },
     {
-      title: 'Refine an AVS idea',
+      title: 'Step1: Refine an AVS idea',
       label: STAGE1_TEST_PROMPT1.substring(0, 80) + '...',
       action: STAGE1_TEST_PROMPT1,
       initialIntent: UserIntent.RefineIdea
     },
     {
-      title: '(Test Button) Generate code for my AVS based on task list',
+      title: 'Step2: Generate a Design tech spec',
+      label: STAGE2_TEST_PROMPT1.substring(0, 80) + '...',
+      action: STAGE2_TEST_PROMPT1,
+      initialIntent: UserIntent.GenerateDesign
+    },
+    {
+      title: 'Step3: Generate code for my AVS prototype',
+      label: STAGE3_TEST_PROMPT1.substring(0, 80) + '...',
+      action: STAGE3_TEST_PROMPT1,
+      initialIntent: UserIntent.GenerateTaskList
+    },
+
+    {
+      title: 'Step3(+):  Generate code for my AVS based on task list',
       label: STAGE3_TEST_PROMPT2.substring(0, 80) + '...',
       action: STAGE3_TEST_PROMPT2,
       initialIntent: UserIntent.GenerateCode
