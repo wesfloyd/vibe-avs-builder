@@ -15,7 +15,8 @@ import {
 import { generateTitleFromUserMessage } from '../../actions';
 import { classifyUserIntent } from '@/lib/ai/intentManager';
 import { UserIntent } from '@/lib/ai/types';
-import { generateLLMResponse } from '@/lib/ai/chat-stream-executor';
+import { generateStreamingLLMResponse } from '@/lib/ai/chat-stream-executor';
+import { generateBatchLLMResponse } from '@/lib/ai/chat-batch-executor';
 
 
 
@@ -48,38 +49,43 @@ export async function POST(request: Request) {
       return new Response('No user message found', { status: 400 });
     }
 
-    const chat = await getChatById({ id });
+    // const chat = await getChatById({ id });
 
-    if (!chat) {
-      const title = await generateTitleFromUserMessage({
-        message: userMessage,
-      });
+    // if (!chat) {
+    //   const title = await generateTitleFromUserMessage({
+    //     message: userMessage,
+    //   });
 
-      await saveChat({ id, userId: session.user.id, title });
-    } else {
-      if (chat.userId !== session.user.id) {
-        return new Response('Unauthorized', { status: 401 });
-      }
-    }
+    //   await saveChat({ id, userId: session.user.id, title });
+    // } else {
+    //   if (chat.userId !== session.user.id) {
+    //     return new Response('Unauthorized', { status: 401 });
+    //   }
+    // }
 
-    await saveMessages({
-      messages: [
-        {
-          chatId: id,
-          id: userMessage.id,
-          role: 'user',
-          parts: userMessage.parts,
-          attachments: userMessage.experimental_attachments ?? [],
-          createdAt: new Date(),
-        },
-      ],
-    });
+    // await saveMessages({
+    //   messages: [
+    //     {
+    //       chatId: id,
+    //       id: userMessage.id,
+    //       role: 'user',
+    //       parts: userMessage.parts,
+    //       attachments: userMessage.experimental_attachments ?? [],
+    //       createdAt: new Date(),
+    //     },
+    //   ],
+    // });
 
 
-    // Note: primary LLM backend invocation starts here.
+    
+    // const response = await generateBatchLLMResponse(messages, selectedChatModel, initialIntent);
+    // return response;
+
+
+    // Note: primary stream LLM backend invocation starts here.
     try {
 
-      const stream = await generateLLMResponse(messages, selectedChatModel, initialIntent);
+      const stream = await generateStreamingLLMResponse(messages, selectedChatModel, initialIntent);
 
       return LangChainAdapter.toDataStreamResponse(stream, {
         init: {

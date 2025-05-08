@@ -102,7 +102,7 @@ function concatStreams<T>(stream1: ReadableStream<T>, stream2: ReadableStream<T>
   });
 }
 
-export async function generateStreamingLLMResponse(
+export async function generateBatchLLMResponse(
   messages: UIMessage[], 
   selectedChatModel?: string,
   initialIntent?: UserIntent
@@ -130,7 +130,7 @@ export async function generateStreamingLLMResponse(
   } else if (intent === UserIntent.GenerateDesign) {
     systemPrompt = await stage2DesignPrompt();
   } else if (intent === UserIntent.BuildPrototype) {
-    systemPrompt = await stage3PrototypePromptTaskList();
+    systemPrompt = await stage3PrototypePromptCodeGeneration();
   } // else, keep the basicPrompt
 
   logContentForDebug(systemPrompt, `chat-stream-executor-system-prompt.txt`, 'Chat Stream Executor - System Prompt');
@@ -147,66 +147,9 @@ export async function generateStreamingLLMResponse(
     
     // Get the current model to use
     const modelToUse = getModelProvider(selectedChatModel);
-    
-
-
-
-    // Get the raw stream from the model
-    const [llmResponseStream, llmResponseStreamCopy] = (await modelToUse.stream(messageHistory)).tee();
-
-    
-
-    // log the stream copy without holding up your response
-    logStreamForDebug(
-      llmResponseStreamCopy, 
-      `llm-stream-${Date.now()}.txt`,
-      'Raw LLM response'
-    );
-
-
-    // const stringStream = new ReadableStream({
-    //   start(controller) {
-    //     controller.enqueue("Starting to generate your response now");
-    //     controller.close();
-    //   }
-    // });
-    //const combinedStream = concatStreams(stringStream, llmResponseStream);
-    //const combinedStream = concatStreams(streamA, streamB);
-    //return combinedStream;
-    
-    
-    
-    // const appendedStream = new ReadableStream({
-    //   async start(controller) {
-    //     let llmResponseText:string = '';
-    //     const reader = llmResponseStream.getReader();
-    //     try {
-    //       while (true) {
-    //         const { value, done } = await reader.read();
-    //         if (done) break;
-    //         llmResponseText += value.content;
-    //         controller.enqueue(value);
-    //       }
-          
-    //       logContentForDebug(llmResponseText, `llm-stream-${Date.now()}.txt`, 'LLM response text');
-    //       const customSystemPrompt = await stage3PrototypePromptCodeGeneration();
-    //       const invokeMessages = [new SystemMessage(customSystemPrompt), new AIMessage(llmResponseText)];
-    //       const response = await modelToUse.invoke(invokeMessages);
-    //       controller.enqueue(response);
-          
-    //       controller.close();
-    //     } catch (err) {
-    //       controller.error(err);
-    //     }
-    //   }
-    // });
-    
-
-
-    
-    
-    return llmResponseStream;
-    //return appendedStream;
+    const llmResponse = await modelToUse.invoke(messageHistory);
+    console.log('chat-batch-executor: llmResponse:', llmResponse);
+    return llmResponse;
 
   } catch (error) {
     console.error("LLM response generation failed:", error);

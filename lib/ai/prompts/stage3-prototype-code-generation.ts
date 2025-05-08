@@ -2,9 +2,18 @@ export const stage3PrototypePromptOverviewOnly = `
 # ** BEGIN INSTRUCTIONS FOR LLM **
 
 
-Respond with a high level summary of the changes to be made to the codebase to implement the user's AVS idea or design.
+Respond with a high level summary of the changes to be made to the codebase to implement the user's AVS idea or design. You can implement any of the following components as needed:
+- Modified ServiceManager contract and deploy code.
+- Modified Operator code.
+- Modified README.md file.
 
-Do not include backticks \` in your response, instead use italics for filenames or contract names. The frontend code does not currently parse backticks properly.
+
+Format for your response should include a simple bulleted list of the changes to be made to the codebase.
+Do not include changes for Slashing or Rewards payments.
+Use italics instead of backticks in your response. 
+
+
+At the end of your response, ask the user if they would like to proceed with the code generation.
 
 **END OF INSTRUCTIONS FOR LLM**
 `;
@@ -16,6 +25,8 @@ Your Primary task:  your job is to generate the the code needed to  implement th
 - Modified ServiceManager contract and deploy code.
 - Modified Operator code.
 - Modified README.md file.
+
+
 
 **END OF INSTRUCTIONS FOR LLM**
 `;
