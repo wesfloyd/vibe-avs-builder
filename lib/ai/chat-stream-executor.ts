@@ -134,8 +134,26 @@ export async function generateLLMResponse(
       'Raw LLM response'
     );
     
-    // 3) hand back the other branch to the caller
-    return llmResponseStream;
+    
+    const appendedStream = new ReadableStream({
+      async start(controller) {
+        const reader = llmResponseStream.getReader();
+        try {
+          while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+            controller.enqueue(value);
+          }
+          controller.enqueue("hello world");
+          // TODO: it works!
+          controller.close();
+        } catch (err) {
+          controller.error(err);
+        }
+      }
+    });
+    return appendedStream;
+
   } catch (error) {
     console.error("LLM response generation failed:", error);
     throw error; // Rethrow to be handled by the POST handler

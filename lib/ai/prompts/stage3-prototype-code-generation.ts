@@ -2,7 +2,9 @@ export const stage3PrototypePromptOverviewOnly = `
 # ** BEGIN INSTRUCTIONS FOR LLM **
 
 
-Respond with a high level summary of the changes to be made to the codebase to implement the user's AVS idea or design. Respond in text format, not in markdown.
+Respond with a high level summary of the changes to be made to the codebase to implement the user's AVS idea or design.
+
+Do not include backticks \` in your response, instead use italics for filenames or contract names. The frontend code does not currently parse backticks properly.
 
 **END OF INSTRUCTIONS FOR LLM**
 `;
