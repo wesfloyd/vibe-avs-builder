@@ -1,6 +1,7 @@
 export enum UserIntent {
   RefineIdea = "RefineIdea",
   GenerateDesign = "GenerateDesign",
-  BuildPrototype = "BuildPrototype",
+  GenerateTaskList = "GenerateTaskList",
+  GenerateCode = "GenerateCode",
   Other = "Other"
 } 

@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Button } from './ui/button';
 import { memo } from 'react';
 import type { UseChatHelpers } from '@ai-sdk/react';
-import { STAGE1_TEST_PROMPT1, STAGE2_TEST_PROMPT1, STAGE3_TEST_PROMPT1 } from '@/tests/prompts/avs';
+import { STAGE1_TEST_PROMPT1, STAGE2_TEST_PROMPT1, STAGE3_TEST_PROMPT1, STAGE3_TEST_PROMPT2 } from '@/tests/prompts/avs';
 import { UserIntent } from '@/lib/ai/types';
 
 interface SuggestedActionsProps {
@@ -14,47 +14,63 @@ interface SuggestedActionsProps {
 
 function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
   const suggestedActions = [
+    
+    
+    // {
+    //   title: 'Generate code for my AVS prototype',
+    //   label: `that I can run locally and demo`,
+    //   action: `Generate code for my AVS prototype using Hello World example`,
+    //   initialIntent: UserIntent.GenerateTaskList
+    // },
+    
+    
+    
+    // {
+    //   title: 'Generate a Design tech spec',
+    //   label: `to help define my AVS idea in detail`,
+    //   action: `Generate a Design tech spec based on my AVS idea.`,
+    //   initialIntent: UserIntent.GenerateDesign
+    // },
+
+    
+
+    // {
+    //   title: 'Refine an AVS idea',
+    //   label: 'Is this a good idea for an AVS? ..',
+    //   action:
+    //     'I have an idea for an EigenLayer Autonomously Verified Service, but it needs to be refined. Let me tell you more about it, then get your feedback.',
+    //   initialIntent: UserIntent.RefineIdea    
+    // },
     {
-      title: 'Refine an AVS idea',
-      label: 'Is this a good idea for an AVS? ..',
-      action:
-        'I have an idea for an EigenLayer Autonomously Verified Service, but it needs to be refined. Let me tell you more about it, then get your feedback.',
-      initialIntent: UserIntent.RefineIdea    
-    },
-    {
-      title: '(Test) Refine an AVS idea',
-      label: STAGE1_TEST_PROMPT1.substring(0, 40) + '...',
+      title: 'Step1: Refine an AVS idea',
+      label: STAGE1_TEST_PROMPT1.substring(0, 80) + '...',
       action: STAGE1_TEST_PROMPT1,
       initialIntent: UserIntent.RefineIdea
     },
     {
-      title: 'Generate a Design tech spec',
-      label: `to help define my AVS idea in detail`,
-      action: `Generate a Design tech spec based on my AVS idea.`,
-      initialIntent: UserIntent.GenerateDesign
-    },
-    {
-      title: '(Test) Generate a Design tech spec',
-      label: STAGE2_TEST_PROMPT1.substring(0, 40) + '...',
+      title: 'Step2: Generate a Design tech spec',
+      label: STAGE2_TEST_PROMPT1.substring(0, 80) + '...',
       action: STAGE2_TEST_PROMPT1,
       initialIntent: UserIntent.GenerateDesign
     },
     {
-      title: 'Generate code for my AVS prototype',
-      label: `that I can run locally and demo`,
-      action: `Generate code for my AVS prototype using Hello World example`,
-      initialIntent: UserIntent.BuildPrototype
-    },
-    {
-      title: '(Test) Generate code for my AVS prototype',
-      label: STAGE3_TEST_PROMPT1.substring(0, 40) + '...',
+      title: 'Step3: Generate code for my AVS prototype',
+      label: STAGE3_TEST_PROMPT1.substring(0, 80) + '...',
       action: STAGE3_TEST_PROMPT1,
-      initialIntent: UserIntent.BuildPrototype
+      initialIntent: UserIntent.GenerateTaskList
     },
+
+    {
+      title: 'Step3(+):  Generate code for my AVS based on task list',
+      label: STAGE3_TEST_PROMPT2.substring(0, 80) + '...',
+      action: STAGE3_TEST_PROMPT2,
+      initialIntent: UserIntent.GenerateCode
+    },
+
   ];
 
   return (
-    <div data-testid="suggested-actions" className="grid sm:grid-cols-2 gap-2 w-full">
+    <div data-testid="suggested-actions" className="grid sm:grid-cols-1 gap-2 w-full">
       {suggestedActions.map((suggestedAction, index) => (
         <motion.div
           initial={{ opacity: 0, y: 20 }}

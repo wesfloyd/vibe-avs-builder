@@ -9,7 +9,8 @@ const IntentClassificationSchema = z.object({
   intent: z.enum([
     UserIntent.RefineIdea,
     UserIntent.GenerateDesign, 
-    UserIntent.BuildPrototype,
+    UserIntent.GenerateTaskList, 
+    UserIntent.GenerateCode,
     UserIntent.Other
   ]).describe("The classified intent of the user's messages")
 });
@@ -25,8 +26,9 @@ export async function classifyUserIntent(messages: UIMessage[]): Promise<UserInt
     Given the user's recent messages, determine:
     1) Refine idea
     2) Generate design
-    3) Build prototype code
-    4) Other
+    3) Build prototype (start with task list if not yet generated)
+    4) Generate code (if task list created)
+    5) Other
     Classify the intent based on the conversation.
   `;
 

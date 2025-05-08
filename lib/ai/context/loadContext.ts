@@ -14,7 +14,14 @@ let helloWorldAVSCodeMinCache: string | null = null;
 export async function fetchEigenLayerDocsOverview(): Promise<string> {
   // Return cached docs if available
   if (eigenLayerDocsCache) {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('loadContext: fetchEigenLayerDocsOverview: returning cached docs');
+    }
     return eigenLayerDocsCache;
+  } else {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('loadContext: fetchEigenLayerDocsOverview: fetching new docs');
+    }
   }
 
   try {
@@ -41,7 +48,14 @@ export async function fetchEigenLayerDocsOverview(): Promise<string> {
 export async function fetchEigenLayerDocsMiddleware(): Promise<string> {
   // Return cached docs if available
   if (eigenLayerDocsMiddlewareCache) {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('loadContext: fetchEigenLayerDocsMiddleware: returning cached docs');
+    }
     return eigenLayerDocsMiddlewareCache;
+  } else {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('loadContext: fetchEigenLayerDocsMiddleware: fetching new docs');
+    }
   }
 
   try {
@@ -68,7 +82,14 @@ export async function fetchEigenLayerDocsMiddleware(): Promise<string> {
 export async function fetchHelloWorldAVSCodeMin(): Promise<string> {
   // Return cached code if available
   if (helloWorldAVSCodeMinCache) {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('loadContext: fetchHelloWorldAVSCodeMin: returning cached code');
+    }
     return helloWorldAVSCodeMinCache;
+  } else {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('loadContext: fetchHelloWorldAVSCodeMin: fetching new code');
+    }
   }
 
   try {

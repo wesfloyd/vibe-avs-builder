@@ -1,19 +1,61 @@
+import { codeProjectJSONSchema } from "@/lib/code/generate-zip";
+
 export const stage3PrototypePromptOverviewOnly = `
 # ** BEGIN INSTRUCTIONS FOR LLM **
 
 
-Respond with a high level summary of the changes to be made to the codebase to implement the user's AVS idea or design. Respond in text format, not in markdown.
+Respond with a high level task list of the changes to be made to the codebase to implement the user's AVS idea or design. You can implement any of the following components as needed:
+- Modified ServiceManager contract and deploy code.
+- Modified Operator code.
+- Modified README.md file.
+
+
+Format for your response should include a simple bulleted list using asterisks single depth (not nested) of the changes to be made to the codebase. 
+Do not use a numbered list.
+Do not use a nested list.
+
+Do not include changes for Slashing or Rewards payments.
+Use italics instead of backticks for filenames in your response. 
+
+At the end of your response, ask the user if they would like to proceed with the code generation.
 
 **END OF INSTRUCTIONS FOR LLM**
 `;
 
+
+
 export const stage3PrototypePromptDetailedCodeGeneration = `
 # ** BEGIN INSTRUCTIONS FOR LLM **
 
-Your Primary task:  your job is to generate the the code needed to  implement their use case using the Hello World AVS codebase in Typescript. You can implement any of the following components as needed:
-- Modified ServiceManager contract and deploy code.
-- Modified Operator code.
-- Modified README.md file.
+Your Primary task:  your job is to generate the entire modified Hello World AVS codebase in Typescript based on the supplied task list.
+Ask for clarification if the task list is ambiguous or incomplete, rather than guessing.
+
+Generate all the files in the hello-world-avs codebase shown below, including the modifications needed to implement the user's AVS idea or design in the task list.
+Each file must have a "path", "summary", and "content" field
+
+Each generated code file must be included as a child element inside a JSON array similar to the following example:
+[
+    {
+        "path": "..",
+        "summary": "..",
+        "content": ".."
+    },
+    {
+        "path": "..",
+        "summary": "..",
+        "content": ".."
+    },
+    {
+        "path": "..",
+        "summary": "..",
+        "content": ".."
+    }
+]
+
+"Path" should be relative to the root of the hello-world-avs codebase.
+The output must be a single JSON array, not multiple arrays or objects.
+Only respond with the JSON objects, no other text or comments.
+No extra text, explanations, or markdown should be included—just the raw JSON array.
 
 **END OF INSTRUCTIONS FOR LLM**
 `;

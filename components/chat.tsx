@@ -49,9 +49,9 @@ export function Chat({
     experimental_throttle: 100,
     sendExtraMessageFields: true,
     generateId: generateUUID,
-    onFinish: () => {
-      mutate(unstable_serialize(getChatHistoryPaginationKey));
-    },
+    // onFinish: () => {
+    //   mutate(unstable_serialize(getChatHistoryPaginationKey));
+    // },
     onError: (error) => {
       console.error('Chat hook threw:', error);
       if (error instanceof Response) {
@@ -64,10 +64,10 @@ export function Chat({
     },
   });
 
-  const { data: votes } = useSWR<Array<Vote>>(
-    messages.length >= 2 ? `/api/vote?chatId=${id}` : null,
-    fetcher,
-  );
+  // const { data: votes } = useSWR<Array<Vote>>(
+  //   messages.length >= 2 ? `/api/vote?chatId=${id}` : null,
+  //   fetcher,
+  // );
 
   const [attachments, setAttachments] = useState<Array<Attachment>>([]);
   const isArtifactVisible = useArtifactSelector((state) => state.isVisible);
@@ -85,7 +85,8 @@ export function Chat({
         <Messages
           chatId={id}
           status={status}
-          votes={votes}
+          // votes={votes}
+          votes={[]}
           messages={messages}
           setMessages={setMessages}
           reload={reload}
@@ -125,7 +126,8 @@ export function Chat({
         messages={messages}
         setMessages={setMessages}
         reload={reload}
-        votes={votes}
+        // votes={votes}
+        votes={[]}
         isReadonly={isReadonly}
       />
     </>
