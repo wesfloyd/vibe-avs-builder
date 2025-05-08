@@ -129,7 +129,7 @@ export async function generateBatchLLMResponse(
     systemPrompt = await stage1IdeasPrompt();
   } else if (intent === UserIntent.GenerateDesign) {
     systemPrompt = await stage2DesignPrompt();
-  } else if (intent === UserIntent.BuildPrototype) {
+  } else if (intent === UserIntent.GenerateCode) {
     systemPrompt = await stage3PrototypePromptCodeGeneration();
   } // else, keep the basicPrompt
 

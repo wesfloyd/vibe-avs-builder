@@ -186,6 +186,8 @@ export async function generateStreamingLLMResponse(
       llmResponseStream = await selectedModelProvider.stream(messageHistory);
     }
     
+    // Todo: filter out backticks here?
+      
     const [llmResponseStreamCopy1, llmResponseStreamCopy2] = llmResponseStream.tee();
     // log the stream copy without holding up your response
     logStreamForDebug(
