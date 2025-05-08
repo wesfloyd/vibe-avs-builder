@@ -5,12 +5,16 @@ export const stage3PrototypePromptOverviewOnly = `
 
 
 Respond with a high level task list of the changes to be made to the codebase to implement the user's AVS idea or design. You can implement any of the following components as needed:
-- Modified ServiceManager contract and deploy code.
-- Modified Operator code.
-- Modified README.md file.
+
+- Modified ServiceManager contract and deployment code.
+- Modified Operator code and add Operator code files as needed for execution or validation.
+- Modified README.md file including project overview, installation instructions, and how to run the operator binaries.
+
 
 
 Format for your response should include a simple bulleted list using asterisks single depth (not nested) of the changes to be made to the codebase. 
+Do Not use backticks in the response for any reason. Backticks are not allowed.
+
 Do not use a numbered list.
 Do not use a nested list.
 
@@ -30,7 +34,9 @@ export const stage3PrototypePromptDetailedCodeGeneration = `
 Your Primary task:  your job is to generate the entire modified Hello World AVS codebase in Typescript based on the supplied task list.
 Ask for clarification if the task list is ambiguous or incomplete, rather than guessing.
 
-Generate all the files in the hello-world-avs codebase shown below, including the modifications needed to implement the user's AVS idea or design in the task list.
+Generate all the files in the existing hello-world-avs codebase shown below
+Also generate the modifications or new files needed to implement the user's supplied design or task list.
+
 Each file must have a "path", "summary", and "content" field
 
 Each generated code file must be included as a child element inside a JSON array similar to the following example:
@@ -54,6 +60,9 @@ Each generated code file must be included as a child element inside a JSON array
 
 "Path" should be relative to the root of the hello-world-avs codebase.
 The output must be a single JSON array, not multiple arrays or objects.
+
+Remove any trailing commas after the last property in each object or array in your JSON file.
+
 Only respond with the JSON objects, no other text or comments.
 No extra text, explanations, or markdown should be included—just the raw JSON array.
 
