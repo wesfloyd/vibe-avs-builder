@@ -129,8 +129,10 @@ export async function generateStreamingLLMResponse(
     systemPrompt = await stage1IdeasPrompt();
   } else if (intent === UserIntent.GenerateDesign) {
     systemPrompt = await stage2DesignPrompt();
-  } else if (intent === UserIntent.BuildPrototype) {
+  } else if (intent === UserIntent.GenerateTaskList) {
     systemPrompt = await stage3PrototypePromptTaskList();
+  } else if (intent === UserIntent.GenerateCode) {
+    systemPrompt = await stage3PrototypePromptCodeGeneration();
   } // else, keep the basicPrompt
 
   logContentForDebug(systemPrompt, `chat-stream-executor-system-prompt.txt`, 'Chat Stream Executor - System Prompt');
