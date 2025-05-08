@@ -36,7 +36,7 @@ export const codeProjectJSONSchema = `
 
 export async function validateCodeProjectJSON(jsonInput: string): Promise<void> {
     // Create a new Ajv instance
-    const ajv = new Ajv();
+    const ajv = new Ajv({ allErrors: true });
 
     // Parse the schema
     const schema = JSON.parse(codeProjectJSONSchema);

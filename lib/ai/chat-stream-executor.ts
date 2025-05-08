@@ -134,34 +134,45 @@ export async function generateStreamingLLMResponse(
 
   logContentForDebug(systemPrompt, `chat-stream-executor-system-prompt.txt`, 'Chat Stream Executor - System Prompt');
 
+  // Prepend system prompt to the message history
+  const messageHistory = [
+    new SystemMessage(systemPrompt),
+    ...convertUIMessagesToLangChainMessages(messages)
+  ];
+
+  // Get the current model to use
+  const selectedModelProvider = getModelProvider(selectedChatModel);
+
   try {
     
-    // Prepend system prompt to the message history
-    // Convert UI messages to LangChain format
-
-    const messageHistory = [
-      new SystemMessage(systemPrompt),
-      ...convertUIMessagesToLangChainMessages(messages)
-    ];
     
-    // Get the current model to use
-    const selectedModelProvider = getModelProvider(selectedChatModel);
-
     // Get the raw stream from the model
     let llmResponseStream: ReadableStream<any>;
     if (intent === UserIntent.GenerateCode) {
       
-      // TODO invoke model to generate the code project json
-      const codeProjectJSON = tempCodeProjectJSON;
-      
-      // Generate the zip file from the JSON
+      // TODO modify prompt to generate the full hello world code project json
+    
       let responseText;
       try {
-        await validateCodeProjectJSON(codeProjectJSON);
+        
+          // const codeProjectJSON = tempCodeProjectJSON;
+        console.log('chat-stream-executor: invoking model to generate code project json');
+        console.time('chat-stream-executor: code project json generation');
+        const codeProjectChunk = await selectedModelProvider.invoke(messageHistory);
+        console.timeEnd('chat-stream-executor: code project json generation');
+        console.log('chat-stream-executor: code project json chunk generated');
+        const codeProjectJSONString = codeProjectChunk.content?.toString() ?? ''; 
+        console.log('chat-stream-executor: code project json generated');
+        
+        
+        logContentForDebug(codeProjectJSONString, `chat-stream-executor-codeProjectJSON.txt`, 'Code Project JSON');
+        await validateCodeProjectJSON(codeProjectJSONString);
+
         responseText = 'Please download your project code here:\n [AVS Project Download Link]('
-        + await generateZipFromJSON(codeProjectJSON)
-        + ')';
+          + await generateZipFromJSON(codeProjectJSONString)
+          + ')\n\n Your project code is a modification of the [hello-world-avs](https://github.com/eigenlayer/hello-world-avs) project code.';
       } catch (err) {
+        console.log('chat-stream-executor: error generating code project json', err);
         responseText = "Unable to generate downloadable project code due to llm response json formatting error";
       }
       

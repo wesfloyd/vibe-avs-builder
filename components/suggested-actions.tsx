@@ -58,7 +58,7 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
       initialIntent: UserIntent.RefineIdea
     },
     {
-      title: '(Test) Generate code for my AVS based on task list',
+      title: '(Test Button) Generate code for my AVS based on task list',
       label: STAGE3_TEST_PROMPT2.substring(0, 80) + '...',
       action: STAGE3_TEST_PROMPT2,
       initialIntent: UserIntent.GenerateCode

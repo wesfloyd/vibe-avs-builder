@@ -28,11 +28,29 @@ export const stage3PrototypePromptDetailedCodeGeneration = `
 
 Your Primary task:  your job is to generate the the code needed to  implement their use case using the Hello World AVS codebase in Typescript based on the supplied task list. (If the task list is not clear, ask the user for clarification.)
 
-Include a summary of each file generated and its relative file path in the directory tree. Each file be included inside a JSON object with the following schema:
-${codeProjectJSONSchema}
+Each generated code file must be included as a child element inside a JSON array that conforms to the following example:
+[
+    {
+        "path": "contracts/src/HelloWorldServiceManager.sol",
+        "summary": "Implements HelloWorldServiceManager contract for cat image generation tasks.",
+        "content": "// SPDX-License-Identifier: UNLICENSED\npragma solidity ^0.8.9;\n// ... contract code ..."
+    },
+    {
+        "path": "contracts/src/IHelloWorldServiceManager.sol",
+        "summary": "Interface for HelloWorldServiceManager with cat image generation methods.",
+        "content": "// SPDX-License-Identifier: UNLICENSED\npragma solidity ^0.8.9;\n// ... interface code ..."
+    },
+    {
+        "path": "README.md",
+        "summary": "Documentation for the cat image generation AVS.",
+        "content": "# Cat Image Generation AVS\nThis AVS allows users to request and generate cat images."
+    }
+]
+
+Include a summary of each file generated and its relative file path in the directory tree.
 
 Only respond with the JSON objects, no other text or comments.
-Do not surround the JSON object with three backticks.
+Do not surround the JSON object with three backticks, quotes or any other text. Just return the JSON array object.
 
 **END OF INSTRUCTIONS FOR LLM**
 `;
