@@ -7,10 +7,24 @@ Help me generate a design tech spec for my AVS idea. My idea is for an AVS that 
 `;
 
 export const STAGE3_TEST_PROMPT1 = `
-Help me generate a prototype for my AVS idea. My idea is for an AVS that generates cat images, then have a group of operators verify whether the likelihood of that operator being a cat image greater than 90%
+Help me generate a prototype for my AVS idea. My idea is for an AVS that generates cat images. Have each operator generate a cat image via llm
 `;
 
+
 export const STAGE3_TEST_PROMPT2 = `
+Help me generate code based on the following task list.
+# Required Changes for Cat Image Generator AVS
+* Modify the ServiceManager contract to add a new task type for cat image generation
+* Create new functionality in HelloWorldServiceManager to handle cat image generation tasks
+* Add storage for cat image generation results and metadata
+* Implement the operator code to connect with an LLM API for cat image generation
+* Modify the respondToTask function to handle cat image task responses
+* Update the README.md to explain the cat image generation AVS
+
+`;
+
+
+export const STAGE3_TEST_PROMPT3 = `
 Help me generate a prototype implementation for my AVS using the following design tech spec
 
 CatLLM: AI Cat Image Generation and Validation AVS - Technical Design Specification

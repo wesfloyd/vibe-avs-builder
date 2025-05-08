@@ -5,6 +5,7 @@ import archiver from 'archiver';
 import bodyParser from 'body-parser';
 import { PassThrough, Readable } from 'stream';
 import { put } from '@vercel/blob';
+import Ajv from 'ajv';
 
 type CodeFile = {
     path: string;
@@ -16,12 +17,80 @@ type BlobResponse = {
     url: string;
 };
 
+
+export const codeProjectJSONSchema = `
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["path", "summary", "content"],
+    "properties": {
+      "path": { "type": "string" },
+      "summary": { "type": "string" },
+      "content": { "type": "string" }
+    }
+  }
+}
+`;
+
+export async function validateCodeProjectJSON(jsonInput: string): Promise<void> {
+    // Create a new Ajv instance
+    const ajv = new Ajv();
+
+    // Parse the schema
+    const schema = JSON.parse(codeProjectJSONSchema);
+
+    // Compile the schema
+    const validate = ajv.compile(schema);
+
+    // Validate the JSON input against the schema
+    let parsedInput;
+    try {
+        parsedInput = JSON.parse(jsonInput);
+        const valid = validate(parsedInput);
+        if (!valid) {
+            const errors = validate.errors || [];
+            const errorMessages = errors.map(err => 
+                `${err.instancePath} ${err.message}`
+            ).join('; ');
+            console.error(`generate-zip.ts: JSON validation failed: ${errorMessages}`);
+            throw new Error(`JSON validation failed: ${errorMessages}`);
+        }
+    } catch (error) {
+        if (error instanceof SyntaxError) {
+            console.error(`generate-zip.ts: JSON syntax error: ${error.message}`);
+            throw new Error(`Invalid JSON syntax: ${error.message}`);
+        }
+        throw error;
+    }
+}
+
 export async function generateZipFromJSON(jsonInput: string): Promise<string> {
+    
+    // Validate the JSON input
+    validateCodeProjectJSON(jsonInput);
+    
     let files: CodeFile[];
 
+    // Parse JSON, write each object to code files array
     try {
         files = JSON.parse(jsonInput);
-    } catch (error) {
+    } catch (error: any) {
+        if (typeof jsonInput === 'string' && error instanceof SyntaxError && error.message.includes('position')) {
+            const match = error.message.match(/position (\d+)/);
+            if (match) {
+                const pos = parseInt(match[1], 10);
+                const context = jsonInput.slice(Math.max(0, pos - 20), pos + 20);
+                console.error(
+                    `JSON parse error at position ${pos}: ...${context}...`
+                );
+            } else {
+                console.error('JSON parse error:', error.message);
+            }
+        } else {
+            console.error('JSON parse error:', error);
+        }
         throw new Error("Invalid JSON format: Unable to parse input.");
     }
 

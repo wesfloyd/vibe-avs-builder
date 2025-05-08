@@ -62,7 +62,7 @@ export async function stage2DesignPrompt(): Promise<string> {
 // Custom prompt for Stage 3: AVS code generation - Now fetches on demand
 export async function stage3PrototypePromptTaskList(): Promise<string> {
   try {
-    console.log('prompts: generating stage 3 code prompt');
+    console.log('prompts: generating stage 3 task list prompt');
     const eigenLayerDocsMiddleware = await fetchEigenLayerDocsMiddleware();
     const helloWorldAVSCodeMin = await fetchHelloWorldAVSCodeMin();
 

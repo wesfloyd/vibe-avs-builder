@@ -1,16 +1,19 @@
+import { codeProjectJSONSchema } from "@/lib/code/generate-zip";
+
 export const stage3PrototypePromptOverviewOnly = `
 # ** BEGIN INSTRUCTIONS FOR LLM **
 
 
-Respond with a high level summary of the changes to be made to the codebase to implement the user's AVS idea or design. You can implement any of the following components as needed:
+Respond with a high level task list of the changes to be made to the codebase to implement the user's AVS idea or design. You can implement any of the following components as needed:
 - Modified ServiceManager contract and deploy code.
 - Modified Operator code.
 - Modified README.md file.
 
 
-Format for your response should include a simple bulleted list of the changes to be made to the codebase.
+Format for your response should include a simple bulleted list of the changes to be made to the codebase. Do note use a numbered list.
+
 Do not include changes for Slashing or Rewards payments.
-Use italics instead of backticks in your response. 
+Use italics instead of backticks for filenames in your response. 
 
 
 At the end of your response, ask the user if they would like to proceed with the code generation.
@@ -18,15 +21,18 @@ At the end of your response, ask the user if they would like to proceed with the
 **END OF INSTRUCTIONS FOR LLM**
 `;
 
+
+
 export const stage3PrototypePromptDetailedCodeGeneration = `
 # ** BEGIN INSTRUCTIONS FOR LLM **
 
-Your Primary task:  your job is to generate the the code needed to  implement their use case using the Hello World AVS codebase in Typescript. You can implement any of the following components as needed:
-- Modified ServiceManager contract and deploy code.
-- Modified Operator code.
-- Modified README.md file.
+Your Primary task:  your job is to generate the the code needed to  implement their use case using the Hello World AVS codebase in Typescript based on the supplied task list. (If the task list is not clear, ask the user for clarification.)
 
+Include a summary of each file generated and its relative file path in the directory tree. Each file be included inside a JSON object with the following schema:
+${codeProjectJSONSchema}
 
+Only respond with the JSON objects, no other text or comments.
+Do not surround the JSON object with three backticks.
 
 **END OF INSTRUCTIONS FOR LLM**
 `;
