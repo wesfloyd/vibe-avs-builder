@@ -1,10 +1,6 @@
-
-
-
-
 # EigenLayer Vibe AVS Web App
 Goals:
-- "**Anyone** can build an AVS"
+- "**Anyone** can build an [AVS on EigenLayer](https://docs.eigenlayer.xyz/developers/Concepts/avs-developer-guide)"
 - "Idea to Design to AVS in under 10 minutes"
 - Benefits of Vibe Coding an AVS for less technical users.
 
@@ -18,8 +14,12 @@ Goals:
 [vibe-avs-builder.vercel.app](https://vibe-avs-builder.vercel.app/)
 
 **How to Use The App**
+- Either click one the suggested example actions or begin chatting with the app about your AVS idea.
 - User is guided through 3 stages: idea refinement, design tech spec generation, and prototype code generation.
-- Feel free to click one of the suggested actions to test its operation or skip ahead
+    - Idea refinement: the app will provide a refined AVS idea, provide feedback on how well your idea fits as an AVS on EigenLayer, and suggest enhancements to get more value from your idea on EigenLayer.
+    - Design generation: the app will generate a complete Design Tech Spec for your AVS idea.
+    - Prototype code generation: the app will generate a fully function prototype for your AVS idea based on the [hello-world-avs](https://github.com/Layr-Labs/hello-world-avs) example.
+- Feel free to click one of the suggested actions to test its operation or skip through the three stages as you like.
 
 ## Running locally
 
