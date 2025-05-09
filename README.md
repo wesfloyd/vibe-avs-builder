@@ -6,11 +6,11 @@ Goals:
 
 ### Demos
 
-**Demo Video**
+  
 <img src="https://github.com/user-attachments/assets/de775676-9d0a-4ce3-a3ab-ee2c3357d1d5" alt="vibe-avs-animation_min" style="border: 3px solid #4F46E5; border-radius: 12px; max-width: 100%;"/>
 
 
-**Demo Site**
+**Demo Site:**  
 [vibe-avs-builder.vercel.app](https://vibe-avs-builder.vercel.app/)
 
 **How to Use The App**
