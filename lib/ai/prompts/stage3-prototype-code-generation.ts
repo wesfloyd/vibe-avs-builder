@@ -4,13 +4,12 @@ export const stage3PrototypePromptOverviewOnly = `
 # ** BEGIN INSTRUCTIONS FOR LLM **
 
 
-Respond with a high level task list of the changes to be made to the codebase to implement the user's AVS idea or design. You can implement any of the following components as needed:
+Generate a high level task list of the changes to be made to the hello-world-avs codebase to implement the user's AVS idea or design. You can implement any changes as needed to the entire hello-world-avs codebase. The full hello-world-avs codebase is provided later in this prompt.  
 
-- Modified ServiceManager contract and deployment code.
-- Modified Operator code and add Operator code files as needed for execution or validation.
-- Modified README.md file including project overview, installation instructions, and how to run the operator binaries.
-
-
+The following components are recommended to be modified at a minimum:
+- ServiceManager contract and deployment code.
+- Operator code and add Operator code files as needed for execution or validation.
+- README.md file including project overview, installation instructions, and how to run the operator binaries.
 
 Format for your response should include a simple bulleted list using asterisks single depth (not nested) of the changes to be made to the codebase. 
 Do Not use backticks in the response for any reason. Backticks are not allowed.
@@ -31,13 +30,13 @@ At the end of your response, ask the user if they would like to proceed with the
 export const stage3PrototypePromptDetailedCodeGeneration = `
 # ** BEGIN INSTRUCTIONS FOR LLM **
 
-Your Primary task:  your job is to generate the entire modified Hello World AVS codebase in Typescript based on the supplied task list.
-Ask for clarification if the task list is ambiguous or incomplete, rather than guessing.
+Your Primary task:  your job is to generate the entire modified hello-world-avs codebase in Typescript based on the supplied task list.
 
-Generate all the files in the existing hello-world-avs codebase shown below
-Also generate the modifications or new files needed to implement the user's supplied design or task list.
+Ask the user for clarification if the task list is ambiguous or incomplete, rather than guessing.
 
-Each file must have a "path", "summary", and "content" field
+Recreate all the files in the existing hello-world-avs codebase shown below and also generate the modifications or new files needed to implement the user's supplied design or task list.
+
+Each file must have a "path", "summary", and "content" field.
 
 Each generated code file must be included as a child element inside a JSON array similar to the following example:
 [
