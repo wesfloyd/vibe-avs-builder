@@ -5,10 +5,12 @@
 </div>
 
 # EigenLayer Vibe AVS Web App
-"Idea to Design to AVS in under 10 minutes"
+Goals:
+- **Anyone** can build an AVS
+- "Idea to Design to AVS in under 10 minutes"
 
-**Screenshot**
-<img width="500" alt="image" src="https://github.com/user-attachments/assets/f9abe5d6-1aa5-420e-801c-974b3f6dbe2c" />
+**Demo Video**
+![vibe-avs-animation_min](https://github.com/user-attachments/assets/de775676-9d0a-4ce3-a3ab-ee2c3357d1d5)
 
 
 **Demo Site**
