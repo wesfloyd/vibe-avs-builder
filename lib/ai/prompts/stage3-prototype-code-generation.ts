@@ -62,6 +62,7 @@ The output must be a single JSON array, not multiple arrays or objects.
 
 Remove any trailing commas after the last property in each object or array in your JSON file.
 
+Check to ensure the JSON is valid and properly formatted.
 Only respond with the JSON objects, no other text or comments.
 No extra text, explanations, or markdown should be included—just the raw JSON array.
 
