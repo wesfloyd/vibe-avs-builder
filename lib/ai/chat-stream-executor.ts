@@ -184,10 +184,12 @@ export async function generateStreamingLLMResponse(
         let files: CodeFile[];
         files = JSON.parse(codeProjectJSONString);        
         responseText = 'Please download your project code here:\n [**Custom AVS Project Download Link**]('
+
           + await generateZipFromJSONString(appendedJson) + ')'
           + '\n\nThe following files have been modified for your project:\n * '
           + files.map(file => file.path).join('\n * ')
           + '\n\n _Note: your project code is a modification of the [hello-world-avs](https://github.com/Layr-Labs/hello-world-avs) project code._';
+
       } catch (err) {
         console.log('chat-stream-executor: error generating code project json', err);
         responseText = "Unable to generate downloadable project code due to llm response json formatting error";
