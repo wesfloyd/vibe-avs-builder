@@ -1,23 +1,30 @@
 # EigenLayer Vibe AVS Web App
-Goals:
+
+## Project Goals
 - "**Anyone** can build an [AVS on EigenLayer](https://docs.eigenlayer.xyz/developers/Concepts/avs-developer-guide)"
 - "Idea to Design to AVS in under 10 minutes"
 - Benefits of Vibe Coding an AVS for less technical users.
 
   
-<img src="https://github.com/user-attachments/assets/de775676-9d0a-4ce3-a3ab-ee2c3357d1d5" alt="vibe-avs-animation_min" style="border: 3px solid #4F46E5; border-radius: 12px; max-width: 100%;"/>
 
 
-**Demo Site:**  
-[vibe-avs-builder.vercel.app](https://vibe-avs-builder.vercel.app/)
+## Demo Site
+**[vibe-avs-builder.vercel.app](https://vibe-avs-builder.vercel.app/)**
 
-**How to Use The App**
-- Either click one the suggested example actions or begin chatting with the app about your AVS idea.
-- User is guided through 3 stages: idea refinement, design tech spec generation, and prototype code generation.
+<img src="https://github.com/user-attachments/assets/de775676-9d0a-4ce3-a3ab-ee2c3357d1d5" alt="vibe-avs-animation_min" style="border: 3px solid #4F46E5; border-radius: 12px; max-width: 500%;"/>
+
+
+## Instructions
+How to Use The App:
+- Choose whichever AI model you prefer for your testing from the dropdown.
+- Click one the suggested example actions or begin chatting free form with the app about your AVS idea.
+- You will be guided through 3 stages: idea refinement, design tech spec generation, and prototype code generation.
     - Idea refinement: the app will provide a refined AVS idea, provide feedback on how well your idea fits as an AVS on EigenLayer, and suggest enhancements to get more value from your idea on EigenLayer.
     - Design generation: the app will generate a complete Design Tech Spec for your AVS idea.
     - Prototype code generation: the app will generate a fully function prototype for your AVS idea based on the [hello-world-avs](https://github.com/Layr-Labs/hello-world-avs) example.
 - Feel free to click one of the suggested actions to test its operation or skip through the three stages as you like.
+
+
 
 ## Running locally
 
