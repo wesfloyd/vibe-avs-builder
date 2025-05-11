@@ -34,6 +34,9 @@ export const codeProjectJSONSchema = `
 }
 `;
 
+
+
+
 export async function validateCodeProjectJSON(jsonInput: string): Promise<void> {
     // Create a new Ajv instance
     const ajv = new Ajv({ allErrors: true });
@@ -66,7 +69,7 @@ export async function validateCodeProjectJSON(jsonInput: string): Promise<void> 
     }
 }
 
-export async function generateZipFromJSON(jsonInput: string): Promise<string> {
+export async function generateZipFromJSONString(jsonInput: string): Promise<string> {
     
     // Validate the JSON input
     validateCodeProjectJSON(jsonInput);
@@ -132,4 +135,26 @@ export async function generateZipFromJSON(jsonInput: string): Promise<string> {
         }
     );
     return response.url;
+}
+
+// Appends the input JSON array to a new empty array and returns the result.
+export function appendJSONToHelloWorld<T = any>(jsonArrayInput: string | T[]): T[] {
+    let inputArray: T[];
+    if (typeof jsonArrayInput === 'string') {
+        try {
+            inputArray = JSON.parse(jsonArrayInput);
+        } catch (e) {
+            throw new Error('Invalid JSON input');
+        }
+    } else {
+        inputArray = jsonArrayInput;
+    }
+
+    if (!Array.isArray(inputArray)) {
+        throw new Error('Input must be a JSON array or array');
+    }
+
+    const resultArray: T[] = [];
+    resultArray.push(...inputArray);
+    return resultArray;
 }

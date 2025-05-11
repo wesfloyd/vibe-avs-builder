@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { generateZipFromJSON } from '../../lib/code/generate-zip';
+import { generateZipFromJSONString, validateCodeProjectJSON } from '../../lib/code/generate-code-project';
 import fetch from 'node-fetch';
 import dotenv from 'dotenv';
 dotenv.config({ path: '.env.local' });
@@ -16,7 +16,7 @@ const jsonInput2 = fs.readFileSync(inputFilePath2, 'utf8');
 describe('generateZipFromJSON1', () => {
   it('should create a zip file with the expected content', async () => {
     // Call the function
-    const url = await generateZipFromJSON(jsonInput1);
+    const url = await generateZipFromJSONString(jsonInput1);
 
     console.log(url);
 
@@ -31,7 +31,7 @@ describe('generateZipFromJSON1', () => {
 describe('generateZipFromJSON2', () => {
   it('should create a zip file with the expected content', async () => {
     // Call the function
-    const url = await generateZipFromJSON(jsonInput2);
+    const url = await generateZipFromJSONString(jsonInput2);
 
     console.log(url);
 
@@ -40,3 +40,13 @@ describe('generateZipFromJSON2', () => {
     
   });
 });
+
+describe('validateCodeProjectJSON with hello-world-avs-json.txt', () => {
+  it('should validate the JSON without throwing', async () => {
+    const inputFilePath = path.join(__dirname, 'hello-world-avs-json.txt');
+    const jsonInput = fs.readFileSync(inputFilePath, 'utf8');
+    await expect(validateCodeProjectJSON(jsonInput)).resolves.not.toThrow();
+  });
+});
+
+

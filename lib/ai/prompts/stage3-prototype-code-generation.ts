@@ -1,4 +1,4 @@
-import { codeProjectJSONSchema } from "@/lib/code/generate-zip";
+import { codeProjectJSONSchema } from "@/lib/code/generate-code-project";
 
 export const stage3PrototypePromptOverviewOnly = `
 # ** BEGIN INSTRUCTIONS FOR LLM **
