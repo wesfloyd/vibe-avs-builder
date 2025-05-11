@@ -6,9 +6,11 @@ import bodyParser from 'body-parser';
 import { PassThrough, Readable } from 'stream';
 import { put } from '@vercel/blob';
 import Ajv from 'ajv';
+import { fetchHelloWorldAVSCodeMinJSON } from '../ai/context/loadContext';
 
-type CodeFile = {
+export type CodeFile = {
     path: string;
+    summary: string;
     content: string;
   };
 
@@ -34,6 +36,9 @@ export const codeProjectJSONSchema = `
 }
 `;
 
+
+
+
 export async function validateCodeProjectJSON(jsonInput: string): Promise<void> {
     // Create a new Ajv instance
     const ajv = new Ajv({ allErrors: true });
@@ -49,6 +54,7 @@ export async function validateCodeProjectJSON(jsonInput: string): Promise<void> 
     try {
         parsedInput = JSON.parse(jsonInput);
         const valid = validate(parsedInput);
+        console.log('generateZipFromJSONString: valid', valid);
         if (!valid) {
             const errors = validate.errors || [];
             const errorMessages = errors.map(err => 
@@ -66,7 +72,7 @@ export async function validateCodeProjectJSON(jsonInput: string): Promise<void> 
     }
 }
 
-export async function generateZipFromJSON(jsonInput: string): Promise<string> {
+export async function generateZipFromJSONString(jsonInput: string): Promise<string> {
     
     // Validate the JSON input
     validateCodeProjectJSON(jsonInput);
@@ -93,7 +99,7 @@ export async function generateZipFromJSON(jsonInput: string): Promise<string> {
         }
         throw new Error("Invalid JSON format: Unable to parse input.");
     }
-
+    
     if (!Array.isArray(files)) {
         throw new Error("Invalid input: Expected an array of files.");
     }
@@ -132,4 +138,16 @@ export async function generateZipFromJSON(jsonInput: string): Promise<string> {
         }
     );
     return response.url;
+}
+
+// Appends the input JSON array to a new empty array and returns the result.
+export async function appendJSONToHelloWorld(jsonArrayInput: string): Promise<string> {
+    
+    const helloWorldAVSCodeJSON = await fetchHelloWorldAVSCodeMinJSON();
+    const helloWorldAVSCodeJSONArray = JSON.parse(helloWorldAVSCodeJSON);
+    const jsonArrayInputArray = JSON.parse(jsonArrayInput);
+
+    const resultArray = [ ...jsonArrayInputArray, ...helloWorldAVSCodeJSONArray];
+
+    return JSON.stringify(resultArray);
 }
