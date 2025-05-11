@@ -173,7 +173,7 @@ export async function generateStreamingLLMResponse(
         console.log(`chat-stream-executor:codeProjectJSONString.length:`, codeProjectJSONString.length)
         if (codeProjectJSONString.length < 10){
           // If codeProjectJSONString.length < 10, most likely the llm did not generate the entire codebase. So manually append the hello world code to the codeProjectJSONString
-          //codeProjectJSONString = prependHelloWorldToJSON(codeProjectJSONString);
+          //todo uncomment after testing codeProjectJSONString = prependHelloWorldToJSON(codeProjectJSONString);
         }
 
         

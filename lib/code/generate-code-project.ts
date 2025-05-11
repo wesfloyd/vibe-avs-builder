@@ -9,6 +9,7 @@ import Ajv from 'ajv';
 
 type CodeFile = {
     path: string;
+    summary: string;
     content: string;
   };
 
