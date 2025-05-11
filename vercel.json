@@ -1,0 +1,15 @@
+{
+    "version": 2,
+    "builds": [
+        {
+            "src": "next.config.ts",
+            "use": "@vercel/next"
+        }
+    ],
+    "crons": [
+        {
+            "path": "/api/cleanup",
+            "schedule": "0 0 * * *"
+        }
+    ]
+}

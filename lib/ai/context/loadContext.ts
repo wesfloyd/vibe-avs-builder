@@ -2,11 +2,47 @@
 const EIGENLAYER_DOCS_OVERVIEW_URL = 'https://af52o4jcdfzphbst.public.blob.vercel-storage.com/context/repomix-output-eigenlayer-docs-overview-min-wtABuLj3MuRM9JklyGY2tt8v6gPJNY.md';
 const EIGENLAYER_MIDDLEWARE_DOCS_URL = 'https://af52o4jcdfzphbst.public.blob.vercel-storage.com/context/repomix-output-eigenlayer-middleware-docs-Hz9TpntXTCiddC0ilxAJq2ztglt8DI.md';
 const HELLO_WORLD_AVS_CODE_MIN_URL = 'https://af52o4jcdfzphbst.public.blob.vercel-storage.com/context/repomix-output-Layr-Labs-hello-world-avs-minified-GA9JC545l89gNAYte8iDADNteNBqXj.txt';
+const HELLO_WORLD_AVS_CODE_MIN_JSON_URL = 'https://af52o4jcdfzphbst.public.blob.vercel-storage.com/context/hello-world-avs-json-dtPpmbxgQIDvlw8yxAJDuLQsI0B81E.txt';
 
 // Cache variables to store fetched data
 let eigenLayerDocsCache: string | null = null;
 let eigenLayerDocsMiddlewareCache: string | null = null;
 let helloWorldAVSCodeMinCache: string | null = null;
+let helloWorldAVSCodeMinJSONCache: string | null = null;
+
+/**
+ * Fetches the Hello World AVS code, using a cached version if available.
+ */
+export async function fetchHelloWorldAVSCodeMinJSON(): Promise<string> {
+  // Return cached code if available
+  if (helloWorldAVSCodeMinJSONCache) {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('loadContext: fetchHelloWorldAVSCodeMinJSON: returning cached code');
+    }
+    return helloWorldAVSCodeMinJSONCache;
+  } else {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('loadContext: fetchHelloWorldAVSCodeMinJSON: fetching new code');
+    }
+  }
+
+  try {
+    const response = await fetch(HELLO_WORLD_AVS_CODE_MIN_JSON_URL);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch Hello World AVS code JSON: ${response.statusText}`);
+    }
+    const helloWorldAVSCodeJSON = await response.text();
+
+    // Cache the code for future use
+    helloWorldAVSCodeMinJSONCache = helloWorldAVSCodeJSON;
+
+    return helloWorldAVSCodeJSON;
+  } catch (error) {
+    console.error("Error fetching Hello World AVS code JSON:", error);
+    // Return a descriptive error message or rethrow
+    return 'Error loading Hello World AVS code JSON.';
+  }
+} 
 
 /**
  * Fetches the EigenLayer docs overview, using a cached version if available.

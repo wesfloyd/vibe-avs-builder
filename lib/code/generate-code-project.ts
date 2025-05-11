@@ -6,8 +6,9 @@ import bodyParser from 'body-parser';
 import { PassThrough, Readable } from 'stream';
 import { put } from '@vercel/blob';
 import Ajv from 'ajv';
+import { fetchHelloWorldAVSCodeMinJSON } from '../ai/context/loadContext';
 
-type CodeFile = {
+export type CodeFile = {
     path: string;
     summary: string;
     content: string;
@@ -53,6 +54,7 @@ export async function validateCodeProjectJSON(jsonInput: string): Promise<void> 
     try {
         parsedInput = JSON.parse(jsonInput);
         const valid = validate(parsedInput);
+        console.log('generateZipFromJSONString: valid', valid);
         if (!valid) {
             const errors = validate.errors || [];
             const errorMessages = errors.map(err => 
@@ -97,7 +99,7 @@ export async function generateZipFromJSONString(jsonInput: string): Promise<stri
         }
         throw new Error("Invalid JSON format: Unable to parse input.");
     }
-
+    
     if (!Array.isArray(files)) {
         throw new Error("Invalid input: Expected an array of files.");
     }
@@ -139,23 +141,13 @@ export async function generateZipFromJSONString(jsonInput: string): Promise<stri
 }
 
 // Appends the input JSON array to a new empty array and returns the result.
-export function appendJSONToHelloWorld<T = any>(jsonArrayInput: string | T[]): T[] {
-    let inputArray: T[];
-    if (typeof jsonArrayInput === 'string') {
-        try {
-            inputArray = JSON.parse(jsonArrayInput);
-        } catch (e) {
-            throw new Error('Invalid JSON input');
-        }
-    } else {
-        inputArray = jsonArrayInput;
-    }
+export async function appendJSONToHelloWorld(jsonArrayInput: string): Promise<string> {
+    
+    const helloWorldAVSCodeJSON = await fetchHelloWorldAVSCodeMinJSON();
+    const helloWorldAVSCodeJSONArray = JSON.parse(helloWorldAVSCodeJSON);
+    const jsonArrayInputArray = JSON.parse(jsonArrayInput);
 
-    if (!Array.isArray(inputArray)) {
-        throw new Error('Input must be a JSON array or array');
-    }
+    const resultArray = [ ...jsonArrayInputArray, ...helloWorldAVSCodeJSONArray];
 
-    const resultArray: T[] = [];
-    resultArray.push(...inputArray);
-    return resultArray;
+    return JSON.stringify(resultArray);
 }
