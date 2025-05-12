@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useWindowSize } from 'usehooks-ts';
 import { SidebarToggle } from '@/components/sidebar-toggle';
 import { Button } from '@/components/ui/button';
-import { PlusIcon } from './icons';
+import { PlusIcon, InfoIcon } from './icons';
 import { useSidebar } from './ui/sidebar';
 import { memo } from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
@@ -50,12 +50,30 @@ function PureChatHeader({
         </Tooltip>
       )}
 
+   
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
             variant="outline"
             className="order-3 md:order-2 p-2"
-            onClick={() => window.open('https://www.eigenlayer.xyz', '_blank')}
+            onClick={() => window.open('https://github.com/wesfloyd/vibe-avs-builder?tab=readme-ov-file#instructions', '_blank')}
+            aria-label="Help / Documentation"
+          >
+            <InfoIcon size={20} />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          How To Guide
+         
+        </TooltipContent>
+      </Tooltip>
+
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="outline"
+            className="order-4 md:order-3 p-2"
+            onClick={() => window.open('https://share.hsforms.com/1BksFoaPjSk2l3pQ5J4EVCAein6l', '_blank')}
           >
             <Image
               src="/images/eigenlayer-logo-simplified.png"
@@ -66,13 +84,15 @@ function PureChatHeader({
             />
           </Button>
         </TooltipTrigger>
-        <TooltipContent>Visit EigenLayer</TooltipContent>
+        <TooltipContent>Contact EigenLayer</TooltipContent>
       </Tooltip>
+
+
 
       {!isReadonly && (
         <ModelSelector
           selectedModelId={selectedModelId}
-          className="order-1 md:order-2"
+          className="order-5 md:order-4"
         />
       )}
 
