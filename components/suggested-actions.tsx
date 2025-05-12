@@ -42,26 +42,26 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
     //   initialIntent: UserIntent.RefineIdea    
     // },
     {
-      title: 'Step1: Refine an AVS idea',
+      title: 'Step 1: Refine an AVS idea',
       label: STAGE1_TEST_PROMPT1.substring(0, 80) + '...',
       action: STAGE1_TEST_PROMPT1,
       initialIntent: UserIntent.RefineIdea
     },
     {
-      title: 'Step2: Generate a Design tech spec',
+      title: 'Step 2: Generate a Design tech spec',
       label: STAGE2_TEST_PROMPT1.substring(0, 80) + '...',
       action: STAGE2_TEST_PROMPT1,
       initialIntent: UserIntent.GenerateDesign
     },
     {
-      title: 'Step3: Generate code for my AVS prototype',
+      title: 'Step 3: Generate code for my AVS prototype',
       label: STAGE3_TEST_PROMPT1.substring(0, 80) + '...',
       action: STAGE3_TEST_PROMPT1,
       initialIntent: UserIntent.GenerateTaskList
     },
 
     {
-      title: 'Step3(+):  Generate code for my AVS based on task list',
+      title: 'Step 3(+):  Generate code for my AVS based on task list',
       label: STAGE3_TEST_PROMPT2.substring(0, 80) + '...',
       action: STAGE3_TEST_PROMPT2,
       initialIntent: UserIntent.GenerateCode

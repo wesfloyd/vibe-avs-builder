@@ -6,13 +6,15 @@ import { stage1IdeaRefinementPromptLLMGuidance } from './prompts/stage1-idea-ref
 import { stage2DesignGenerationPromptText } from './prompts/stage2-design-generation';
 
 
+export const stageProgessionPrompt =  `Help the user with each stage of their AVS development journey. Encourage them to move to the next stage when they are ready.
+- Stage 1: Refine their AVS idea
+- Stage 2: Generate their AVS Design Tech Spec
+- Stage 3: Generate their AVS Prototype code
+`;
+
 export const basicPrompt =
   'You are a friendly EigenLayer Solution Engineer assistant! Keep your responses concise and helpful.'
-  + `Help the user with each stage of their AVS development journey. Encourage them to move to the next stage when they are ready.
-  - Stage 1: Refine their AVS idea
-  - Stage 2: Generate their AVS Design Tech Spec
-  - Stage 3: Generate their AVS Prototype code
-  `;
+  + stageProgessionPrompt;
   
 
 // Function to get the stage 1 ideas prompt - Now fetches on demand
