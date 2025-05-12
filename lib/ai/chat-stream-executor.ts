@@ -13,7 +13,7 @@ import { logContentForDebug, logStreamForDebug } from '@/lib/utils/debugUtils';
 // Internal relative imports
 import { classifyUserIntent } from './intentManager';
 import { UserIntent } from './types';
-import { basicPrompt, stage1IdeasPrompt, stage2DesignPrompt, stage3PrototypePromptTaskList, stage3PrototypePromptCodeGeneration } from './prompts';
+import { basicPrompt, stage1IdeasPrompt, stage2DesignPrompt, stage3PrototypePromptTaskList, stage3PrototypePromptCodeGeneration, stageProgessionPrompt } from './prompts';
 import { appendJSONToHelloWorld as prependHelloWorldToJSON, generateZipFromJSONString, validateCodeProjectJSON, appendJSONToHelloWorld } from '../code/generate-code-project';
 import type { CodeFile } from '../code/generate-code-project';
 
@@ -132,6 +132,9 @@ export async function generateStreamingLLMResponse(
   } else if (intent === UserIntent.GenerateCode) {
     systemPrompt = await stage3PrototypePromptCodeGeneration();
   } // else, keep the basicPrompt
+
+  // Add the stage progression prompt to the system prompt
+  systemPrompt = systemPrompt + stageProgessionPrompt;
 
   logContentForDebug(systemPrompt, `chat-stream-executor-system-prompt.txt`, 'Chat Stream Executor - System Prompt');
 
