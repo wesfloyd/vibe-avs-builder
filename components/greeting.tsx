@@ -23,7 +23,7 @@ export const Greeting = () => {
         transition={{ delay: 0.6 }}
         className="text-lg text-zinc-500 mt-5"
       >
-        Realize your AVS as an Idea, Design Tech Spec, or Prototype Code.
+        Realize your <a href="https://docs.eigenlayer.xyz/developers/Concepts/avs-developer-guide#what-is-an-autonomous-verifiable-service-avs" target="_blank" rel="noopener noreferrer" className="text-[#1A0C6D]">EigenLayer AVS</a> as an Idea, Design Tech Spec, or Prototype Code.
       </motion.div>
     </div>
   );

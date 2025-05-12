@@ -10,17 +10,21 @@ import { memo } from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 import type { VisibilityType } from './visibility-selector';
 import { ModelSelector } from './model-selector';
+import { SidebarUserNav } from '@/components/sidebar-user-nav';
+import type { User } from 'next-auth';
 
 function PureChatHeader({
   chatId,
   selectedModelId,
   selectedVisibilityType,
   isReadonly,
+  user,
 }: {
   chatId: string;
   selectedModelId: string;
   selectedVisibilityType: VisibilityType;
   isReadonly: boolean;
+  user?: User;
 }) {
   const router = useRouter();
   const { open } = useSidebar();
@@ -29,7 +33,12 @@ function PureChatHeader({
 
   return (
     <header className="flex sticky top-0 bg-background py-1.5 items-center px-2 md:px-2 gap-2">
-      <SidebarToggle />
+      {user && (
+        <div className="order-0 md:order-0 mr-2">
+          <SidebarUserNav user={user} />
+        </div>
+      )}
+      {/* <SidebarToggle /> */}
 
       {(!open || windowWidth < 768) && (
         <Tooltip>
@@ -87,8 +96,6 @@ function PureChatHeader({
         <TooltipContent>Contact EigenLayer</TooltipContent>
       </Tooltip>
 
-
-
       {!isReadonly && (
         <ModelSelector
           selectedModelId={selectedModelId}
@@ -110,5 +117,8 @@ function PureChatHeader({
 }
 
 export const ChatHeader = memo(PureChatHeader, (prevProps, nextProps) => {
-  return prevProps.selectedModelId === nextProps.selectedModelId;
+  return (
+    prevProps.selectedModelId === nextProps.selectedModelId &&
+    prevProps.user === nextProps.user
+  );
 });
