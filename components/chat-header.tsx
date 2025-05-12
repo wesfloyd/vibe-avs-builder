@@ -32,77 +32,77 @@ function PureChatHeader({
   const { width: windowWidth } = useWindowSize();
 
   return (
-    <header className="flex sticky top-0 bg-background py-1.5 items-center px-2 md:px-2 gap-2">
-      {user && (
-        <div className="order-0 md:order-0 mr-2">
-          <SidebarUserNav user={user} />
-        </div>
-      )}
-      {/* <SidebarToggle /> */}
-
-      {(!open || windowWidth < 768) && (
+    <header className="flex sticky top-0 bg-background py-1.5 items-center px-[20px] md:px-[20px] gap-2 justify-between">
+      {/* Left-aligned items */}
+      <div className="flex items-center gap-2">
+        {user && (
+          <div className="order-0 md:order-0 mr-2">
+            <SidebarUserNav user={user} />
+          </div>
+        )}
+        {/* <SidebarToggle /> */}
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
               variant="outline"
-              className="order-2 md:order-1 md:px-2 px-2 md:h-fit ml-auto md:ml-0"
-              onClick={() => {
-                router.push('/');
-                router.refresh();
-              }}
+              className="order-3 md:order-2 p-2"
+              onClick={() => window.open('https://github.com/wesfloyd/vibe-avs-builder?tab=readme-ov-file#instructions', '_blank')}
+              aria-label="Help / Documentation"
             >
-              <PlusIcon />
-              <span className="md:sr-only">New Chat</span>
+              <InfoIcon size={20} />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>New Chat</TooltipContent>
+          <TooltipContent>
+            How To Guide
+          </TooltipContent>
         </Tooltip>
-      )}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outline"
+              className="order-4 md:order-3 p-2"
+              onClick={() => window.open('https://share.hsforms.com/1BksFoaPjSk2l3pQ5J4EVCAein6l', '_blank')}
+            >
+              <Image
+                src="/images/eigenlayer-logo-simplified.png"
+                alt="EigenLayer Logo"
+                className="h-6 w-auto"
+                width={24}
+                height={24}
+              />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Contact EigenLayer</TooltipContent>
+        </Tooltip>
+      </div>
 
-   
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="outline"
-            className="order-3 md:order-2 p-2"
-            onClick={() => window.open('https://github.com/wesfloyd/vibe-avs-builder?tab=readme-ov-file#instructions', '_blank')}
-            aria-label="Help / Documentation"
-          >
-            <InfoIcon size={20} />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>
-          How To Guide
-         
-        </TooltipContent>
-      </Tooltip>
-
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="outline"
-            className="order-4 md:order-3 p-2"
-            onClick={() => window.open('https://share.hsforms.com/1BksFoaPjSk2l3pQ5J4EVCAein6l', '_blank')}
-          >
-            <Image
-              src="/images/eigenlayer-logo-simplified.png"
-              alt="EigenLayer Logo"
-              className="h-6 w-auto"
-              width={24}
-              height={24}
-            />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>Contact EigenLayer</TooltipContent>
-      </Tooltip>
-
-      {!isReadonly && (
-        <ModelSelector
-          selectedModelId={selectedModelId}
-          className="order-5 md:order-4"
-        />
-      )}
-
+      {/* Right-aligned items */}
+      <div className="flex items-center gap-2 ml-auto">
+        {(!open || windowWidth < 768) && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                className="order-2 md:order-1 md:px-2 px-2 md:h-fit ml-auto md:ml-0"
+                onClick={() => {
+                  router.push('/');
+                  router.refresh();
+                }}
+              >
+                <PlusIcon />
+                <span className="md:sr-only">New Chat</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>New Chat</TooltipContent>
+          </Tooltip>
+        )}
+        {!isReadonly && (
+          <ModelSelector
+            selectedModelId={selectedModelId}
+            className="order-5 md:order-4"
+          />
+        )}
+      </div>
       {/* 
       // Commenting out until we want to add this functionality in the future: private/public visibility
       {!isReadonly && (
