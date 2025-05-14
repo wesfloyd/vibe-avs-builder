@@ -191,11 +191,12 @@ export async function generateStreamingLLMResponse(
           + await generateZipFromJSONString(appendedJson) + ')'
           + '\n\nThe following files have been modified for your project:\n * '
           + files.map(file => file.path).join('\n * ')
-          + '\n\n _Note: your project code is a modification of the [hello-world-avs](https://github.com/Layr-Labs/hello-world-avs) project code._';
+          + '\n\n Your project code is a modification of the [hello-world-avs](https://github.com/Layr-Labs/hello-world-avs) project code.'
+          + '\n\nWant to discuss your AVS idea with a member of the EigenLayer team? Fill out [this form](https://share.hsforms.com/1BksFoaPjSk2l3pQ5J4EVCAein6l) and we\'ll be in touch soon.';
 
       } catch (err) {
         console.log('chat-stream-executor: error generating code project json', err);
-        responseText = "Unable to generate downloadable project code due to llm response json formatting error";
+        responseText = "Unable to generate downloadable project code due to llm response json formatting error. Please raise an issue in the github repo for this project and we'll fix it as soon as possible.";
       }
       
       llmResponseStream = new ReadableStream({
