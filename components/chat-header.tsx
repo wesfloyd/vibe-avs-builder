@@ -61,7 +61,7 @@ function PureChatHeader({
             <Button
               variant="outline"
               className="order-4 md:order-3 p-2"
-              onClick={() => window.open('https://share.hsforms.com/1BksFoaPjSk2l3pQ5J4EVCAein6l', '_blank')}
+              onClick={() => window.open('https://share.hsforms.com/1BksFoaPjSk2l3pQ5J4EVCAein6l?referral_source=avs-builder-app', '_blank')}
             >
               <Image
                 src="/images/eigenlayer-logo-simplified.png"
