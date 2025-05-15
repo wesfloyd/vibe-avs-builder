@@ -5,3 +5,5 @@ export const isTestEnvironment = Boolean(
     process.env.PLAYWRIGHT ||
     process.env.CI_PLAYWRIGHT,
 );
+
+export const EIGEN_LAYER_AVS_FORM_URL = "https://share.hsforms.com/1BksFoaPjSk2l3pQ5J4EVCAein6l?referral_source=avs-builder-app";
