@@ -16,6 +16,7 @@ import { UserIntent } from './types';
 import { basicPrompt, stage1IdeasPrompt, stage2DesignPrompt, stage3PrototypePromptTaskList, stage3PrototypePromptCodeGeneration, stageProgessionPrompt } from './prompts';
 import { appendJSONToHelloWorld as prependHelloWorldToJSON, generateZipFromJSONString, validateCodeProjectJSON, appendJSONToHelloWorld } from '../code/generate-code-project';
 import type { CodeFile } from '../code/generate-code-project';
+import { EIGEN_LAYER_AVS_FORM_URL } from '@/lib/constants';
 
 
 interface ExecuteChatStreamParams {
@@ -192,7 +193,7 @@ export async function generateStreamingLLMResponse(
           + '\n\nThe following files have been modified for your project:\n * '
           + files.map(file => file.path).join('\n * ')
           + '\n\n Your project code is a modification of the [hello-world-avs](https://github.com/Layr-Labs/hello-world-avs) project code.'
-          + '\n\nWant to discuss your AVS idea with a member of the EigenLayer team? Fill out [this form](https://share.hsforms.com/1BksFoaPjSk2l3pQ5J4EVCAein6l) and we\'ll be in touch soon.';
+          + '\n\nWant to discuss your AVS idea with a member of the EigenLayer team? Fill out [this form](' + EIGEN_LAYER_AVS_FORM_URL + ") and we'll be in touch soon.";
 
       } catch (err) {
         console.log('chat-stream-executor: error generating code project json', err);

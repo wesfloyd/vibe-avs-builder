@@ -12,6 +12,7 @@ import type { VisibilityType } from './visibility-selector';
 import { ModelSelector } from './model-selector';
 import { SidebarUserNav } from '@/components/sidebar-user-nav';
 import type { User } from 'next-auth';
+import { EIGEN_LAYER_AVS_FORM_URL } from '@/lib/constants';
 
 function PureChatHeader({
   chatId,
@@ -61,7 +62,7 @@ function PureChatHeader({
             <Button
               variant="outline"
               className="order-4 md:order-3 p-2"
-              onClick={() => window.open('https://share.hsforms.com/1BksFoaPjSk2l3pQ5J4EVCAein6l', '_blank')}
+              onClick={() => window.open(EIGEN_LAYER_AVS_FORM_URL, '_blank')}
             >
               <Image
                 src="/images/eigenlayer-logo-simplified.png"
