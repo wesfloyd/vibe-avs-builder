@@ -34,13 +34,37 @@ function PureChatHeader({
 
   return (
     <header className="flex sticky top-0 bg-background py-1.5 items-center px-[20px] md:px-[20px] gap-2 justify-between">
-      {/* Left-aligned items */}
+      {/* Right-aligned items (moved to the left) */}
       <div className="flex items-center gap-2">
-        {user && (
-          <div className="order-0 md:order-0 mr-2">
-            <SidebarUserNav user={user} />
-          </div>
+        {(!open || windowWidth < 768) && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                className="order-2 md:order-1 md:px-2 px-2 md:h-fit ml-auto md:ml-0"
+                onClick={() => {
+                  router.push('/');
+                  router.refresh();
+                }}
+              >
+                <PlusIcon />
+                <span className="md:sr-only">New Chat</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>New Chat</TooltipContent>
+          </Tooltip>
         )}
+        {!isReadonly && (
+          <ModelSelector
+            selectedModelId={selectedModelId}
+            className="order-5 md:order-4"
+          />
+        )}
+      </div>
+
+      {/* Left-aligned items (moved to the right) */}
+      <div className="flex items-center gap-2">
+       
         {/* <SidebarToggle /> */}
         <Tooltip>
           <TooltipTrigger asChild>
@@ -75,33 +99,10 @@ function PureChatHeader({
           </TooltipTrigger>
           <TooltipContent>Contact EigenLayer</TooltipContent>
         </Tooltip>
-      </div>
-
-      {/* Right-aligned items */}
-      <div className="flex items-center gap-2 ml-auto">
-        {(!open || windowWidth < 768) && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="outline"
-                className="order-2 md:order-1 md:px-2 px-2 md:h-fit ml-auto md:ml-0"
-                onClick={() => {
-                  router.push('/');
-                  router.refresh();
-                }}
-              >
-                <PlusIcon />
-                <span className="md:sr-only">New Chat</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>New Chat</TooltipContent>
-          </Tooltip>
-        )}
-        {!isReadonly && (
-          <ModelSelector
-            selectedModelId={selectedModelId}
-            className="order-5 md:order-4"
-          />
+        {user && (
+          <div className="order-5 md:order-5 mr-2">
+            <SidebarUserNav user={user} />
+          </div>
         )}
       </div>
       {/* 
