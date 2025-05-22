@@ -1,3 +1,8 @@
+# Deprecated 5/22/2025
+
+This project is deprecated. Future development will occur at https://github.com/Layr-Labs/studio
+
+
 # EigenLayer Vibe AVS Web App
 
 ## Project Goals
